@@ -14,5 +14,4 @@ alias java15="sdk use java 15.0.2.hs-adpt && java -version"
 alias nuget="mono /usr/local/bin/nuget.exe"
 alias yarn-up="yarn upgrade-interactive --latest"
 
-alias cebartling-github-cd="cd ~/git-sandbox/cebartling"
-
+alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
