@@ -20,3 +20,5 @@ alias quizzer-aliases="source ~/.dotfiles/aliases/quizzer.sh"
 alias saga-pattern-aliases="source ~/.dotfiles/aliases/saga-pattern.sh"
 alias swift-aliases="source ~/.dotfiles/aliases/swift.sh"
 alias studying-aliases="source ~/.dotfiles/aliases/studying.sh"
+
+alias weather="curl wttr.in/55379"
