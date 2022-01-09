@@ -1,3 +1,5 @@
+echo "Configuring Gummi Bears aliases..."
+
 alias gummi-bears-cd="cd ~/github-sandbox/cebartling/gummi-bears && rvm use"
 alias gummi-bears-web-cd="cd ~/github-sandbox/cebartling/gummi-bears-web && nvm use lts/erbium"
 alias gummi-bears-react-cd="cd ~/github-sandbox/cebartling/gummi-bears-react && nvm use"
@@ -5,3 +7,15 @@ alias gummi-bears-acceptance-tests-cd="cd ~/github-sandbox/cebartling/gummi-bear
 alias gummi-bears-firebase-cd="cd ~/github-sandbox/cebartling/gummi-bears-firebase && nvm use lts/dubnium"
 alias gummi-bears-firebase-functions-cd="cd ~/github-sandbox/cebartling/gummi-bears-firebase/functions && nvm use lts/dubnium"
 alias gummi-bears-dev-db-migrate="heroku run rails db:migrate --app gummi-bears-dev"
+
+echo "Available aliases"
+echo "---------------------------------------------"
+echo "gummi-bears-cd"
+echo "gummi-bears-web-cd"
+echo "gummi-bears-react-cd"
+echo "gummi-bears-acceptance-tests-cd"
+echo "gummi-bears-firebase-cd"
+echo "gummi-bears-firebase-functions-cd"
+echo "gummi-bears-dev-db-migrate"
+echo "---------------------------------------------"
+
