@@ -4,3 +4,12 @@ alias test-driven-cd="cd ~/github-sandbox/cebartling/test-driven"
 alias test-driven-spring-boot-webflux-tdd-demo-cd="cd ~/github-sandbox/cebartling/test-driven/spring-boot/webflux-tdd-demo && pwd"
 alias test-driven-testcontainers-java-demo-cd="cd ~/github-sandbox/cebartling/test-driven/testcontainers/java-demo && pwd"
 alias test-driven-svelte-example1-cd="cd ~/github-sandbox/cebartling/test-driven/svelte/example1 && pwd"
+
+echo "Available aliases"
+echo "---------------------------------------------"
+echo "test-driven-cd"
+echo "test-driven-spring-boot-webflux-tdd-demo-cd"
+echo "test-driven-testcontainers-java-demo-cd"
+echo "test-driven-svelte-example1-cd"
+echo "---------------------------------------------"
+
