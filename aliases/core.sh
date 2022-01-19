@@ -4,6 +4,7 @@
 # For a full list of active aliases, run `alias`.
 
 # Common aliases
+alias ll='exa -l --icons --no-user --group-directories-first  --time-style long-iso'
 alias weather="curl wttr.in/55379"
 alias zshconfig="code ~/.zshrc"
 alias aliases-config="code ~/.dotfiles/aliases/core.sh"
