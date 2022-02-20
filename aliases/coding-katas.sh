@@ -1,9 +1,9 @@
 echo "Configuring code katas aliases..."
 
-alias code-katas-cd="cd ~/github-sandbox/cebartling/code-katas"
+alias coding-katas-cd="cd ~/github-sandbox/cebartling/coding-katas"
 
 echo "Available aliases"
 echo "---------------------------------------------"
-echo "code-katas-cd"
+echo "coding-katas-cd"
 echo "---------------------------------------------"
 
