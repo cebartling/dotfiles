@@ -4,7 +4,12 @@
 # For a full list of active aliases, run `alias`.
 
 # Common aliases
-alias ll='exa -l --icons --no-user --group-directories-first  --time-style long-iso'
+alias cat=bat --paging=never
+#alias ll='exa -l --icons --no-user --group-directories-first  --time-style long-iso'
+alias ls='exa -l --group-directories-first --color=auto --git --icons --no-permissions --no-user'
+alias ll='exa -lahF --group-directories-first --color=auto --git --icons'
+
+
 alias zshconfig="code ~/.zshrc"
 alias aliases-config="code ~/.dotfiles/aliases/core.sh"
 alias ohmyzsh="code ~/.oh-my-zsh"

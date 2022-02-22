@@ -8,5 +8,7 @@ brew install ripgrep
 brew install httpie
 brew install procs
 brew install dog
+brew install fx
+brew install fzf
 
 echo "Finished installing essentials tools on macOS!"
