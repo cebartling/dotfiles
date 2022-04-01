@@ -2,6 +2,10 @@
 
 echo "Installing essentials tools on macOS..."
 
+brew update
+brew install git
+brew install curl
+brew install starship
 brew install bat
 brew install exa
 brew install ripgrep
