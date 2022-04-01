@@ -14,5 +14,6 @@ brew install procs
 brew install dog
 brew install fx
 brew install fzf
+brew install tmux
 
 echo "Finished installing essentials tools on macOS!"
