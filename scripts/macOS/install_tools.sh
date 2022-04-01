@@ -15,5 +15,8 @@ brew install dog
 brew install fx
 brew install fzf
 brew install tmux
+brew install cheat
+brew install figlet
+brew install lolcat
 
 echo "Finished installing essentials tools on macOS!"
