@@ -19,5 +19,6 @@ brew install cheat
 brew install figlet
 brew install lolcat
 brew install gh
+gh extension install dlvhdr/gh-dash
 
 echo "Finished installing essentials tools on macOS!"
