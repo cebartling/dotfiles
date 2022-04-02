@@ -18,5 +18,6 @@ brew install tmux
 brew install cheat
 brew install figlet
 brew install lolcat
+brew install gh
 
 echo "Finished installing essentials tools on macOS!"
