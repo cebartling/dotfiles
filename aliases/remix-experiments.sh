@@ -1,6 +1,6 @@
 echo "Configuring Remix experiments aliases..."
 
-alias remix-experiments-cd="cd ~/github-sandbox/cebartling/remix-experiments"
+alias remix-experiments-cd="cd ~/github-sandbox/cebartling/remix-experiments && pwd && nvm use"
 alias remix-experiments-example1-cd="cd ~/github-sandbox/cebartling/remix-experiments/example1 && pwd && nvm use"
 
 echo "Available aliases"
