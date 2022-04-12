@@ -19,6 +19,7 @@ brew install tmux
 brew install cheat
 brew install figlet
 brew install lolcat
+brew install devutils
 brew install gh
 gh extension install dlvhdr/gh-dash
 
