@@ -31,6 +31,11 @@ alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\
 alias weather-shakopee="curl wttr.in/Shakopee"
 #alias weather="curl wttr.in/55379"
 
+
+# Git configuration
+alias config-git-pager="git config --global pager.diff \"less -FX\""
+
+
 # Specific alias loaders
 alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
 alias gummi-bear-aliases="source ~/.dotfiles/aliases/gummi-bears.sh"
