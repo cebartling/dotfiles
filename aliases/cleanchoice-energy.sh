@@ -16,4 +16,5 @@ echo $fg[cyan]---------------------------------------------$reset_color
 echo $fg[yellow]cce-ceo-api-cd$reset_color
 echo $fg[yellow]cce-ceo-cd$reset_color
 echo $fg[yellow]cce-ceo-web-ui-cd$reset_color
+echo $fg[yellow]personal-github-identity$reset_color
 echo $fg[cyan]---------------------------------------------$reset_color
