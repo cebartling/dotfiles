@@ -12,6 +12,7 @@ alias cce-europa-cd="cd ~/github-sandbox/cleanchoice/europa && pwd"
 alias cce-ceo-web-ui-cd="cd ~/github-sandbox/cleanchoice/clean-energy-option/web-ui && pwd && nvm use"
 alias cce-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519"
 alias personal-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519_personal"
+alias test-email-address="echo \"\n\nchris.bartling$(date +%s)@any-domain.com\n\n\""
 
 
 echo $fg[cyan]Available aliases$reset_color
@@ -23,4 +24,5 @@ echo $fg[yellow]cce-ceo-api-cd$reset_color
 echo $fg[yellow]cce-ceo-web-ui-cd$reset_color
 echo $fg[yellow]cce-github-identity$reset_color
 echo $fg[yellow]personal-github-identity$reset_color
+echo $fg[yellow]test-email-address$reset_color
 echo $fg[cyan]---------------------------------------------$reset_color
