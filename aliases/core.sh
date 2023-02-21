@@ -48,6 +48,7 @@ alias coding-katas-aliases="source ~/.dotfiles/aliases/coding-katas.sh"
 alias react-experiments-aliases="source ~/.dotfiles/aliases/react-experiments.sh"
 alias testcontainers-experiments-aliases="source ~/.dotfiles/aliases/testcontainers-experiments.sh"
 alias remix-experiments-aliases="source ~/.dotfiles/aliases/remix-experiments.sh"
-alias cleanchoice-energy-aliases="source ~/.dotfiles/aliases/cleanchoice-energy.sh"
+alias cleanchoice-energy-aliases-functions="source ~/.dotfiles/aliases/cleanchoice-energy.sh && source ~/.dotfiles/functions/cleanchoice.sh"
 alias tauri-experiments-aliases="source ~/.dotfiles/aliases/tauri-experiments.sh"
 alias remix-ecommerce-aliases="source ~/.dotfiles/aliases/remix-ecommerce.sh"
+
