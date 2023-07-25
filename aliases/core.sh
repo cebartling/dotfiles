@@ -51,4 +51,5 @@ alias remix-experiments-aliases="source ~/.dotfiles/aliases/remix-experiments.sh
 alias cleanchoice-energy-aliases-functions="source ~/.dotfiles/aliases/cleanchoice-energy.sh && source ~/.dotfiles/functions/cleanchoice.sh"
 alias tauri-experiments-aliases="source ~/.dotfiles/aliases/tauri-experiments.sh"
 alias remix-ecommerce-aliases="source ~/.dotfiles/aliases/remix-ecommerce.sh"
+alias localstack-experiments-aliases="source ~/.dotfiles/aliases/localstack-experiments.sh"
 
