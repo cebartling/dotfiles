@@ -10,8 +10,7 @@ alias cce-ceo-cd="cd ~/github-sandbox/cleanchoice/clean-energy-option && pwd && 
 alias cce-cd="cd ~/github-sandbox/cleanchoice && pwd"
 alias cce-europa-cd="cd ~/github-sandbox/cleanchoice/europa && pwd"
 alias cce-ceo-web-ui-cd="cd ~/github-sandbox/cleanchoice/clean-energy-option/web-ui && pwd && nvm use"
-alias remix-spike-auth0-cd="cd ~/github-sandbox/cebartling/remix-experiments/auth0-integration && pwd && nvm use"
-alias remix-spike-stripe-cd="cd ~/github-sandbox/cebartling/remix-experiments/stripe-payment-element && pwd && nvm use"
+alias cce-ceo-test-app-cd="cd ~/github-sandbox/cleanchoice/clean-energy-option-test-app && pwd && nvm use"
 alias cce-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519"
 alias personal-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519_personal"
 alias test-email-address="echo \"\n\nchris.bartling$(date +%s)@cleanchoiceenergy.com\n\n\""
@@ -24,8 +23,7 @@ echo $fg[yellow]cce-europa-cd$reset_color
 echo $fg[yellow]cce-ceo-cd$reset_color
 echo $fg[yellow]cce-ceo-api-cd$reset_color
 echo $fg[yellow]cce-ceo-web-ui-cd$reset_color
-echo $fg[yellow]remix-spike-auth0-cd$reset_color
-echo $fg[yellow]remix-spike-stripe-cd$reset_color
+echo $fg[yellow]cce-ceo-test-app-cd$reset_color
 echo $fg[yellow]cce-github-identity$reset_color
 echo $fg[yellow]personal-github-identity$reset_color
 echo $fg[yellow]test-email-address$reset_color
