@@ -38,6 +38,7 @@ alias config-git-pager="git config --global pager.diff \"less -FX\""
 
 # Specific alias loaders
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
+alias aws-explorer-aliases="source ~/.dotfiles/aliases/aws-explorer.sh"
 alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
 alias cleanchoice-energy-aliases-functions="source ~/.dotfiles/aliases/cleanchoice-energy.sh && source ~/.dotfiles/functions/cleanchoice.sh"
 alias coding-katas-aliases="source ~/.dotfiles/aliases/coding-katas.sh"
