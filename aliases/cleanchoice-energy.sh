@@ -14,6 +14,7 @@ alias cce-ceo-test-app-cd="cd ~/github-sandbox/cleanchoice/clean-energy-option-t
 alias cce-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519"
 alias personal-github-identity="eval \"$(ssh-agent -s)\" && ssh-add ~/.ssh/id_ed25519_personal"
 alias test-email-address="echo \"\n\nchris.bartling$(date +%s)@cleanchoiceenergy.com\n\n\""
+alias npm-ci-legacy-peer-deps="npm ci --legacy-peer-deps"
 
 
 echo $fg[cyan]Available aliases$reset_color
@@ -27,4 +28,5 @@ echo $fg[yellow]cce-ceo-test-app-cd$reset_color
 echo $fg[yellow]cce-github-identity$reset_color
 echo $fg[yellow]personal-github-identity$reset_color
 echo $fg[yellow]test-email-address$reset_color
+echo $fg[yellow]npm-ci-legacy-peer-deps$reset_color
 echo $fg[cyan]---------------------------------------------$reset_color
