@@ -54,4 +54,5 @@ alias test-driven-aliases="source ~/.dotfiles/aliases/test-driven.sh"
 alias testcontainers-experiments-aliases="source ~/.dotfiles/aliases/testcontainers-experiments.sh"
 alias tauri-experiments-aliases="source ~/.dotfiles/aliases/tauri-experiments.sh"
 alias remix-ecommerce-aliases="source ~/.dotfiles/aliases/remix-ecommerce.sh"
+alias real-python-aliases="source ~/.dotfiles/aliases/real-python.sh"
 
