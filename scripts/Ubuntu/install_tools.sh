@@ -12,6 +12,7 @@ sudo apt install -y ripgrep
 sudo apt install -y fonts-hack-ttf
 sudo apt install -y net-tools
 sudo apt install -y tmux
+sudo apt install -y fonts-powerline
 
 sudo snap install httpie
 sudo snap install procs
