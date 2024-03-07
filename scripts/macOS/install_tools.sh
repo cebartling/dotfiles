@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 echo "Installing essentials tools on macOS..."
 
