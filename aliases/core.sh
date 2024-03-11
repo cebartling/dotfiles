@@ -6,8 +6,8 @@
 # Common aliases
 alias cat=bat --paging=never
 #alias ll='exa -l --icons --no-user --group-directories-first  --time-style long-iso'
-alias ls='exa -l --group-directories-first --color=auto --git --icons --no-permissions --no-user'
-alias ll='exa -lahF --group-directories-first --color=auto --git --icons'
+alias ls='exa -l --group-directories-first --color=auto --icons --no-permissions --no-user'
+alias ll='exa -lahF --group-directories-first --color=auto --icons'
 
 
 alias zshconfig="code ~/.zshrc"
