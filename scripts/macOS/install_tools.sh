@@ -23,6 +23,7 @@ brew install devutils
 brew install gh
 brew install awslogs
 brew install dust
+brew install hyperfine
 gh extension install dlvhdr/gh-dash
 
 echo "Finished installing essentials tools on macOS!"
