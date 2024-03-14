@@ -22,6 +22,7 @@ brew install lolcat
 brew install devutils
 brew install gh
 brew install awslogs
+brew install dust
 gh extension install dlvhdr/gh-dash
 
 echo "Finished installing essentials tools on macOS!"
