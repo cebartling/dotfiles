@@ -8,7 +8,7 @@ brew install git
 brew install curl
 brew install starship
 brew install bat
-brew install exa
+brew install eza
 brew install ripgrep
 brew install httpie
 brew install procs
