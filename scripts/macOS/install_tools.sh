@@ -25,6 +25,7 @@ brew install awslogs
 brew install dust
 brew install hyperfine
 brew install --cask warp
+brew install derailed/k9s/k9s
 
 gh extension install dlvhdr/gh-dash
 
