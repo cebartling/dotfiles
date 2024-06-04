@@ -56,4 +56,4 @@ alias tauri-experiments-aliases="source ~/.dotfiles/aliases/tauri-experiments.sh
 alias remix-ecommerce-aliases="source ~/.dotfiles/aliases/remix-ecommerce.sh"
 alias real-python-aliases="source ~/.dotfiles/aliases/real-python.sh"
 alias joy-of-react-aliases="source ~/.dotfiles/aliases/joy-of-react.sh"
-
+alias costco-aliases="source ~/.dotfiles/aliases/costco.sh"
