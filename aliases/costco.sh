@@ -22,6 +22,8 @@ alias costco-oms-ui-bff-serve="pnpm nx serve bff"
 alias costco-oms-ui-bff-test="pnpm nx test bff --skip-nx-cache"
 alias costco-oms-ui-bff-test-typecheck-lint-build="pnpm nx run-many -p bff --skip-nx-cache -t test typecheck lint build"
 
+alias costco-oms-ui-all-serve="pnpm nx run-many -t serve -p host,bff"
+
 alias costco-oms-ui-host-e2e-tests="pnpm nx e2e host-e2e"
 
 echo $fg[cyan]Available aliases$reset_color
@@ -44,6 +46,8 @@ echo ""
 echo $fg[yellow]costco-oms-ui-bff-serve$reset_color
 echo $fg[yellow]costco-oms-ui-bff-test$reset_color
 echo $fg[yellow]costco-oms-ui-bff-test-typecheck-lint-build$reset_color
+echo ""
+echo $fg[yellow]costco-oms-ui-all-serve$reset_color
 echo ""
 echo $fg[yellow]costco-oms-ui-host-e2e-tests$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
