@@ -26,10 +26,11 @@ alias git-log-enhanced="git log --graph --pretty=format:'%Cred%h%Creset -%C(yell
 alias hostfile="sudo code /etc/hosts"
 alias external-ip="curl https://diagnostic.opendns.com/myip ; echo"
 alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+alias git-config="git config user.name && git config user.email"
 
 
-alias weather-shakopee="curl wttr.in/Shakopee"
-#alias weather="curl wttr.in/55379"
+alias weather-shakopee="curl https://wttr.in/Shakopee\?u"
+#alias weather="curl wttr.in/55379?u"
 
 
 # Git configuration
