@@ -22,7 +22,7 @@ alias costco-oms-ui-bff-serve="pnpm nx serve bff"
 alias costco-oms-ui-bff-test="pnpm nx test bff --skip-nx-cache"
 alias costco-oms-ui-bff-test-typecheck-lint-build="pnpm nx run-many -p bff --skip-nx-cache -t test typecheck lint build"
 
-alias costco-oms-ui-all-serve="pnpm nx run-many -t serve -p host,bff"
+alias costco-oms-ui-all-serve="pnpm nx run-many -t serve -p host,bff,mock-apim --verbose --configuration development"
 
 alias costco-oms-ui-host-e2e-tests="pnpm nx e2e host-e2e"
 
