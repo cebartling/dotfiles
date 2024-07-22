@@ -14,7 +14,7 @@ alias costco-oms-ui-shared-ui-test="pnpm nx test shared-ui --skip-nx-cache"
 alias costco-oms-ui-shared-util-test="pnpm nx test shared-util --skip-nx-cache"
 
 alias costco-oms-ui-host-serve="pnpm nx serve host"
-alias costco-oms-ui-host-storybook="pnpm nx run storybook-host:storybook"
+alias costco-oms-ui-host-storybook="pnpm nx run storybook:serve"
 alias costco-oms-ui-host-test="pnpm nx test host --skip-nx-cache"
 alias costco-oms-ui-host-test-typecheck-lint-build="pnpm nx run-many -p host --skip-nx-cache -t test typecheck lint build"
 
