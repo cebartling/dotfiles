@@ -3,6 +3,7 @@
 echo "Installing essentials tools on macOS..."
 
 brew update
+brew install vale
 brew install openssl
 brew install git
 brew install curl

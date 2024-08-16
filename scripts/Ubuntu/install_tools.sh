@@ -17,6 +17,7 @@ sudo apt install -y fonts-powerline
 sudo snap install httpie
 sudo snap install procs
 sudo snap install fx
+sudo snap install vale
 
 curl -sS https://starship.rs/install.sh | sh
 
