@@ -1,6 +1,7 @@
 #!/bin/zsh
 
-autoload colors; colors
+autoload colors
+colors
 
 echo $fg[cyan]Configuring Costco OMS Modernization engagement aliases...$reset_color
 
@@ -22,7 +23,8 @@ alias costco-oms-ui-bff-serve="pnpm nx serve bff"
 alias costco-oms-ui-bff-test="pnpm nx test bff --skip-nx-cache"
 alias costco-oms-ui-bff-test-typecheck-lint-build="pnpm nx run-many -p bff --skip-nx-cache -t test typecheck lint build"
 
-alias costco-oms-ui-all-serve="pnpm nx run-many -t serve -p host,bff,mock-apim --verbose --configuration development"
+alias oms-run-dev="pnpm nx run-many -t serve -p host,bff,mock-apim --verbose --configuration development"
+alias oms-run-prod="pnpm nx run-many -t serve -p host,bff --verbose --configuration production"
 
 alias costco-oms-ui-host-e2e-tests="pnpm nx e2e host-e2e"
 
@@ -47,7 +49,11 @@ echo $fg[yellow]costco-oms-ui-bff-serve$reset_color
 echo $fg[yellow]costco-oms-ui-bff-test$reset_color
 echo $fg[yellow]costco-oms-ui-bff-test-typecheck-lint-build$reset_color
 echo ""
-echo $fg[yellow]costco-oms-ui-all-serve$reset_color
-echo ""
 echo $fg[yellow]costco-oms-ui-host-e2e-tests$reset_color
+echo ""
+echo ""
+echo $fg[cyan]Local dev OMS run configurations$reset_color
+echo $fg[cyan]---------------------------------------------------$reset_color
+echo $fg[yellow]oms-run-dev$reset_color
+echo $fg[yellow]oms-run-prod$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
