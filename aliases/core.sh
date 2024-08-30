@@ -9,7 +9,6 @@ alias cat=bat --paging=never
 alias ls='eza -l --group-directories-first --color=auto --icons --no-permissions --no-user'
 alias ll='eza -lahF --group-directories-first --color=auto --icons'
 
-
 alias zshconfig="code ~/.zshrc"
 alias aliases-config="code ~/.dotfiles/aliases/core.sh"
 alias ohmyzsh="code ~/.oh-my-zsh"
@@ -28,14 +27,11 @@ alias external-ip="curl https://diagnostic.opendns.com/myip ; echo"
 alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 alias git-config="git config user.name && git config user.email"
 
-
 alias weather-shakopee="curl https://wttr.in/Shakopee\?u"
 #alias weather="curl wttr.in/55379?u"
 
-
 # Git configuration
 alias config-git-pager="git config --global pager.diff \"less -FX\""
-
 
 # Specific alias loaders
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
@@ -44,6 +40,7 @@ alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
 alias cleanchoice-energy-aliases-functions="source ~/.dotfiles/aliases/cleanchoice-energy.sh && source ~/.dotfiles/functions/cleanchoice.sh"
 alias coding-katas-aliases="source ~/.dotfiles/aliases/coding-katas.sh"
 alias gummi-bear-aliases="source ~/.dotfiles/aliases/gummi-bears.sh"
+alias kubernetes-experiments-aliases="source ~/.dotfiles/aliases/kubernetes-experiments.sh"
 alias localstack-experiments-aliases="source ~/.dotfiles/aliases/localstack-experiments.sh"
 alias quizzer-aliases="source ~/.dotfiles/aliases/quizzer.sh"
 alias react-experiments-aliases="source ~/.dotfiles/aliases/react-experiments.sh"
