@@ -11,13 +11,21 @@ alias costco-search-cd="cd ~/github-sandbox/costco/search.costco.web && nvm use 
 alias costco-add-ssh-key="ssh-add ~/.ssh/costco-rsa-key && ssh-add -l"
 alias costco-git-config="git config user.name && git config user.email"
 
+alias costco-start-redis="docker run -d --name costco-browse-redis-stack -p 6379:6379  redis/redis-stack-server:latest"
+alias costco-start-redis-insight="docker run -d --name costco-browse-redis-insight -p 5540:5540 redis/redisinsight:latest"
+alias costco-stop-redis="docker container stop costco-browse-redis-stack"
+alias costco-stop-redis-insight="docker container stop costco-browse-redis-insight"
+
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
-echo ""
 echo $fg[yellow]costco-browse-cd$reset_color
 echo $fg[yellow]costco-forge-cd$reset_color
 echo $fg[yellow]costco-search-cd$reset_color
 echo $fg[yellow]costco-add-ssh-key$reset_color
 echo $fg[yellow]costco-git-config$reset_color
 echo ""
+echo $fg[yellow]costco-start-redis$reset_color
+echo $fg[yellow]costco-stop-redis$reset_color
+echo $fg[yellow]costco-start-redis-insight$reset_color
+echo $fg[yellow]costco-stop-redis-insight$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
