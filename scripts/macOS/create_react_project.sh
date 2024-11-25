@@ -3,18 +3,19 @@
 autoload colors
 colors
 
-export NODE_JS_RUNTIME="lts/jod"
-
 echo $fg[cyan]Creating new React/Vite project...$reset_color
 
 read "project_name?What will be the name of the React project? "
+echo $fg[yellow]A new React project named $project_name will be created.$reset_color
+
+read "node_js_runtime?What version of Node.js do you want to use? "
+echo $fg[yellow]Node.js version $node_js_runtime will be used.$reset_color
 
 npm create vite@latest $project_name -- --template react-ts
 cd ./$project_name
 
-echo $fg[yellow]Setting the default Node.js runtime to $NODE_JS_RUNTIME.$reset_color
 touch .nvmrc
-echo $NODE_JS_RUNTIME >./.nvmrc
+echo $node_js_runtime >./.nvmrc
 
 # Add vitest and React Testing Library dependencies
 echo $fg[yellow]Installing Vitest and React Testing Library...$reset_color
