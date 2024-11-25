@@ -45,6 +45,11 @@ echo $fg[yellow]Installing and configuring Mock Service Worker...$reset_color
 npm install -D msw@latest msw-storybook-addon@latest
 npx msw init public/ --save
 
+# Add Rollup bundle visualizer
+echo $fg[yellow]Installing and configuring Rollup bundle visualizer...$reset_color
+npm install -D rollup-plugin-visualizer
+cat ~/.dotfiles/templates/vite/vite.config.ts >./vite.config.ts
+
 echo $fg[yellow]Running eslint to fix any issues...$reset_color
 npx eslint --fix ./src
 
