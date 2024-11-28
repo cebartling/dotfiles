@@ -37,15 +37,7 @@ cat ~/.dotfiles/templates/prettier/.prettierrc.mjs >./.prettierrc.mjs
 touch ./.prettierignore
 cat ~/.dotfiles/templates/prettier/.prettierignore >./.prettierignore
 
-# Add Storybook
-echo $fg[yellow]Installing and configuring Storybook...$reset_color
-npx storybook@latest init --no-dev
-npm install -D @storybook/test-runner jest @storybook/react-vite @vitejs/plugin-react @babel/preset-env @babel/preset-typescript @babel/preset-react @storybook/addon-links @storybook/addon-a11y
-
-# Add MSW to Storybook
-echo $fg[yellow]Installing and configuring Mock Service Worker...$reset_color
-npm install -D msw@latest msw-storybook-addon@latest
-npx msw init public/ --save
+~/.dotfiles/scripts/macOS/add-storybook.zsh
 
 # Add Rollup bundle visualizer
 echo $fg[yellow]Installing and configuring Rollup bundle visualizer...$reset_color
