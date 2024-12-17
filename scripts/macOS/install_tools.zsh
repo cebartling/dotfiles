@@ -35,4 +35,4 @@ brew install 1password-cli
 
 gh extension install dlvhdr/gh-dash
 
-echo $fg[cyan]Fnished Installing essential tools on macOS!$reset_color
+echo $fg[cyan]Finished installing essential tools on macOS!$reset_color
