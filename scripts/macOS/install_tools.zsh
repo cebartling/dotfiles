@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/bin/zsh
 
-echo "Installing essentials tools on macOS..."
+autoload colors
+colors
+
+echo $fg[cyan]Installing essential tools on macOS...$reset_color
 
 brew update
 brew install vale
@@ -26,9 +29,10 @@ brew install awslogs
 brew install dust
 brew install hyperfine
 brew install --cask warp
+brew install --cask wave
 brew install derailed/k9s/k9s
 brew install 1password-cli
 
 gh extension install dlvhdr/gh-dash
 
-echo "Finished installing essentials tools on macOS!"
+echo $fg[cyan]Fnished Installing essential tools on macOS!$reset_color
