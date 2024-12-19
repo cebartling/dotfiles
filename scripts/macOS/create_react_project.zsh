@@ -27,6 +27,11 @@ npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
 touch ./.eslint.config.mjs
 cat ~/.dotfiles/templates/eslint/eslint.config.mjs >./.eslint.config.mjs
 
+echo $fg[cyan]Adding oxlint to current project...$reset_color
+npm install -D oxlint eslint-plugin-oxlint
+touch ./oxlintrc.json
+cat ~/.dotfiles/templates/oxlint/oxlintrc.json >./oxlintrc.json
+
 # Add Prettier
 echo $fg[yellow]Installing and configuring Prettier...$reset_color
 npm install -D prettier eslint-config-prettier eslint-plugin-prettier
