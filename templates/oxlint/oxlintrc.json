@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "oxc", "react", "typescript", "unicorn"],
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "foo": "readonly"
+  },
+  "ignorePatterns": [
+    ".azuredevops/",
+    ".githooks/",
+    ".swc/",
+    ".vscode/",
+    "build/",
+    "node_modules/",
+    "pipelines/",
+    "public/"
+  ],
+  "settings": {},
+  "rules": {
+    "eqeqeq": "error",
+    "import/namespace": "warn",
+    "import/no-cycle": "error",
+    "no-document-cookie": "error",
+    "no-extra-boolean-cast": "warn",
+    "no-unsafe-finally": "error",
+    "no-unused-vars": "warn",
+    "unicorn/no-empty-file": "error"
+  },
+  "overrides": [
+    {
+      "files": ["*.test.ts", "*.spec.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    }
+  ]
+}
