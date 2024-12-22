@@ -32,6 +32,7 @@ brew install --cask warp
 brew install --cask wave
 brew install derailed/k9s/k9s
 brew install 1password-cli
+brew install fastfetch
 
 gh extension install dlvhdr/gh-dash
 
