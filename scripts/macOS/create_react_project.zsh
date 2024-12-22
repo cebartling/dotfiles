@@ -18,8 +18,7 @@ touch .nvmrc
 echo $node_js_runtime >./.nvmrc
 
 # Add vitest and React Testing Library dependencies
-echo $fg[yellow]Installing Vitest and React Testing Library...$reset_color
-npm install -D jsdom vitest @vitest/ui @testing-library/react @testing-library/jest-dom @testing-library/user-event vitest-axe@1.0.0-pre.3
+~/.dotfiles/scripts/add_vitest.sh
 
 # Add eslint and fix issues with bootstrapped project files
 echo $fg[yellow]Installing and configuring eslint...$reset_color
