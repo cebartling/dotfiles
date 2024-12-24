@@ -17,7 +17,11 @@ alias costco-stop-redis="docker container stop costco-browse-redis-stack"
 alias costco-stop-redis-insight="docker container stop costco-browse-redis-insight"
 alias costco-package-forge="npm run build && npm run pack"
 
+alias costco-export-node-options="export NODE_OPTIONS=--max-old-space-size=8192"
+alias costco-export-node-tls-reject-unauthorized="export NODE_TLS_REJECT_UNAUTHORIZED=0"
+
 alias costco-run-nextjs="export NODE_TLS_REJECT_UNAUTHORIZED=0 && npm run dev --max-old-space-size=8192"
+alias costco-run-tests="npm test --max-old-space-size=8192"
 
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
@@ -34,4 +38,8 @@ echo $fg[yellow]costco-stop-redis-insight$reset_color
 echo ""
 echo $fg[yellow]costco-package-forge$reset_color
 echo $fg[yellow]costco-run-nextjs$reset_color
+echo $fg[yellow]costco-run-tests$reset_color
+echo ""
+echo $fg[yellow]costco-export-node-options$reset_color
+echo $fg[yellow]costco-export-node-tls-reject-unauthorized$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
