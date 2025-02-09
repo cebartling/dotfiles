@@ -65,3 +65,4 @@ alias tauri-experiments-aliases="source ~/.dotfiles/aliases/tauri-experiments.sh
 alias real-python-aliases="source ~/.dotfiles/aliases/real-python.sh"
 alias remix-ecommerce-aliases="source ~/.dotfiles/aliases/remix-ecommerce.sh"
 alias replay-forensics-aliases="source ~/.dotfiles/aliases/replay-forensics.sh"
+alias tailwind-css-experiments-aliases="source ~/.dotfiles/aliases/tailwind-css-experiments.sh"
