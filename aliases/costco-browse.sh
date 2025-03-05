@@ -8,6 +8,7 @@ echo $fg[cyan]Configuring Costco Digital Browse Modernization aliases...$reset_c
 alias costco-browse-cd="cd ~/github-sandbox/costco/browse.costco.web && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-digital-forge-cd="cd ~/github-sandbox/costco/forge.digital.components && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-public-forge-cd="cd ~/github-sandbox/costco/forge.public.components && nvm use && pwd && costco-add-ssh-key && costco-git-config"
+alias costco-public-forge-lint-cd="cd ~/github-sandbox/costco/forge.public.lint && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-search-cd="cd ~/github-sandbox/costco/search.costco.web && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-consent-ui-cd="cd ~/github-sandbox/costco/all.costco.web.consent-manager-ui.transcend && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-consent-web-cd="cd ~/github-sandbox/costco/consent.costco.web && nvm use && pwd && costco-add-ssh-key && costco-git-config"
@@ -34,6 +35,7 @@ echo $fg[yellow]costco-public-forge-cd$reset_color
 echo $fg[yellow]costco-search-cd$reset_color
 echo $fg[yellow]costco-consent-ui-cd$reset_color
 echo $fg[yellow]costco-consent-web-cd$reset_color
+echo $fg[yellow]costco-public-forge-lint-cd$reset_color
 echo $fg[yellow]costco-add-ssh-key$reset_color
 echo $fg[yellow]costco-git-config$reset_color
 echo ""
