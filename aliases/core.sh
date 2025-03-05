@@ -38,6 +38,8 @@ alias weather-shakopee="curl https://wttr.in/Shakopee\?u"
 
 # Git configuration
 alias config-git-pager="git config --global pager.diff \"less -FX\""
+alias personal-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -l"
+alias personal-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
 # Specific alias loaders
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
@@ -48,6 +50,7 @@ alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
 alias coding-katas-aliases="source ~/.dotfiles/aliases/coding-katas.sh"
 # alias costco-aliases="source ~/.dotfiles/aliases/costco.sh"
 alias costco-browse-aliases="source ~/.dotfiles/aliases/costco-browse.sh"
+alias d3-experiments-aliases="source ~/.dotfiles/aliases/d3-experiments.sh"
 alias gummi-bear-aliases="source ~/.dotfiles/aliases/gummi-bears.sh"
 alias joy-of-react-aliases="source ~/.dotfiles/aliases/joy-of-react.sh"
 alias kubernetes-experiments-aliases="source ~/.dotfiles/aliases/kubernetes-experiments.sh"
