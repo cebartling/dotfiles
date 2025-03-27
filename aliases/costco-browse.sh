@@ -5,7 +5,7 @@ colors
 
 echo $fg[cyan]Configuring Costco Digital Browse Modernization aliases...$reset_color
 
-#alias costco-browse-cd="cd ~/github-sandbox/costco/browse.costco.web && nvm use && pwd && costco-add-ssh-key && costco-git-config"
+alias costco-browse-cd="cd ~/github-sandbox/costco/browse.costco.web && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-digital-forge-cd="cd ~/github-sandbox/costco/forge.digital.components && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-public-forge-cd="cd ~/github-sandbox/costco/forge.public.components && nvm use && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-public-forge-lint-cd="cd ~/github-sandbox/costco/forge.public.lint && nvm use && pwd && costco-add-ssh-key && costco-git-config"
@@ -36,7 +36,7 @@ alias costco-run-tests="npm test --max-old-space-size=8192"
 
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
-#echo $fg[yellow]costco-browse-cd$reset_color
+echo $fg[yellow]costco-browse-cd$reset_color
 echo $fg[yellow]costco-digital-forge-cd$reset_color
 echo $fg[yellow]costco-public-forge-cd$reset_color
 echo $fg[yellow]costco-search-cd$reset_color
