@@ -20,7 +20,7 @@ alias costco-gdx-forge-public-cd="cd ~/github-sandbox/costco/gdx-lib-forge-publi
 alias costco-gdx-forge-public-icons-cd="cd ~/github-sandbox/costco/gdx-lib-forge-public-icons && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-gdx-forge-public-tokens-cd="cd ~/github-sandbox/costco/gdx-lib-forge-public-tokens && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-gdx-browse-homepage-cd="cd ~/github-sandbox/costco/gdx-ux-cnsw-browse-homepage && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
-alias costco-gdx-browse-search-cd="cd ~/github-sandbox/costco/gdx-ux-cnsw-browse-search && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
+alias costco-gdx-search-catalog-cd="cd ~/github-sandbox/costco/gdx-ux-cnsw-search-catalog && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
 
 alias costco-start-redis="docker remove costco-browse-redis-stack && docker run -d --name costco-browse-redis-stack -p 6379:6379  redis/redis-stack-server:latest"
 alias costco-start-redis-insight="docker remove costco-browse-redis-insight && docker run -d --name costco-browse-redis-insight -p 5540:5540 redis/redisinsight:latest"
@@ -51,7 +51,7 @@ echo $fg[yellow]costco-gdx-forge-public-cd$reset_color
 echo $fg[yellow]costco-gdx-forge-public-icons-cd$reset_color
 echo $fg[yellow]costco-gdx-forge-public-tokens-cd$reset_color
 echo $fg[yellow]costco-gdx-browse-homepage-cd$reset_color
-echo $fg[yellow]costco-gdx-browse-search-cd$reset_color
+echo $fg[yellow]costco-gdx-search-catalog-cd$reset_color
 echo ""
 echo $fg[yellow]costco-start-redis$reset_color
 echo $fg[yellow]costco-stop-redis$reset_color
