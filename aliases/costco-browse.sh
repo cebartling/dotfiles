@@ -12,6 +12,7 @@ alias costco-public-forge-lint-cd="cd ~/github-sandbox/costco/forge.public.lint 
 alias costco-search-cd="cd ~/github-sandbox/costco/search.costco.web && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-consent-ui-cd="cd ~/github-sandbox/costco/all.costco.web.consent-manager-ui.transcend && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
 alias costco-consent-web-cd="cd ~/github-sandbox/costco/consent.costco.web && nvm use lts/iron && pwd && costco-add-ssh-key && costco-git-config"
+alias costco-content-stack-cli-cd="cd ~/github-sandbox/costco/content-stack-cli && nvm use lts/jod && pwd"
 alias costco-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/costco-rsa-key && ssh-add -l"
 alias costco-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"c_cbartling@costco.com\""
 
@@ -42,6 +43,7 @@ echo $fg[yellow]costco-public-forge-cd$reset_color
 echo $fg[yellow]costco-search-cd$reset_color
 echo $fg[yellow]costco-consent-ui-cd$reset_color
 echo $fg[yellow]costco-consent-web-cd$reset_color
+echo $fg[yellow]costco-content-stack-cli-cd$reset_color
 echo $fg[yellow]costco-public-forge-lint-cd$reset_color
 echo $fg[yellow]costco-add-ssh-key$reset_color
 echo $fg[yellow]costco-git-config$reset_color
