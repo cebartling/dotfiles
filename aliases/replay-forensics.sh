@@ -15,6 +15,7 @@ alias rfi-frontend-spikes-cd="cd ~/github-sandbox/ReplayForensics/frontend-spike
 
 alias rfi-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519_rfi && ssh-add -l"
 alias rfi-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris@replayforensics.com\""
+alias rfi-start-fastify-server="export DATA_SERVER_BASE_URL=http://127.0.0.1:8700 && npm run dev"
 
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
@@ -30,4 +31,6 @@ echo $fg[yellow]rfi-frontend-spikes-cd$reset_color
 echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-add-ssh-key$reset_color
 echo $fg[yellow]rfi-git-config$reset_color
+echo $fg[yellow]$reset_color
+echo $fg[yellow]rfi-start-fastify-server$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
