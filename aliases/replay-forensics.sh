@@ -7,10 +7,9 @@ echo $fg[cyan]Configuring Replay Forensics aliases...$reset_color
 
 alias rfi-github-cd="cd ~/github-sandbox/ReplayForensics && pwd && rfi-add-ssh-key && rfi-git-config"
 alias rfi-gen1-demo-cd="cd ~/github-sandbox/ReplayForensics/gen1_demo && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
-alias rfi-replay-platform-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
-alias rfi-frontend-app-cd="cd ~/github-sandbox/ReplayForensics/frontend-app && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
-alias rfi-frontend-react-app-cd="cd ~/github-sandbox/ReplayForensics/frontend-app/react-spa && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
-alias rfi-frontend-fastify-server-cd="cd ~/github-sandbox/ReplayForensics/frontend-app/fastify-server && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
+alias rfi-replay-platform-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform && pwd && rfi-add-ssh-key && rfi-git-config"
+alias rfi-react-app-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/react-spa && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
+alias rfi-fastify-server-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/fastify-server && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 alias rfi-frontend-spikes-cd="cd ~/github-sandbox/ReplayForensics/frontend-spikes && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 
 alias rfi-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519_rfi && ssh-add -l"
@@ -23,9 +22,8 @@ echo $fg[yellow]rfi-github-cd$reset_color
 echo $fg[yellow]rfi-gen1-demo-cd$reset_color
 echo $fg[yellow]rfi-replay-platform-cd$reset_color
 echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-frontend-app-cd$reset_color
-echo $fg[yellow]rfi-frontend-react-app-cd$reset_color
-echo $fg[yellow]rfi-frontend-fastify-server-cd$reset_color
+echo $fg[yellow]rfi-react-app-cd$reset_color
+echo $fg[yellow]rfi-fastify-server-cd$reset_color
 echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-frontend-spikes-cd$reset_color
 echo $fg[yellow]$reset_color
