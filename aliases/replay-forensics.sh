@@ -23,6 +23,10 @@ alias rfi-dc-up-fastify-dev="docker compose --profile fastify-dev up"
 alias rfi-dc-down-fastify-dev="docker compose --profile fastify-dev down"
 alias rfi-dc-down-rmi-fastify-dev="docker compose --profile fastify-dev down --rmi all"
 
+alias rfi-dc-up-demo-mode="docker compose --profile demo-mode up"
+alias rfi-dc-down-demo-mode="docker compose --profile demo-mode down"
+alias rfi-dc-down-rmi-demo-mode="docker compose --profile demo-mode down --rmi all"
+
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
 echo $fg[yellow]rfi-replay-platform-cd$reset_color
@@ -32,9 +36,14 @@ echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-dc-up-react-dev$reset_color
 echo $fg[yellow]rfi-dc-down-react-dev$reset_color
 echo $fg[yellow]rfi-dc-down-rmi-react-dev$reset_color
+echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-dc-up-fastify-dev$reset_color
 echo $fg[yellow]rfi-dc-down-fastify-dev$reset_color
 echo $fg[yellow]rfi-dc-down-rmi-fastify-dev$reset_color
+echo $fg[yellow]$reset_color
+echo $fg[yellow]rfi-dc-up-demo-mode$reset_color
+echo $fg[yellow]rfi-dc-down-demo-mode$reset_color
+echo $fg[yellow]rfi-dc-down-rmi-demo-mode$reset_color
 echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-github-cd$reset_color
 echo $fg[yellow]rfi-frontend-spikes-cd$reset_color
