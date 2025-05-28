@@ -35,7 +35,9 @@ brew install 1password-cli
 brew install fastfetch
 brew install direnv
 brew install caddy
-brew install sozercan/kubectl-ai/kubectl-ai
+
+brew tap sozercan/kubectl-ai https://github.com/sozercan/kubectl-ai
+brew install kubectl-ai
 
 
 gh extension install dlvhdr/gh-dash
