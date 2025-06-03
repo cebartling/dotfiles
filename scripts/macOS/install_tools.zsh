@@ -36,4 +36,7 @@ brew install fastfetch
 brew install direnv
 brew install caddy
 
+# Doing MongoDB? Uncomment the following line for MongoDB Compass
+# brew install --cask mongodb-compass
+
 echo $fg[cyan]Finished installing essential tools on macOS!$reset_color
