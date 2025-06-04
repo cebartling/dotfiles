@@ -1,0 +1,104 @@
+# ~/.config/starship.toml
+
+# Prompt character configuration
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[✗](bold red)"
+#vicmd_symbol = "[V](bold yellow)"
+
+# Directory module
+[directory]
+truncation_length = 3
+truncate_to_repo = false
+style = "cyan"
+read_only = " "
+read_only_style = "red"
+
+# Git branch
+[git_branch]
+symbol = " "
+style = "purple"
+
+# Git status
+[git_status]
+style = "bold yellow"
+conflicted = "⚔️ "
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕"
+untracked = "??"
+stashed = "📦"
+modified = "✎"
+staged = "+${count}"
+deleted = "✘"
+renamed = "»"
+
+
+[java]
+symbol = "☕ "
+style = "red bold"
+format = "via [$symbol$version ($vendor)]($style) "
+detect_extensions = ["java", "class", "jar", "gradle", "clj", "cljs", "cljc"]
+detect_files = [
+    "pom.xml",
+    "build.gradle",
+    "build.gradle.kts",
+    "settings.gradle",
+    "settings.gradle.kts",
+]
+detect_folders = ["src"]
+
+# Node.js
+[nodejs]
+symbol = "⬢ "
+style = "green"
+
+# Rust
+[rust]
+symbol = "🦀 "
+style = "red"
+
+# Python
+[python]
+symbol = "🐍 "
+style = "yellow"
+pyenv_version_name = true
+
+# Docker
+[docker_context]
+symbol = "🐳 "
+style = "blue bold"
+
+# Kubernetes
+[kubernetes]
+symbol = "⎈ "
+style = "cyan bold"
+disabled = false
+
+# Time
+# [time]
+# disabled = false
+# format = "🕒 [%T] "
+# style = "dimmed white"
+
+# Battery
+[battery]
+full_symbol = "🔋"
+charging_symbol = "⚡️"
+discharging_symbol = "🔌"
+
+[[battery.display]]
+threshold = 20
+style = "bold red"
+
+# Command duration
+[cmd_duration]
+min_time = 500
+format = "took [$duration](bold yellow)"
+
+# Line break between prompt sections
+[line_break]
+disabled = false
+
+# Right prompt (only works in some shells like zsh)
+#[right_format] = "$time"
