@@ -33,6 +33,8 @@ brew install --cask wave
 brew install --cask obsidian
 brew install --cask postman
 brew install --cask zed
+brew install --cask chatgpt
+brew install --cask claude
 brew install derailed/k9s/k9s
 brew install 1password-cli
 brew install fastfetch
