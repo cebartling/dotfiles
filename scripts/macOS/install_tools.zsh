@@ -31,6 +31,8 @@ brew install hyperfine
 brew install --cask warp
 brew install --cask wave
 brew install --cask obsidian
+brew install --cask postman
+brew install --cask zed
 brew install derailed/k9s/k9s
 brew install 1password-cli
 brew install fastfetch
