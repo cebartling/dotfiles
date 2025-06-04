@@ -42,14 +42,16 @@ alias personal-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -
 alias personal-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
 # Specific alias loaders
+
+alias lifetime-aliases="source ~/.dotfiles/aliases/lifetime.sh"
+
+
+
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
 alias aws-explorer-aliases="source ~/.dotfiles/aliases/aws-explorer.sh"
 alias azure-experiments-aliases="source ~/.dotfiles/aliases/azure-experiments.sh"
 alias cebartling-github-cd="cd ~/github-sandbox/cebartling"
-# alias cleanchoice-energy-aliases-functions="source ~/.dotfiles/aliases/cleanchoice-energy.sh && source ~/.dotfiles/functions/cleanchoice.sh"
 alias coding-katas-aliases="source ~/.dotfiles/aliases/coding-katas.sh"
-# alias costco-aliases="source ~/.dotfiles/aliases/costco.sh"
-alias costco-browse-aliases="source ~/.dotfiles/aliases/costco-browse.sh"
 alias d3-experiments-aliases="source ~/.dotfiles/aliases/d3-experiments.sh"
 alias gummi-bear-aliases="source ~/.dotfiles/aliases/gummi-bears.sh"
 alias joy-of-react-aliases="source ~/.dotfiles/aliases/joy-of-react.sh"
