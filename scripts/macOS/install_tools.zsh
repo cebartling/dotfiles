@@ -40,6 +40,7 @@ brew install 1password-cli
 brew install fastfetch
 brew install direnv
 brew install caddy
+brew install uv
 
 # Doing MongoDB? Uncomment the following line for MongoDB Compass
 # brew install --cask mongodb-compass
