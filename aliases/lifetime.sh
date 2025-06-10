@@ -5,8 +5,8 @@ colors
 
 echo $fg[cyan]Configuring Life Time, Inc. aliases...$reset_color
 
-alias lt-home-cd="cd ~/github-sandbox/lifetime && pwd"
-alias lt-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -l"
+alias lt-home-cd="cd ~/github-sandbox/lifetime && pwd && lt-add-ssh-key && lt-git-config"
+alias lt-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519_life_time && ssh-add -l"
 alias lt-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"cbartling@lt.life\""
 
 echo $fg[cyan]Available aliases$reset_color
