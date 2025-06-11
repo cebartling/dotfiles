@@ -9,6 +9,7 @@ brew update
 
 brew install kubernetes-cli
 brew install helm
+brew install stern
 brew tap sozercan/kubectl-ai https://github.com/sozercan/kubectl-ai
 brew install kubectl-ai
 brew install azure-cli
