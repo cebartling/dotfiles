@@ -28,6 +28,13 @@ brew install gh
 brew install awslogs
 brew install dust
 brew install hyperfine
+brew install derailed/k9s/k9s
+brew install 1password-cli
+brew install fastfetch
+brew install direnv
+brew install caddy
+brew install uv
+
 brew install --cask warp
 brew install --cask wave
 brew install --cask obsidian
@@ -35,12 +42,7 @@ brew install --cask postman
 brew install --cask zed
 brew install --cask chatgpt
 brew install --cask claude
-brew install derailed/k9s/k9s
-brew install 1password-cli
-brew install fastfetch
-brew install direnv
-brew install caddy
-brew install uv
+brew install --cask moom
 
 # Doing MongoDB? Uncomment the following line for MongoDB Compass
 # brew install --cask mongodb-compass
