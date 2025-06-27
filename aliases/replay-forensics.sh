@@ -13,7 +13,7 @@ alias rfi-fastify-server-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform
 alias rfi-data-server-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/data-server && pwd && rfi-add-ssh-key && rfi-git-config"
 alias rfi-frontend-spikes-cd="cd ~/github-sandbox/ReplayForensics/frontend-spikes && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 
-alias rfi-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519_rfi && ssh-add -l"
+alias rfi-add-ssh-key="ssh-add -D && ssh-add -t 8h ~/.ssh/id_ed25519_rfi && ssh-add -l"
 alias rfi-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris@replayforensics.com\""
 
 alias rfi-dc-up-database-dev="docker compose --profile database-dev up"
