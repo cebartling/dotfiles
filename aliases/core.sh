@@ -30,7 +30,7 @@ alias external-ip="curl https://diagnostic.opendns.com/myip ; echo"
 alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
 alias git-config="git config user.name && git config user.email"
 
-alias git-set-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -l"
+alias git-set-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
 alias git-set-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
 alias weather-shakopee="curl https://wttr.in/Shakopee\?u"
