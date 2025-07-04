@@ -45,6 +45,7 @@ brew install --cask claude
 brew install --cask moom
 brew install --cask witch
 brew install --cask maccy
+brew install --cask lookaway
 
 # Doing MongoDB? Uncomment the following line for MongoDB Compass
 # brew install --cask mongodb-compass
