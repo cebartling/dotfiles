@@ -16,6 +16,7 @@ brew install azure-cli
 brew tap weaveworks/tap
 brew install weaveworks/tap/eksctl
 brew install --cask openlens
+brew install --cask freelens
 brew install kubeshark
 
 echo $fg[cyan]Finished installing Kubernetes tools on macOS!$reset_color
