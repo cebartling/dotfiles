@@ -34,6 +34,8 @@ brew install fastfetch
 brew install direnv
 brew install caddy
 brew install uv
+brew tap hashicorp/tap
+brew install hashicorp/tap/vault
 
 brew install --cask warp
 brew install --cask wave
