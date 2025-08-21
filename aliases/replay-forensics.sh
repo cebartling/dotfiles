@@ -17,20 +17,20 @@ alias rfi-add-ssh-key="ssh-add -D && ssh-add -t 8h ~/.ssh/id_ed25519_rfi && ssh-
 alias rfi-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris@replayforensics.com\""
 
 alias rfi-dc-up-database-dev="docker compose --profile database-dev up"
-alias rfi-dc-down-database-dev="docker compose --profile database-dev down"
-alias rfi-dc-down-rmi-database-dev="docker compose --profile database-dev down --rmi all"
+alias rfi-dc-down-database-dev="docker compose --profile database-dev down -v --remove-orphans"
+alias rfi-dc-down-rmi-database-dev="docker compose --profile database-dev down --rmi all -v --remove-orphans"
 
 alias rfi-dc-up-react-dev="docker compose --profile react-dev up"
-alias rfi-dc-down-react-dev="docker compose --profile react-dev down"
-alias rfi-dc-down-rmi-react-dev="docker compose --profile react-dev down --rmi all"
+alias rfi-dc-down-react-dev="docker compose --profile react-dev down -v --remove-orphans"
+alias rfi-dc-down-rmi-react-dev="docker compose --profile react-dev down --rmi all -v --remove-orphans"
 
 alias rfi-dc-up-fastify-dev="docker compose --profile fastify-dev up"
-alias rfi-dc-down-fastify-dev="docker compose --profile fastify-dev down"
-alias rfi-dc-down-rmi-fastify-dev="docker compose --profile fastify-dev down --rmi all"
+alias rfi-dc-down-fastify-dev="docker compose --profile fastify-dev down -v --remove-orphans"
+alias rfi-dc-down-rmi-fastify-dev="docker compose --profile fastify-dev down --rmi all -v --remove-orphans"
 
 alias rfi-dc-up-demo-mode="docker compose --profile demo-mode up"
-alias rfi-dc-down-demo-mode="docker compose --profile demo-mode down"
-alias rfi-dc-down-rmi-demo-mode="docker compose --profile demo-mode down --rmi all"
+alias rfi-dc-down-demo-mode="docker compose --profile demo-mode down -v --remove-orphans"
+alias rfi-dc-down-rmi-demo-mode="docker compose --profile demo-mode down --rmi all -v --remove-orphans"
 
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
