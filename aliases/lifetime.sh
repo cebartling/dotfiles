@@ -12,6 +12,7 @@ alias lt-ops-confluent-kafka-cd="cd ~/github-sandbox/lifetime/ops-confluent-kafk
 alias lt-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/credit-card-account-consumer && pwd && lt-git-setup"
 alias lt-register-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/register-credit-card-account-consumer && pwd && lt-git-setup"
 alias lt-suite-creditcardaccount-debezium-connector-cd="cd ~/github-sandbox/lifetime/ltsuite-creditcardaccount-debezium-connector && pwd && lt-git-setup"
+alias lt-docker-compose-down="docker compose --profile infrastructure down -v --remove-orphans"
 
 alias lt-add-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519_life_time && ssh-add -l"
 alias lt-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"cbartling@lt.life\""
@@ -27,6 +28,7 @@ echo ""
 echo $fg[yellow]lt-add-ssh-key$reset_color
 echo $fg[yellow]lt-git-config$reset_color
 echo $fg[yellow]lt-git-setup$reset_color
+echo $fg[yellow]lt-docker-compose-down$reset_color
 echo ""
 echo $fg[yellow]lt-splunkspike-cd$reset_color
 echo $fg[yellow]lt-ops-confluent-kafka-cd$reset_color
