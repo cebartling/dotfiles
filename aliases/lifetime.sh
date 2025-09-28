@@ -16,7 +16,8 @@ alias lt-chase-oauth-spike-cd="cd ~/github-sandbox/lifetime/chase-oauth-spike &&
 
 alias lt-docker-compose-down="docker compose --profile infrastructure down -v --remove-orphans"
 
-alias lt-add-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519_life_time && ssh-add -l"
+alias lt-add-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
+alias lt-add-personal-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519_personal && ssh-add -l"
 alias lt-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"cbartling@lt.life\""
 alias lt-git-setup="lt-add-ssh-key && lt-git-config"
 
@@ -28,6 +29,7 @@ echo $fg[yellow]lt-credit-card-account-consumer-cd$reset_color
 echo $fg[yellow]lt-register-credit-card-account-consumer-cd$reset_color
 echo ""
 echo $fg[yellow]lt-add-ssh-key$reset_color
+echo $fg[yellow]lt-add-personal-ssh-key$reset_color
 echo $fg[yellow]lt-git-config$reset_color
 echo $fg[yellow]lt-git-setup$reset_color
 echo $fg[yellow]lt-docker-compose-down$reset_color
