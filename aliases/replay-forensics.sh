@@ -15,6 +15,7 @@ alias rfi-frontend-spikes-cd="cd ~/github-sandbox/ReplayForensics/frontend-spike
 
 alias rfi-add-ssh-key="ssh-add -D && ssh-add -t 8h ~/.ssh/id_ed25519_rfi && ssh-add -l"
 alias rfi-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris@replayforensics.com\""
+alias rfi-git-setup="rfi-add-ssh-key && rfi-git-config"
 
 alias rfi-dc-up-database-dev="docker compose --profile database-dev up"
 alias rfi-dc-down-database-dev="docker compose --profile database-dev down -v --remove-orphans"
@@ -72,4 +73,5 @@ echo $fg[yellow]rfi-gen1-demo-cd$reset_color
 echo $fg[yellow]$reset_color
 echo $fg[yellow]rfi-add-ssh-key$reset_color
 echo $fg[yellow]rfi-git-config$reset_color
+echo $fg[yellow]rfi-git-setup$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
