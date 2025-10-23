@@ -9,6 +9,7 @@ echo $fg[cyan]Configuring Life Time, Inc. aliases...$reset_color
 alias lt-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/credit-card-account-consumer && pwd && lt-git-setup"
 alias lt-register-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/register-credit-card-account-consumer && pwd && lt-git-setup"
 alias lt-chase-commerce-gateway-api-cd="cd ~/github-sandbox/lifetime/chase-commerce-gateway-api && pwd && lt-git-setup"
+alias lt-payment-account-updater-cd="cd ~/github-sandbox/lifetime/payment-account-updater && pwd && lt-git-setup"
 
 alias lt-github-home-cd="cd ~/github-sandbox/lifetime && pwd && lt-git-setup"
 alias lt-splunkspike-cd="cd ~/github-sandbox/lifetime/splunkspike && pwd && lt-git-setup"
@@ -32,6 +33,7 @@ echo ""
 echo $fg[yellow]lt-credit-card-account-consumer-cd$reset_color
 echo $fg[yellow]lt-register-credit-card-account-consumer-cd$reset_color
 echo $fg[yellow]lt-chase-commerce-gateway-api-cd$reset_color
+echo $fg[yellow]lt-payment-account-updater-cd$reset_color
 echo ""
 echo $fg[yellow]lt-add-ssh-key$reset_color
 echo $fg[yellow]lt-add-personal-ssh-key$reset_color
