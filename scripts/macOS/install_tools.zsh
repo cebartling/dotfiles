@@ -6,6 +6,9 @@ colors
 echo $fg[cyan]Installing essential tools on macOS...$reset_color
 
 brew update
+
+brew tap hashicorp/tap
+
 brew install vale
 brew install openssl
 brew install git
@@ -34,7 +37,6 @@ brew install fastfetch
 brew install direnv
 brew install caddy
 brew install uv
-brew tap hashicorp/tap
 brew install hashicorp/tap/vault
 brew install specify
 
