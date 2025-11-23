@@ -39,6 +39,7 @@ brew install caddy
 brew install uv
 brew install hashicorp/tap/vault
 brew install specify
+brew install podman
 
 brew install --cask warp
 brew install --cask wave
