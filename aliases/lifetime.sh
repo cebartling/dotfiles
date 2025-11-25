@@ -12,6 +12,8 @@ alias lt-chase-commerce-gateway-api-cd="cd ~/github-sandbox/lifetime/chase-comme
 alias lt-payment-account-updater-cd="cd ~/github-sandbox/lifetime/payment-account-updater && pwd && lt-git-setup"
 alias lt-payments-testing-admin-api-cd="cd ~/github-sandbox/lifetime/payments-testing-admin-api && pwd && lt-git-setup"
 
+alias lt-payment-services-proxy-cd="cd ~/github-sandbox/lifetime/payment-services-proxy && pwd && lt-git-setup"
+
 alias lt-github-home-cd="cd ~/github-sandbox/lifetime && pwd && lt-git-setup"
 alias lt-splunkspike-cd="cd ~/github-sandbox/lifetime/splunkspike && pwd && lt-git-setup"
 alias lt-ops-confluent-kafka-cd="cd ~/github-sandbox/lifetime/ops-confluent-kafka && pwd && lt-git-setup"
@@ -36,6 +38,8 @@ echo $fg[yellow]lt-register-credit-card-account-consumer-cd$reset_color
 echo $fg[yellow]lt-chase-commerce-gateway-api-cd$reset_color
 echo $fg[yellow]lt-payment-account-updater-cd$reset_color
 echo $fg[yellow]lt-payments-testing-admin-api-cd$reset_color
+echo ""
+echo $fg[yellow]lt-payment-services-proxy-cd$reset_color
 echo ""
 echo $fg[yellow]lt-add-ssh-key$reset_color
 echo $fg[yellow]lt-add-personal-ssh-key$reset_color
