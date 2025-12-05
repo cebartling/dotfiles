@@ -56,9 +56,6 @@
 
 ## MCP Tool Use
 
-- Use Context7 to validate current documentation about software libraries
-- Use searxng if your primary Web Search or Fetch tools fail
-- Use Tavily ONLY when searxng doesn't give you enough information
 
 ## Important Reminders
 
