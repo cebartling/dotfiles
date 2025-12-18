@@ -56,6 +56,7 @@ brew install --cask lookaway
 brew install --cask gitkraken
 brew install --cask claude-code
 brew install --cask flashspace
+brew install --cask productdevbook/tap/portkiller
 
 # Doing MongoDB? Uncomment the following line for MongoDB Compass
 # brew install --cask mongodb-compass
