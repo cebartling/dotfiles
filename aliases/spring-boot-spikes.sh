@@ -15,6 +15,7 @@ alias spring-boot-spikes-cd="cd ~/github-sandbox/cebartling/spring-boot-spikes &
 alias spring-boot-spikes-cqrs-spike-cd="cd ~/github-sandbox/cebartling/spring-boot-spikes/cqrs-spike && sdk env"
 alias spring-boot-spikes-resiliency-spike-cd="cd ~/github-sandbox/cebartling/spring-boot-spikes/resiliency-spike && sdk env"
 alias spring-boot-spikes-saga-pattern-spike-cd="cd ~/github-sandbox/cebartling/spring-boot-spikes/saga-pattern-spike && sdk env"
+alias spring-boot-spikes-cdc-debezium-cd="cd ~/github-sandbox/cebartling/spring-boot-spikes/cdc-debezium && sdk env"
 
 
 echo ""
@@ -27,4 +28,5 @@ echo ""
 echo $fg[yellow]spring-boot-spikes-cqrs-spike-cd$reset_color
 echo $fg[yellow]spring-boot-spikes-resiliency-spike-cd$reset_color
 echo $fg[yellow]spring-boot-spikes-saga-pattern-spike-cd$reset_color
+echo $fg[yellow]spring-boot-spikes-cdc-debezium-cd$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
