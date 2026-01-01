@@ -74,3 +74,4 @@ alias tailwind-css-experiments-aliases="source ~/.dotfiles/aliases/tailwind-css-
 alias kafka-experiments-aliases="source ~/.dotfiles/aliases/kafka-experiments.sh"
 alias spring-boot-spikes-aliases="source ~/.dotfiles/aliases/spring-boot-spikes.sh"
 alias deck-gl-spikes-aliases="source ~/.dotfiles/aliases/deck-gl-spikes.sh"
+alias acme-inc-2026-aliases="source ~/.dotfiles/aliases/acme-inc-2026.sh"
