@@ -20,6 +20,7 @@ alias lt-splunkspike-cd="cd ~/github-sandbox/lifetime/splunkspike && pwd && lt-g
 alias lt-ops-confluent-kafka-cd="cd ~/github-sandbox/lifetime/ops-confluent-kafka && pwd && lt-git-setup"
 alias lt-suite-creditcardaccount-debezium-connector-cd="cd ~/github-sandbox/lifetime/ltsuite-creditcardaccount-debezium-connector && pwd && lt-git-setup"
 alias lt-chase-oauth-spike-cd="cd ~/github-sandbox/lifetime/chase-oauth-spike && pwd && lt-git-setup"
+alias lt-spring-batch-spike-cd="cd ~/github-sandbox/lifetime/spring-batch-spike && pwd && lt-git-setup"
 
 alias lt-docker-compose-down="docker compose --profile infrastructure down -v --remove-orphans"
 
@@ -54,4 +55,5 @@ echo $fg[yellow]lt-splunkspike-cd$reset_color
 echo $fg[yellow]lt-ops-confluent-kafka-cd$reset_color
 echo $fg[yellow]lt-suite-creditcardaccount-debezium-connector-cd$reset_color
 echo $fg[yellow]lt-chase-oauth-spike-cd$reset_color
+echo $fg[yellow]lt-spring-batch-spike-cd$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
