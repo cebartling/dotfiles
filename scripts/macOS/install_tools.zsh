@@ -41,7 +41,7 @@ brew install hashicorp/tap/vault
 brew install specify
 brew install podman
 brew install copilot-cli
-brew install gastown
+brew install steveyegge/beads/bd
 
 brew install --cask warp
 brew install --cask wave
