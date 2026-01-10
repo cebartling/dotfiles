@@ -42,6 +42,7 @@ brew install specify
 brew install podman
 brew install copilot-cli
 brew install steveyegge/beads/bd
+brew install tailscale
 
 brew install --cask warp
 brew install --cask wave
