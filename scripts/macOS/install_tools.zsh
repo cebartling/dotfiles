@@ -61,6 +61,7 @@ brew install --cask flashspace
 brew install --cask productdevbook/tap/portkiller
 brew install --cask sloth
 brew install --cask blender
+brew install --cask tailscale-app
 
 # Doing MongoDB? Uncomment the following line for MongoDB Compass
 # brew install --cask mongodb-compass
