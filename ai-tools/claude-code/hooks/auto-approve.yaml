@@ -1,0 +1,13 @@
+# .claude/hooks/auto-approve.yaml
+patterns:
+  - path: "src/tests/**"
+    operations: [create, modify, delete]
+    auto_approve: true
+
+  - path: "src/**/*.ts"
+    operations: [modify]
+    auto_approve: true
+
+  - path: "package.json"
+    operations: [modify]
+    auto_approve: false # Always ask for dependency changes
