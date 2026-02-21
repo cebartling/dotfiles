@@ -33,8 +33,6 @@ alias git-config="git config user.name && git config user.email"
 alias git-set-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
 alias git-set-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
-alias weather-shakopee="curl https://wttr.in/Shakopee\?u"
-#alias weather="curl wttr.in/55379?u"
 
 # Git configuration
 alias config-git-pager="git config --global pager.diff \"less -FX\""
@@ -45,8 +43,6 @@ alias personal-git-config="git config user.name \"Christopher Bartling\" && git 
 
 alias lifetime-aliases="source ~/.dotfiles/aliases/lifetime.sh"
 
-
-
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
 alias aws-explorer-aliases="source ~/.dotfiles/aliases/aws-explorer.sh"
 alias azure-experiments-aliases="source ~/.dotfiles/aliases/azure-experiments.sh"
@@ -56,7 +52,6 @@ alias d3-experiments-aliases="source ~/.dotfiles/aliases/d3-experiments.sh"
 alias gummi-bear-aliases="source ~/.dotfiles/aliases/gummi-bears.sh"
 alias joy-of-react-aliases="source ~/.dotfiles/aliases/joy-of-react.sh"
 alias kubernetes-experiments-aliases="source ~/.dotfiles/aliases/kubernetes-experiments.sh"
-# alias localstack-experiments-aliases="source ~/.dotfiles/aliases/localstack-experiments.sh"
 alias pneuma-aliases="source ~/.dotfiles/aliases/pneuma.sh"
 alias quizzer-aliases="source ~/.dotfiles/aliases/quizzer.sh"
 alias react-experiments-aliases="source ~/.dotfiles/aliases/react-experiments.sh"
@@ -75,3 +70,4 @@ alias kafka-experiments-aliases="source ~/.dotfiles/aliases/kafka-experiments.sh
 alias spring-boot-spikes-aliases="source ~/.dotfiles/aliases/spring-boot-spikes.sh"
 alias deck-gl-spikes-aliases="source ~/.dotfiles/aliases/deck-gl-spikes.sh"
 alias acme-inc-2026-aliases="source ~/.dotfiles/aliases/acme-inc-2026.sh"
+alias wici-aliases="source ~/.dotfiles/aliases/wici.sh"
