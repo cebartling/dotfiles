@@ -45,6 +45,7 @@ brew install steveyegge/beads/bd
 brew install tailscale
 brew install playwright-cli
 brew install mongodb-atlas
+brew install heroku/brew/heroku
 
 brew install --cask warp
 brew install --cask wave
