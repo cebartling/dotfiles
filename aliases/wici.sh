@@ -8,7 +8,7 @@ echo $fg[cyan]Configuring Schoolhouse Educational Services aliases...$reset_colo
 
 alias wici-home-cd="cd ~/github-sandbox/schoolhouse-educational-services && pwd && wici-git-setup"
 alias wici-api-cd="cd ~/github-sandbox/schoolhouse-educational-services/wici-api && pwd && wici-git-setup"
-alias wici-app-cd="cd ~/github-sandbox/schoolhouse-educational-services/wici-app && pwd && wici-git-setup"
+alias wici-client-cd="cd ~/github-sandbox/schoolhouse-educational-services/wici-client && pwd && wici-git-setup"
 
 alias wici-services-up="docker compose up -d"
 alias wici-services-down="docker compose down -v --remove-orphans"
@@ -23,7 +23,7 @@ echo $fg[cyan]---------------------------------------------------$reset_color
 echo $fg_bold[yellow]wici-home-cd$reset_color
 echo ""
 echo $fg_bold[yellow]wici-api-cd$reset_color
-echo $fg_bold[yellow]wici-app-cd$reset_color
+echo $fg_bold[yellow]wici-client-cd$reset_color
 echo ""
 echo $fg_bold[yellow]wici-add-ssh-key$reset_color
 echo $fg_bold[yellow]wici-git-config$reset_color
