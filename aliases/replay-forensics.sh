@@ -8,6 +8,7 @@ echo $fg[cyan]Configuring Replay Forensics aliases...$reset_color
 alias rfi-github-cd="cd ~/github-sandbox/ReplayForensics && pwd && rfi-add-ssh-key && rfi-git-config"
 alias rfi-gen1-demo-cd="cd ~/github-sandbox/ReplayForensics/gen1_demo && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 alias rfi-replay-platform-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform && pwd && rfi-add-ssh-key && rfi-git-config"
+alias rfi-replay-frontend-cd="cd ~/github-sandbox/ReplayForensics/Replay_Frontend && pwd && rfi-add-ssh-key && rfi-git-config"
 alias rfi-react-app-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/frontend/react-spa && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 alias rfi-fastify-server-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/frontend/fastify-server && pwd && rfi-add-ssh-key && rfi-git-config && nvm use"
 alias rfi-data-server-cd="cd ~/github-sandbox/ReplayForensics/Replay_Platform/data-server && pwd && rfi-add-ssh-key && rfi-git-config"
@@ -39,39 +40,40 @@ alias rfi-dc-run-data-summarization-init="docker compose --profile data-summariz
 
 echo $fg[cyan]Available aliases$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
-echo $fg[yellow]rfi-replay-platform-cd$reset_color
-echo $fg[yellow]rfi-react-app-cd$reset_color
-echo $fg[yellow]rfi-fastify-server-cd$reset_color
-echo $fg[yellow]rfi-data-server-cd$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-up-database-dev$reset_color
-echo $fg[yellow]rfi-dc-down-database-dev$reset_color
-echo $fg[yellow]rfi-dc-down-rmi-database-dev$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-up-react-dev$reset_color
-echo $fg[yellow]rfi-dc-down-react-dev$reset_color
-echo $fg[yellow]rfi-dc-down-rmi-react-dev$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-up-react-dev$reset_color
-echo $fg[yellow]rfi-dc-down-react-dev$reset_color
-echo $fg[yellow]rfi-dc-down-rmi-react-dev$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-up-fastify-dev$reset_color
-echo $fg[yellow]rfi-dc-down-fastify-dev$reset_color
-echo $fg[yellow]rfi-dc-down-rmi-fastify-dev$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-up-demo-mode$reset_color
-echo $fg[yellow]rfi-dc-down-demo-mode$reset_color
-echo $fg[yellow]rfi-dc-down-rmi-demo-mode$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-dc-run-csv-ingest$reset_color
-echo $fg[yellow]rfi-dc-run-data-summarization-init$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-github-cd$reset_color
-echo $fg[yellow]rfi-frontend-spikes-cd$reset_color
-echo $fg[yellow]rfi-gen1-demo-cd$reset_color
-echo $fg[yellow]$reset_color
-echo $fg[yellow]rfi-add-ssh-key$reset_color
-echo $fg[yellow]rfi-git-config$reset_color
-echo $fg[yellow]rfi-git-setup$reset_color
+echo $fg_bold[yellow]rfi-replay-platform-cd$reset_color
+echo $fg_bold[yellow]rfi-replay-frontend-cd$reset_color
+echo $fg_bold[yellow]rfi-react-app-cd$reset_color
+echo $fg_bold[yellow]rfi-fastify-server-cd$reset_color
+echo $fg_bold[yellow]rfi-data-server-cd$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-up-database-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-database-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-rmi-database-dev$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-up-react-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-react-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-rmi-react-dev$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-up-react-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-react-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-rmi-react-dev$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-up-fastify-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-fastify-dev$reset_color
+echo $fg_bold[yellow]rfi-dc-down-rmi-fastify-dev$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-up-demo-mode$reset_color
+echo $fg_bold[yellow]rfi-dc-down-demo-mode$reset_color
+echo $fg_bold[yellow]rfi-dc-down-rmi-demo-mode$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-dc-run-csv-ingest$reset_color
+echo $fg_bold[yellow]rfi-dc-run-data-summarization-init$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-github-cd$reset_color
+echo $fg_bold[yellow]rfi-frontend-spikes-cd$reset_color
+echo $fg_bold[yellow]rfi-gen1-demo-cd$reset_color
+echo $fg_bold[yellow]$reset_color
+echo $fg_bold[yellow]rfi-add-ssh-key$reset_color
+echo $fg_bold[yellow]rfi-git-config$reset_color
+echo $fg_bold[yellow]rfi-git-setup$reset_color
 echo $fg[cyan]---------------------------------------------------$reset_color
