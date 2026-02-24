@@ -46,6 +46,7 @@ brew install tailscale
 brew install playwright-cli
 brew install mongodb-atlas
 brew install heroku/brew/heroku
+brew tap entireio/tap && brew install entireio/tap/entire
 
 brew install --cask warp
 brew install --cask wave
