@@ -48,6 +48,7 @@ brew install mongodb-atlas
 brew install heroku/brew/heroku
 brew tap entireio/tap && brew install entireio/tap/entire
 brew install whisperkit-cli
+brew install doctl
 
 brew install --cask warp
 brew install --cask wave
