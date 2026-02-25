@@ -47,6 +47,7 @@ brew install playwright-cli
 brew install mongodb-atlas
 brew install heroku/brew/heroku
 brew tap entireio/tap && brew install entireio/tap/entire
+brew install whisperkit-cli
 
 brew install --cask warp
 brew install --cask wave
@@ -67,8 +68,6 @@ brew install --cask sloth
 brew install --cask blender
 brew install --cask tailscale-app
 brew install --cask keepingyouawake
-
-# Doing MongoDB? Uncomment the following line for MongoDB Compass
-# brew install --cask mongodb-compass
+brew install --cask mongodb-compass
 
 echo $fg[cyan]Finished installing essential tools on macOS!$reset_color
