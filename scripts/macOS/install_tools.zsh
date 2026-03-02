@@ -41,7 +41,7 @@ brew install hashicorp/tap/vault
 brew install specify
 brew install podman
 brew install copilot-cli
-brew install steveyegge/beads/bd
+brew install beads
 brew install tailscale
 brew install playwright-cli
 brew install mongodb-atlas
@@ -49,6 +49,7 @@ brew install heroku/brew/heroku
 brew tap entireio/tap && brew install entireio/tap/entire
 brew install whisperkit-cli
 brew install doctl
+brew install pandoc
 
 brew install --cask warp
 brew install --cask wave
