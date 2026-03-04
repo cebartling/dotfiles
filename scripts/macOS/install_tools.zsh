@@ -50,6 +50,8 @@ brew tap entireio/tap && brew install entireio/tap/entire
 brew install whisperkit-cli
 brew install doctl
 brew install pandoc
+brew install oven-sh/bun/bun
+brew install xcodegen
 
 brew install --cask warp
 brew install --cask wave
