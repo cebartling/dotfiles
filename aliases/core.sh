@@ -11,25 +11,18 @@ alias cat=bat --paging=never
 #alias ll='eza -l --icons --no-user --group-directories-first  --time-style long-iso'
 alias ls='eza -l --group-directories-first --color=auto --icons --no-permissions --no-user'
 alias ll='eza -lahF --group-directories-first --color=auto --icons'
+alias homebrew-update="brew update && brew upgrade && brew cleanup"
 
 alias zshconfig="code ~/.zshrc"
 alias aliases-config="code ~/.dotfiles/aliases/core.sh"
 alias ohmyzsh="code ~/.oh-my-zsh"
-alias java8="sdk use java 8.0.232.hs-adpt && java -version"
-alias java11="sdk use java 11.0.11.hs-adpt && java -version"
-alias java12="sdk use java 12.0.1.hs-adpt && java -version"
-alias java13="sdk use java 13.0.2.hs-adpt && java -version"
-alias java15="sdk use java 15.0.2.hs-adpt && java -version"
-alias java17="sdk use java 17.0.2-tem && java -version"
-alias nuget="mono /usr/local/bin/nuget.exe"
-alias yarn-up="yarn upgrade-interactive --latest"
 
 alias git-log-enhanced="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias hostfile="sudo code /etc/hosts"
 alias external-ip="curl https://diagnostic.opendns.com/myip ; echo"
 alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-alias git-config="git config user.name && git config user.email"
 
+alias git-config="git config user.name && git config user.email"
 alias git-set-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
 alias git-set-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
