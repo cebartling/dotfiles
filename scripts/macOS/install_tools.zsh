@@ -52,6 +52,7 @@ brew install doctl
 brew install pandoc
 brew install oven-sh/bun/bun
 brew install xcodegen
+brew install cliclick
 
 brew install --cask warp
 brew install --cask wave
