@@ -33,16 +33,19 @@ alias git-config="git config user.name && git config user.email"
 alias git-set-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
 alias git-set-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
 
-
 # Git configuration
 alias config-git-pager="git config --global pager.diff \"less -FX\""
-alias personal-add-ssh-key="ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -l"
+alias personal-add-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
 alias personal-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"chris.bartling@gmail.com\""
+alias personal-git-setup="personal-add-ssh-key && personal-git-config"
+
+# Docker Compose
+alias dc-up="docker compose up -d"
+alias dc-down="docker compose down"
+alias dc-down-remove-volumes="docker compose down -v --remove-orphans"
 
 # Specific alias loaders
-
 alias lifetime-aliases="source ~/.dotfiles/aliases/lifetime.sh"
-
 alias aws-cdk-experiments-aliases="source ~/.dotfiles/aliases/aws-cdk-experiments.sh"
 alias aws-explorer-aliases="source ~/.dotfiles/aliases/aws-explorer.sh"
 alias azure-experiments-aliases="source ~/.dotfiles/aliases/azure-experiments.sh"
@@ -71,3 +74,4 @@ alias spring-boot-spikes-aliases="source ~/.dotfiles/aliases/spring-boot-spikes.
 alias deck-gl-spikes-aliases="source ~/.dotfiles/aliases/deck-gl-spikes.sh"
 alias acme-inc-2026-aliases="source ~/.dotfiles/aliases/acme-inc-2026.sh"
 alias wici-aliases="source ~/.dotfiles/aliases/wici.sh"
+alias otherworlds-rpg-aliases="source ~/.dotfiles/aliases/otherworlds-rpg.sh"
