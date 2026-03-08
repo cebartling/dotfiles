@@ -29,6 +29,7 @@ echo $fg_bold[yellow]wici-api-cd$reset_color
 echo $fg_bold[yellow]wici-client-cd$reset_color
 echo $fg_bold[yellow]wici-tools-cd$reset_color
 echo $fg_bold[yellow]wici-acceptance-tests-cd$reset_color
+echo $fg_bold[yellow]wici-web-client-v2-cd$reset_color
 echo ""
 echo $fg_bold[yellow]wici-add-ssh-key$reset_color
 echo $fg_bold[yellow]wici-git-config$reset_color
