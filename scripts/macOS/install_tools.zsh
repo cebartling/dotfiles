@@ -9,70 +9,79 @@ brew update
 
 brew tap hashicorp/tap
 
-brew install vale
-brew install openssl
-brew install git
-brew install curl
-brew install starship
+brew install 1password-cli
+brew install awslogs
 brew install bat
-brew install eza
-brew install ripgrep
-brew install httpie
-brew install procs
+brew install beads
+brew install caddy
+brew install cheat
+brew install cliclick
+brew install copilot-cli
+brew install curl
+brew install derailed/k9s/k9s
+brew install devutils
+brew install direnv
+brew install doctl
 brew install dog
+brew install duckdb
+brew install dust
+brew install eza
+brew install fastfetch
+brew install fd
+brew install figlet
 brew install fx
 brew install fzf
-brew install tmux
-brew install cheat
-brew install figlet
-brew install lolcat
-brew install devutils
 brew install gh
-brew install awslogs
-brew install dust
-brew install hyperfine
-brew install derailed/k9s/k9s
-brew install 1password-cli
-brew install fastfetch
-brew install direnv
-brew install caddy
-brew install uv
+brew install git
+brew install git-delta
 brew install hashicorp/tap/vault
-brew install specify
-brew install podman
-brew install copilot-cli
-brew install beads
-brew install tailscale
-brew install playwright-cli
-brew install mongodb-atlas
 brew install heroku/brew/heroku
-brew tap entireio/tap && brew install entireio/tap/entire
-brew install whisperkit-cli
-brew install doctl
-brew install pandoc
+brew install httpie
+brew install hyperfine
+brew install jq
+brew install just
+brew install lolcat
+brew install mongodb-atlas
+brew install openssl
 brew install oven-sh/bun/bun
+brew install pandoc
+brew install playwright-cli
+brew install podman
+brew install procs
+brew install ripgrep
+brew install semgrep
+brew install specify
+brew install starship
+brew install tailscale
+brew install tmux
+brew install uv
+brew install vale
+brew install watchexec
+brew install whisperkit-cli
 brew install xcodegen
-brew install cliclick
+brew install xh
 
-brew install --cask warp
-brew install --cask wave
-brew install --cask obsidian
-brew install --cask postman
-brew install --cask zed
+brew tap entireio/tap && brew install entireio/tap/entire
+
+brew install --cask blender
 brew install --cask chatgpt
 brew install --cask claude
-brew install --cask moom
-brew install --cask witch
-brew install --cask maccy
-brew install --cask lookaway
-brew install --cask gitkraken
 brew install --cask claude-code
 brew install --cask flashspace
+brew install --cask gitkraken
+brew install --cask keepingyouawake
+brew install --cask lookaway
+brew install --cask maccy
+brew install --cask mongodb-compass
+brew install --cask moom
+brew install --cask obsidian
+brew install --cask postman
 brew install --cask productdevbook/tap/portkiller
 brew install --cask sloth
-brew install --cask blender
 brew install --cask tailscale-app
-brew install --cask keepingyouawake
-brew install --cask mongodb-compass
+brew install --cask warp
+brew install --cask wave
+brew install --cask witch
+brew install --cask zed
 
 echo $fg[cyan]Finished installing essential tools on macOS!$reset_color
