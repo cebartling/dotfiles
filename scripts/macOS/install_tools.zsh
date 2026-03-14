@@ -21,6 +21,7 @@ brew install curl
 brew install derailed/k9s/k9s
 brew install devutils
 brew install direnv
+brew install dnsmasq
 brew install doctl
 brew install dog
 brew install duckdb
