@@ -64,10 +64,12 @@ brew install xh
 
 brew tap entireio/tap && brew install entireio/tap/entire
 
+
 brew install --cask blender
 brew install --cask chatgpt
 brew install --cask claude
 brew install --cask claude-code
+brew tap manaflow-ai/cmux && brew install --cask cmux
 brew install --cask flashspace
 brew install --cask gitkraken
 brew install --cask keepingyouawake
