@@ -80,6 +80,7 @@ brew install --cask moom
 brew install --cask obsidian
 brew install --cask postman
 brew install --cask productdevbook/tap/portkiller
+brew install --cask raycast
 brew install --cask sloth
 brew install --cask tailscale-app
 brew install --cask warp
