@@ -78,6 +78,7 @@ brew install --cask keepingyouawake
 brew install --cask lookaway
 brew install --cask maccy
 brew install --cask mongodb-compass
+brew install --cask tednaleid/montty/montty
 brew install --cask moom
 brew install --cask obsidian
 brew install --cask postman
