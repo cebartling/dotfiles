@@ -61,6 +61,7 @@ brew install watchexec
 brew install whisperkit-cli
 brew install xcodegen
 brew install xh
+brew install cargo-binstall
 
 brew tap entireio/tap && brew install entireio/tap/entire
 
