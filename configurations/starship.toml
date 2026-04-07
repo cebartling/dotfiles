@@ -108,6 +108,15 @@ style = "bold blue"
 format = 'on [$symbol$account(@$domain)(\($region\)) ]($style)'
 disabled = false
 
+# direnv — show when an .envrc has loaded into the current shell.
+# Helpful reminder that environment variables have been mutated by
+# something other than your shell config.
+[direnv]
+disabled = false
+symbol = "📂 "
+style = "bold orange"
+format = "[$symbol$loaded/$allowed]($style) "
+
 # Battery
 [battery]
 full_symbol = "🔋"
