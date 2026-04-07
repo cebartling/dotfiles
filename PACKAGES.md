@@ -133,7 +133,6 @@ To check drift:        `brew bundle check --file=$DOTFILES/Brewfile`
 
 | Package | Description | Source |
 |---|---|---|
-| `poppler` | PDF rendering library; provides `pdftotext`, `pdftoppm`, `pdfinfo` | [poppler.freedesktop.org](https://gitlab.freedesktop.org/poppler/poppler) |
 | `imagemagick` | Image creation, conversion, and manipulation toolkit | [github.com/ImageMagick/ImageMagick](https://github.com/ImageMagick/ImageMagick) |
 
 ### Data

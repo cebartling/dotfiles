@@ -95,7 +95,9 @@ brew "hashicorp/tap/terraform"
 brew "hashicorp/tap/vault"
 
 # ===== Document / image processing =====
-brew "poppler"              # pdftotext, pdftoppm, pdfinfo
+# poppler omitted: source build fails on this Homebrew prefix
+# (/Users/e9004590/homebrew) because the p11-kit dep times out in
+# meson tests. Install ad-hoc when pdftotext/pdftoppm/pdfinfo are needed.
 brew "imagemagick"          # convert/resize images (token cost reduction)
 
 # ===== Data =====
