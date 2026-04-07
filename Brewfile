@@ -42,10 +42,13 @@ brew "zsh-syntax-highlighting"
 
 # ===== Dev tooling =====
 brew "ast-grep"             # structural code search
+brew "atuin"                # better shell history (opt-in init in zshrc.local)
 brew "beads"                # bd issue tracker
 brew "cargo-binstall"
 brew "direnv"
 brew "gh"                   # GitHub CLI
+brew "gitleaks"             # secret scanner
+brew "glow"                 # terminal markdown renderer
 brew "hyperfine"
 brew "jq"
 brew "yq"                   # YAML query (jq for YAML)
@@ -54,6 +57,7 @@ brew "just"
 brew "lazygit"              # TUI git client
 brew "pre-commit"
 brew "semgrep"
+brew "tokei"                # fast cloc replacement
 brew "typescript-language-server"
 brew "vale"
 brew "watchexec"
@@ -87,6 +91,10 @@ brew "heroku/brew/heroku"
 # ===== Hashicorp =====
 brew "hashicorp/tap/terraform"
 brew "hashicorp/tap/vault"
+
+# ===== Document / image processing =====
+brew "poppler"              # pdftotext, pdftoppm, pdfinfo
+brew "imagemagick"          # convert/resize images (token cost reduction)
 
 # ===== Data =====
 brew "duckdb"
