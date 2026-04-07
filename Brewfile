@@ -143,6 +143,7 @@ cask "chatgpt"
 cask "copilot-cli"
 
 # ===== Editors / IDEs =====
+cask "visual-studio-code"   # required by `vscode "..."` extension lines below
 cask "zed"
 
 # ===== Productivity / window mgmt =====
