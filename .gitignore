@@ -42,3 +42,6 @@ zsdoc/data
 # macOS
 .DS_Store
 **/.DS_Store
+
+# Per-machine zsh overrides (sourced from $HOME/.zshrc.local by zshrc)
+.zshrc.local

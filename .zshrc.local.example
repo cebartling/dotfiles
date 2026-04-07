@@ -1,0 +1,23 @@
+# ~/.zshrc.local — per-machine overrides for cebartling/dotfiles
+#
+# Copy this file to $HOME/.zshrc.local on a machine that needs
+# overrides. The tracked $DOTFILES/zshrc sources it at the very
+# end if present, so anything you put here runs after the main
+# config and can override aliases, exports, and shell options.
+#
+# This file is gitignored — never committed back to the repo.
+#
+# Examples of things that belong here:
+#
+#   # Per-host secrets / API tokens (better: use a secrets manager)
+#   export SOME_API_KEY="..."
+#
+#   # Per-host PATH additions for tools installed only on this Mac
+#   path=("$HOME/work/local-tooling/bin" $path)
+#
+#   # Per-host work git identity (overrides personal-git-config)
+#   alias work-git-config='git config user.name "Christopher Bartling" \
+#     && git config user.email "chris@employer.example"'
+#
+#   # Override an aggressive default
+#   unsetopt SHARE_HISTORY
