@@ -1,7 +1,6 @@
-# Load rbenv automatically by appending
-# the following to ~/.zshrc:
+export PATH="$HOME/.rbenv/shims:$PATH"
 
-export PATH="~/.rbenv/shims:$PATH"
-
-eval "$(rbenv init - zsh)"
+if command -v rbenv >/dev/null 2>&1; then
+  eval "$(rbenv init - zsh)"
+fi
 

@@ -1,4 +1,7 @@
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d "$PYENV_ROOT/bin" ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 
-export PYENV_ROOT="$HOME/.pyenv/shims"
-export PATH="$PYENV_ROOT:$PATH"
-export PIPENV_PYTHON="$PYENV_ROOT/python"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+fi
