@@ -1,6 +1,7 @@
 # oh-my-zsh configuration sourced before $ZSH/oh-my-zsh.sh.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes for theme list.
+# Prompt is handled by starship (configured in ~/.zshrc), so the
+# oh-my-zsh theme is intentionally empty to skip its setup work.
 
-ZSH_THEME="agnoster"
+ZSH_THEME=""
 
-plugins=(git git-extras git-flow github npm)
+plugins=(git git-extras git-flow)
