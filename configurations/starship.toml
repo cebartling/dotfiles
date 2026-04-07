@@ -33,6 +33,19 @@ staged = "+${count}"
 deleted = "✘"
 renamed = "»"
 
+# Git state — visible during in-progress operations like rebase, merge,
+# cherry-pick, bisect. Saves you from forgetting you're mid-rebase.
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bold yellow"
+rebase = "REBASING"
+merge = "MERGING"
+revert = "REVERTING"
+cherry_pick = "[🍒 PICKING](bold red)"
+bisect = "BISECTING"
+am = "AM"
+am_or_rebase = "AM/REBASE"
+
 
 [java]
 symbol = "☕ "
