@@ -75,7 +75,6 @@ style = "red"
 [python]
 symbol = "🐍 "
 style = "yellow"
-pyenv_version_name = true
 
 # Docker
 [docker_context]
