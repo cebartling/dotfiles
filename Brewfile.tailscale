@@ -1,0 +1,7 @@
+# Brewfile.tailscale — Tailscale GUI app.
+# Apply with:  brew bundle --file=$DOTFILES/Brewfile.tailscale
+# Kept separate from the main Brewfile because the cask installer
+# requires sudo (it runs a .pkg installer), so it can't run unattended
+# from bootstrap.sh and is opt-in per machine.
+
+cask "tailscale-app"

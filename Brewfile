@@ -4,6 +4,10 @@
 #
 # Kubernetes-specific tools live in Brewfile.k8s and are installed
 # separately via scripts/macOS/install_k8s_tools.zsh.
+#
+# The Tailscale GUI cask lives in Brewfile.tailscale and is installed
+# separately via scripts/macOS/install_tailscale_app.zsh (its installer
+# requires sudo, so it can't run unattended from bootstrap.sh).
 
 # ===== Taps =====
 tap "azure/azd"
@@ -167,8 +171,8 @@ cask "productdevbook/tap/portkiller"
 cask "sloth"
 cask "wave"
 
-# ===== Networking GUI =====
-cask "tailscale-app"
+# tailscale-app cask is opt-in via Brewfile.tailscale (cask installer
+# needs sudo and can't run unattended from bootstrap.sh).
 
 # ===== Notes / 3D =====
 cask "obsidian"
