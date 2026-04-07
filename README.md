@@ -109,6 +109,41 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
 
+## Per-project aliases
+
+Per-project alias files live in `aliases/<project>.sh` and are sourced
+automatically the first time you `cd` into a registered directory (or
+any subdirectory). The wiring lives in `functions/project-aliases.sh`,
+which installs a `chpwd` hook driven by the `PROJECT_ALIAS_MAP`
+associative array.
+
+This replaces an older pattern where you'd run a `<project>-aliases`
+command by hand to load them. Those loader commands no longer exist —
+just `cd` into the project root and the aliases appear. To force-load
+without changing directory:
+
+```sh
+source "$DOTFILES/aliases/<project>.sh"
+```
+
+By convention each project alias file defines a `<project>-help`
+function that prints the available aliases (e.g. `lifetime-help`).
+
+To register a new project, add an entry to `PROJECT_ALIAS_MAP` in
+`functions/project-aliases.sh` mapping the directory prefix to the
+alias filename:
+
+```sh
+typeset -gA PROJECT_ALIAS_MAP=(
+  ...
+  [$HOME/github-sandbox/my-new-project]=my-new-project.sh
+)
+```
+
+Then create `aliases/my-new-project.sh`. Entries whose directory does
+not exist are silently skipped, so stale projects can stay in the map
+without causing errors.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
