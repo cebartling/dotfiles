@@ -144,7 +144,6 @@ cask "1password-cli"
 
 # ===== AI / coding agents =====
 cask "claude"
-cask "claude-code"
 cask "chatgpt"
 cask "copilot-cli"
 
