@@ -9,7 +9,7 @@ error_symbol = "[✗](bold red)"
 # Directory module
 [directory]
 truncation_length = 3
-truncate_to_repo = false
+truncate_to_repo = true
 style = "cyan"
 read_only = " "
 read_only_style = "red"
@@ -69,17 +69,44 @@ pyenv_version_name = true
 symbol = "🐳 "
 style = "blue bold"
 
-# Kubernetes
+# Kubernetes — disabled by default for performance.
+# The module shells out to read kubeconfig on every prompt render,
+# adding 30-80ms even when no context is active. Re-enable
+# (disabled = false) when you actively need to see the current
+# context, or scope it with detect_files for k8s project dirs.
 [kubernetes]
 symbol = "⎈ "
 style = "cyan bold"
-disabled = false
+disabled = true
 
 # Time
 # [time]
 # disabled = false
 # format = "🕒 [%T] "
 # style = "dimmed white"
+
+# AWS — show the active profile (and region) before destructive commands.
+[aws]
+symbol = "aws "
+style = "bold #FF9900"
+format = 'on [$symbol$profile(\($region\)) ]($style)'
+disabled = false
+expiration_symbol = "🔒 "
+
+[aws.region_aliases]
+us-east-1 = "va"
+us-east-2 = "oh"
+us-west-1 = "nca"
+us-west-2 = "or"
+eu-west-1 = "ie"
+eu-central-1 = "fr"
+
+# Google Cloud — show the active account/project.
+[gcloud]
+symbol = "gcp "
+style = "bold blue"
+format = 'on [$symbol$account(@$domain)(\($region\)) ]($style)'
+disabled = false
 
 # Battery
 [battery]
