@@ -5,7 +5,6 @@
 
 # Common aliases
 alias cat='bat --paging=never'
-#alias ll='eza -l --icons --no-user --group-directories-first  --time-style long-iso'
 alias ls='eza -l --group-directories-first --color=auto --icons --no-permissions --no-user'
 alias ll='eza -lahF --group-directories-first --color=auto --icons'
 alias daily-update="brew update && brew upgrade && brew cleanup && claude update"
