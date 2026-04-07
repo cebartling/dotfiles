@@ -1,4 +1,5 @@
-echo "Configuring Gummi Bears aliases..."
+# Gummi Bears aliases (auto-loaded by functions/project-aliases.sh).
+# Run `gummi-bears-help` to print available aliases.
 
 alias gummi-bears-cd="cd ~/github-sandbox/cebartling/gummi-bears && rvm use"
 alias gummi-bears-web-cd="cd ~/github-sandbox/cebartling/gummi-bears-web && nvm use lts/erbium"
@@ -8,14 +9,16 @@ alias gummi-bears-firebase-cd="cd ~/github-sandbox/cebartling/gummi-bears-fireba
 alias gummi-bears-firebase-functions-cd="cd ~/github-sandbox/cebartling/gummi-bears-firebase/functions && nvm use lts/dubnium"
 alias gummi-bears-dev-db-migrate="heroku run rails db:migrate --app gummi-bears-dev"
 
-echo "Available aliases"
-echo "---------------------------------------------"
-echo "gummi-bears-cd"
-echo "gummi-bears-web-cd"
-echo "gummi-bears-react-cd"
-echo "gummi-bears-acceptance-tests-cd"
-echo "gummi-bears-firebase-cd"
-echo "gummi-bears-firebase-functions-cd"
-echo "gummi-bears-dev-db-migrate"
-echo "---------------------------------------------"
-
+gummi-bears-help() {
+  cat <<'EOF'
+Gummi Bears aliases
+-------------------
+gummi-bears-cd
+gummi-bears-web-cd
+gummi-bears-react-cd
+gummi-bears-acceptance-tests-cd
+gummi-bears-firebase-cd
+gummi-bears-firebase-functions-cd
+gummi-bears-dev-db-migrate
+EOF
+}

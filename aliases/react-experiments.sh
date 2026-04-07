@@ -1,9 +1,12 @@
-echo "Configuring React experiments aliases..."
+# React experiments aliases (auto-loaded by functions/project-aliases.sh).
+# Run `react-experiments-help` to print available aliases.
 
 alias react-experiments-cd="cd ~/github-sandbox/cebartling/react-experiments"
 
-echo "Available aliases"
-echo "---------------------------------------------"
-echo "react-experiments-cd"
-echo "---------------------------------------------"
-
+react-experiments-help() {
+  cat <<'EOF'
+React experiments aliases
+-------------------------
+react-experiments-cd
+EOF
+}

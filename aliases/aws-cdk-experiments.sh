@@ -1,19 +1,14 @@
-#!/bin/zsh
-
-autoload colors; colors
-
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
-echo $fg[cyan]Configuring AWS CDK experiments aliases...$reset_color
-
+# AWS CDK experiments aliases (auto-loaded by functions/project-aliases.sh).
+# Run `aws-cdk-experiments-help` to print available aliases.
 
 alias aws-cdk-experiments-cd="cd ~/github-sandbox/cebartling/aws-cdk-experiments && pwd"
 alias install-aws-cdk="npm install -g aws-cdk"
 
-
-echo $fg[cyan]Available aliases$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
-echo $fg[yellow]aws-cdk-experiments-cd$reset_color
-echo $fg[yellow]install-aws-cdk$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
+aws-cdk-experiments-help() {
+  cat <<'EOF'
+AWS CDK experiments aliases
+---------------------------
+aws-cdk-experiments-cd
+install-aws-cdk
+EOF
+}

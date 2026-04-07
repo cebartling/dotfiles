@@ -1,10 +1,5 @@
-#!/bin/zsh
-
-autoload colors
-colors
-
-echo ""
-echo $fg[cyan]Configuring Life Time, Inc. aliases...$reset_color
+# Life Time, Inc. aliases (auto-loaded by functions/project-aliases.sh).
+# Run `lifetime-help` to print available aliases.
 
 alias lt-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/credit-card-account-consumer && pwd && lt-git-setup"
 alias lt-register-credit-card-account-consumer-cd="cd ~/github-sandbox/lifetime/register-credit-card-account-consumer && pwd && lt-git-setup"
@@ -25,36 +20,37 @@ alias lt-spring-batch-spike-cd="cd ~/github-sandbox/lifetime/spring-batch-spike 
 alias lt-docker-compose-down="docker compose --profile infrastructure down -v --remove-orphans"
 
 alias lt-add-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519 && ssh-add -l"
-alias lt-add-personal-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519_personal && ssh-add   -l"
+alias lt-add-personal-ssh-key="ssh-add -D && ssh-add -t 24h ~/.ssh/id_ed25519_personal && ssh-add -l"
 alias lt-git-config="git config user.name \"Christopher Bartling\" && git config user.email \"cbartling@lt.life\""
 alias lt-git-setup="lt-add-ssh-key && lt-git-config"
 alias lt-git-personal-setup="lt-add-personal-ssh-key && lt-git-config"
 
-echo ""
-echo $fg[cyan]Available aliases$reset_color
-echo $fg[cyan]---------------------------------------------------$reset_color
-echo $fg_bold[yellow]lt-github-home-cd$reset_color
-echo ""
-echo $fg_bold[yellow]lt-credit-card-account-consumer-cd$reset_color
-echo $fg_bold[yellow]lt-register-credit-card-account-consumer-cd$reset_color
-echo $fg_bold[yellow]lt-chase-commerce-gateway-api-cd$reset_color
-echo $fg_bold[yellow]lt-chase-credit-card-account-update-enrichment-cd$reset_color
-echo $fg_bold[yellow]lt-payment-account-updater-cd$reset_color
-echo $fg_bold[yellow]lt-payments-testing-admin-api-cd$reset_color
-echo $fg_bold[yellow]lt-account-updater-batch-cd$reset_color
-echo ""
-echo $fg_bold[yellow]lt-payment-services-proxy-cd$reset_color
-echo ""
-echo $fg_bold[yellow]lt-add-ssh-key$reset_color
-echo $fg_bold[yellow]lt-add-personal-ssh-key$reset_color
-echo $fg_bold[yellow]lt-git-config$reset_color
-echo $fg_bold[yellow]lt-git-setup$reset_color
-echo $fg_bold[yellow]lt-git-personal-setup$reset_color
-echo $fg_bold[yellow]lt-docker-compose-down$reset_color
-echo ""
-echo $fg_bold[yellow]lt-splunkspike-cd$reset_color
-echo $fg_bold[yellow]lt-ops-confluent-kafka-cd$reset_color
-echo $fg_bold[yellow]lt-suite-creditcardaccount-debezium-connector-cd$reset_color
-echo $fg_bold[yellow]lt-chase-oauth-spike-cd$reset_color
-echo $fg_bold[yellow]lt-spring-batch-spike-cd$reset_color
-echo $fg[cyan]---------------------------------------------------$reset_color
+lifetime-help() {
+  cat <<'EOF'
+Life Time, Inc. aliases
+-----------------------
+lt-github-home-cd
+
+lt-credit-card-account-consumer-cd
+lt-register-credit-card-account-consumer-cd
+lt-chase-commerce-gateway-api-cd
+lt-payment-account-updater-cd
+lt-payments-testing-admin-api-cd
+lt-account-updater-batch-cd
+
+lt-payment-services-proxy-cd
+
+lt-add-ssh-key
+lt-add-personal-ssh-key
+lt-git-config
+lt-git-setup
+lt-git-personal-setup
+lt-docker-compose-down
+
+lt-splunkspike-cd
+lt-ops-confluent-kafka-cd
+lt-suite-creditcardaccount-debezium-connector-cd
+lt-chase-oauth-spike-cd
+lt-spring-batch-spike-cd
+EOF
+}

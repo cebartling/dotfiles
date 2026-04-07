@@ -1,13 +1,12 @@
-#!/bin/zsh
-
-autoload colors
-colors
-
-echo $fg[cyan]Configuring Kubernetes experiments aliases...$reset_color
+# Kubernetes experiments aliases (auto-loaded by functions/project-aliases.sh).
+# Run `kubernetes-experiments-help` to print available aliases.
 
 alias k8s-experiments-cd="cd ~/github-sandbox/cebartling/kubernetes-experiments"
 
-echo $fg[cyan]Available aliases$reset_color
-echo $fg[cyan]---------------------------------------------------$reset_color
-echo $fg[yellow]k8s-experiments-cd$reset_color
-echo $fg[cyan]---------------------------------------------------$reset_color
+kubernetes-experiments-help() {
+  cat <<'EOF'
+Kubernetes experiments aliases
+------------------------------
+k8s-experiments-cd
+EOF
+}

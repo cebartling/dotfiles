@@ -1,14 +1,12 @@
-#!/bin/zsh
-
-autoload colors; colors
-
-echo $fg[cyan]Configuring Tauri experiments aliases...$reset_color
-echo ""
+# Tauri experiments aliases (auto-loaded by functions/project-aliases.sh).
+# Run `tauri-experiments-help` to print available aliases.
 
 alias tauri-experiments-cd="cd ~/github-sandbox/cebartling/tauri-experiments && pwd"
 
-
-echo $fg[cyan]Available aliases$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
-echo $fg[yellow]tauri-experiments-cd$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
+tauri-experiments-help() {
+  cat <<'EOF'
+Tauri experiments aliases
+-------------------------
+tauri-experiments-cd
+EOF
+}

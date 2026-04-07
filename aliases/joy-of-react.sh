@@ -1,16 +1,12 @@
-#!/bin/zsh
-
-autoload colors; colors
-
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-
-echo $fg[cyan]Configuring Joy of React exercises aliases...$reset_color
-
+# Joy of React aliases (auto-loaded by functions/project-aliases.sh).
+# Run `joy-of-react-help` to print available aliases.
 
 alias joy-of-react-project-wordle-cd="cd ~/github-sandbox/cebartling/joy-of-react-project-wordle && nvm use && pwd"
 
-echo $fg[cyan]Available aliases$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
-echo $fg[yellow]joy-of-react-project-wordle-cd$reset_color
-echo $fg[cyan]---------------------------------------------$reset_color
+joy-of-react-help() {
+  cat <<'EOF'
+Joy of React aliases
+--------------------
+joy-of-react-project-wordle-cd
+EOF
+}
