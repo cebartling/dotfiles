@@ -95,6 +95,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `bootstrap.sh` | One-shot installer for a fresh Mac |
 | `Brewfile` | Canonical macOS package manifest (`brew bundle`) |
 | `Brewfile.k8s` | Optional Kubernetes toolchain |
+| [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package |
 | `zshrc` | Tracked `~/.zshrc` (symlinked into place by `link.zsh`) |
 | `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
 | `aliases/core.sh` | Shared aliases (loaded on every shell) |
