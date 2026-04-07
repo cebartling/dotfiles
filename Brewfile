@@ -55,6 +55,7 @@ brew "yq"                   # YAML query (jq for YAML)
 brew "fx"                   # interactive JSON viewer
 brew "just"
 brew "lazygit"              # TUI git client
+brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
 brew "semgrep"
 brew "tokei"                # fast cloc replacement
@@ -72,6 +73,7 @@ brew "uv"
 brew "caddy"
 brew "dnsmasq"
 brew "dog"                  # DNS client
+brew "grpcurl"              # curl for gRPC
 brew "httpie"
 brew "xh"                   # faster httpie
 brew "sniffnet"
@@ -99,8 +101,12 @@ brew "imagemagick"          # convert/resize images (token cost reduction)
 # ===== Data =====
 brew "duckdb"
 brew "mongodb-atlas-cli"
+brew "pgcli"                # Postgres CLI with autocomplete
 brew "playwright-cli"
 brew "specify"
+
+# ===== Local LLM =====
+brew "ollama"               # local LLM runner; pair with Claude for proprietary work
 
 # ===== Misc =====
 brew "azure/azd/azd"
