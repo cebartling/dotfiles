@@ -1,5 +1,11 @@
 # ~/.config/starship.toml
 
+# Right-side prompt: time and command-duration live here so they
+# don't push the typing line further down on each invocation.
+# Modules listed here are automatically removed from the default
+# left-side $all expansion (no duplicate render).
+right_format = "$cmd_duration $time"
+
 # Prompt character configuration
 [character]
 success_symbol = "[➜](bold green)"
