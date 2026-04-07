@@ -13,6 +13,15 @@ export EDITOR='code --wait'
 export VISUAL="$EDITOR"
 export LANG=en_US.UTF-8
 
+# ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew) -----
+for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew "$HOME/homebrew/bin/brew"; do
+  if [ -x "$_brew_candidate" ]; then
+    eval "$("$_brew_candidate" shellenv)"
+    break
+  fi
+done
+unset _brew_candidate
+
 # ----- PATH (consolidated, deduped) -----
 export PNPM_HOME="$HOME/Library/pnpm"
 typeset -U path                              # automatic dedupe
@@ -49,8 +58,8 @@ source $DOTFILES/functions/project-aliases.sh
 export NVM_DIR="$HOME/.nvm"
 _nvm_load() {
   unset -f nvm node npm npx _nvm_load
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
+  [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
 }
 nvm()  { _nvm_load; nvm  "$@"; }
 node() { _nvm_load; node "$@"; }
@@ -91,10 +100,10 @@ command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # ----- zsh plugins (autosuggestions, then syntax-highlighting LAST) -----
-[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
-  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-[ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[ -f "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
+  source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
+  source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # ----- Per-machine overrides (untracked, optional) -----
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
