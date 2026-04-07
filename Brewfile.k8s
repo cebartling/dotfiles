@@ -1,0 +1,16 @@
+# Brewfile.k8s — Kubernetes-specific tools.
+# Apply with:  brew bundle --file=$DOTFILES/Brewfile.k8s
+# Kept separate from the main Brewfile because not every Mac needs k8s.
+
+tap "sozercan/kubectl-ai", "https://github.com/sozercan/kubectl-ai"
+tap "weaveworks/tap"
+
+brew "helm"
+brew "kubectl-ai"
+brew "kubernetes-cli"
+brew "kubeshark"
+brew "stern"
+brew "weaveworks/tap/eksctl"
+
+cask "freelens"
+cask "openlens"
