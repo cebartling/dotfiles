@@ -87,6 +87,9 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 unset RPROMPT
 eval "$(starship init zsh)"
 
+# ----- zoxide (frecency cd: `z partial-name`) -----
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
 # ----- zsh plugins (autosuggestions, then syntax-highlighting LAST) -----
 [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
   source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh

@@ -32,20 +32,26 @@ brew "ripgrep"              # grep replacement
 brew "dust"                 # du replacement
 brew "procs"                # ps replacement
 brew "fzf"                  # fuzzy finder
+brew "tree"                 # directory layout
+brew "zoxide"               # frecency-based cd (z <name>)
 brew "git-delta"            # better git diff pager
+brew "difftastic"           # AST-aware structural diff
 brew "starship"             # cross-shell prompt
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
 # ===== Dev tooling =====
+brew "ast-grep"             # structural code search
 brew "beads"                # bd issue tracker
 brew "cargo-binstall"
 brew "direnv"
 brew "gh"                   # GitHub CLI
 brew "hyperfine"
 brew "jq"
+brew "yq"                   # YAML query (jq for YAML)
 brew "fx"                   # interactive JSON viewer
 brew "just"
+brew "lazygit"              # TUI git client
 brew "pre-commit"
 brew "semgrep"
 brew "typescript-language-server"
