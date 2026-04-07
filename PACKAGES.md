@@ -98,7 +98,7 @@ To check drift:        `brew bundle check --file=$DOTFILES/Brewfile`
 |---|---|---|
 | `caddy` | Powerful, enterprise-ready web server with automatic HTTPS | [github.com/caddyserver/caddy](https://github.com/caddyserver/caddy) |
 | `dnsmasq` | Lightweight DNS forwarder and DHCP server | [thekelleys.org.uk/dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) |
-| `dog` | Modern, colorful command-line DNS client | [github.com/ogham/dog](https://github.com/ogham/dog) |
+| `doggo` | Modern, colorful command-line DNS client | [github.com/mr-karan/doggo](https://github.com/mr-karan/doggo) |
 | `grpcurl` | Like `curl` but for gRPC services | [github.com/fullstorydev/grpcurl](https://github.com/fullstorydev/grpcurl) |
 | `httpie` | User-friendly HTTP client (`http`, `https` commands) | [github.com/httpie/cli](https://github.com/httpie/cli) |
 | `xh` | Friendly and fast HTTP client; faster httpie clone in Rust | [github.com/ducaale/xh](https://github.com/ducaale/xh) |

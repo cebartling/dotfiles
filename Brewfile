@@ -72,7 +72,7 @@ brew "uv"
 # ===== HTTP / network =====
 brew "caddy"
 brew "dnsmasq"
-brew "dog"                  # DNS client
+brew "doggo"                # DNS client
 brew "grpcurl"              # curl for gRPC
 brew "httpie"
 brew "xh"                   # faster httpie
