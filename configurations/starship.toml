@@ -1,9 +1,31 @@
 # ~/.config/starship.toml
 
+# Explicit left-side prompt. Only the modules I actually use are
+# listed, in a fixed order. New starship versions can't shuffle
+# things and modules not in this list are not evaluated at all.
+# To add a module: insert it here AND configure its [section] below.
+format = """\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$nodejs\
+$rust\
+$python\
+$java\
+$docker_context\
+$aws\
+$gcloud\
+$azure\
+$direnv\
+$battery\
+$line_break\
+$character"""
+
 # Right-side prompt: time and command-duration live here so they
 # don't push the typing line further down on each invocation.
-# Modules listed here are automatically removed from the default
-# left-side $all expansion (no duplicate render).
 right_format = "$cmd_duration $time"
 
 # Prompt character configuration
