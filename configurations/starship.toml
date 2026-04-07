@@ -76,11 +76,15 @@ am = "AM"
 am_or_rebase = "AM/REBASE"
 
 
+# Java — keep enabled (sdkman + spring-boot-spikes + pneuma all use it).
+# Removed detect_folders = ["src"] because it would fire \`java -version\`
+# inside any project with a src/ subdir (React, Rust, Python, Go, etc.).
+# Removed clj/cljs/cljc from detect_extensions — not using Clojure.
 [java]
 symbol = "☕ "
 style = "red bold"
 format = "via [$symbol$version ($vendor)]($style) "
-detect_extensions = ["java", "class", "jar", "gradle", "clj", "cljs", "cljc"]
+detect_extensions = ["java", "class", "jar", "gradle"]
 detect_files = [
     "pom.xml",
     "build.gradle",
@@ -88,7 +92,6 @@ detect_files = [
     "settings.gradle",
     "settings.gradle.kts",
 ]
-detect_folders = ["src"]
 
 # Node.js
 [nodejs]
