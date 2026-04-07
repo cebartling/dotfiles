@@ -3,9 +3,6 @@
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
-ssh-add -D && ssh-add ~/.ssh/id_ed25519 && ssh-add -l
-git config user.name "Christopher Bartling" && git config user.email "chris.bartling@gmail.com"
-
 # Common aliases
 alias cat='bat --paging=never'
 #alias ll='eza -l --icons --no-user --group-directories-first  --time-style long-iso'
