@@ -92,11 +92,13 @@ symbol = "⎈ "
 style = "cyan bold"
 disabled = true
 
-# Time
-# [time]
-# disabled = false
-# format = "🕒 [%T] "
-# style = "dimmed white"
+# Time — currently rendered on the left prompt. Move to right_format
+# (dotfiles-a2z) to get it out of the way of the typing line.
+[time]
+disabled = false
+format = "[$time]($style) "
+time_format = "%T"
+style = "dimmed white"
 
 # AWS — show the active profile (and region) before destructive commands.
 [aws]
