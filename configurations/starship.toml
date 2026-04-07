@@ -19,15 +19,16 @@ read_only_style = "red"
 symbol = " "
 style = "purple"
 
-# Git status
+# Git status — uses a single glyph aesthetic (no emoji) for visual consistency
+# and so the prompt renders correctly even on machines without nerd fonts.
 [git_status]
 style = "bold yellow"
-conflicted = "⚔️ "
+conflicted = "[=](bold red)"
 ahead = "⇡${count}"
 behind = "⇣${count}"
 diverged = "⇕"
-untracked = "??"
-stashed = "📦"
+untracked = "?"
+stashed = "$"
 modified = "✎"
 staged = "+${count}"
 deleted = "✘"
