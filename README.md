@@ -1,37 +1,113 @@
 # dotfiles
-ZShell configuration
 
-## Using this repository
+Christopher Bartling's macOS shell configuration: oh-my-zsh + starship,
+lazy-loaded nvm/sdkman, syntax highlighting, autosuggestions, per-project
+alias auto-loading, and a curated Brewfile.
 
-1. Clone this repository to **$HOME/.dotfiles** directory: `git clone git@github.com:cebartling/dotfiles.git $HOME/.dotfiles`
-1. Edit your `$HOME/.zshrc` file:
+Lives at `$HOME/.dotfiles` on each machine.
 
-    ```zsh
-    # Path to your oh-my-zsh installation.
-    export ZSH="$HOME/.oh-my-zsh"
-    export DOTFILES="$HOME/.dotfiles"
+## Setting up a new Mac
 
-    source $DOTFILES/oh-my-zsh/core.sh
-    source $ZSH/oh-my-zsh.sh
+One-time bootstrap on a brand-new macOS install:
 
-    source $DOTFILES/functions/core.sh
-    source $DOTFILES/aliases/core.sh
-    source $DOTFILES/paths/core.sh
+```sh
+git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
+"$HOME/.dotfiles/bootstrap.sh"
+```
 
-    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-    fpath=($fpath ~/.zsh/completion)
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+`bootstrap.sh` is idempotent. It will:
 
-    # Language runtimes
-    source $DOTFILES/runtimes/sdkman.sh
-    source $DOTFILES/runtimes/nvm-homebrew.sh
-    #source $DOTFILES/runtimes/rbenv.sh
-    #source $DOTFILES/runtimes/pyenv.sh
-    #source $DOTFILES/runtimes/poetry.sh
+1. Ensure Xcode Command Line Tools
+2. Install Homebrew if missing
+3. `brew bundle` everything in [`Brewfile`](Brewfile)
+4. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
+5. Install sdkman if missing
+6. Symlink `~/.zshrc` → `$DOTFILES/zshrc` and
+   `~/.config/starship.toml` → `$DOTFILES/configurations/starship.toml`
+   (existing files are backed up to `<file>.backup.<timestamp>`)
 
-    # AI tooling
-    source $DOTFILES/runtimes/claude.sh
+After bootstrap completes, open a new terminal tab and run any of:
 
-    eval "$(starship init zsh)"
-    ```
-1. Restart your terminal and enjoy!
+```sh
+gh auth login
+sdk version           # initializes sdkman on first call
+nvm install --lts     # installs an LTS node on first call
+~/.dotfiles/scripts/macOS/install_k8s_tools.zsh   # optional: k8s toolchain
+```
+
+## Syncing an existing Mac
+
+When `main` advances and you want to pull the changes onto another machine:
+
+```sh
+cd ~/.dotfiles
+git pull --ff-only
+~/.dotfiles/bootstrap.sh    # idempotent — only acts on what's missing
+exec zsh                    # reload the shell
+```
+
+The bootstrap will pick up any newly added Brewfile entries and re-run
+`link.zsh` (a no-op if everything is already linked correctly).
+
+To verify the sync worked:
+
+```sh
+readlink ~/.zshrc                       # → ~/.dotfiles/zshrc
+readlink ~/.config/starship.toml        # → ~/.dotfiles/configurations/starship.toml
+which starship eza bat fzf
+time zsh -i -c exit                     # ~150ms
+```
+
+## Per-machine overrides
+
+`~/.dotfiles/zshrc` is shared across every Mac. For things that should
+only run on one machine (work proxies, employer git identity, host-specific
+PATH entries, secrets), drop them in `~/.zshrc.local`. The tracked `zshrc`
+sources it at the very end if present, so anything you put there overrides
+the defaults. `~/.zshrc.local` is gitignored.
+
+```sh
+cp ~/.dotfiles/.zshrc.local.example ~/.zshrc.local
+$EDITOR ~/.zshrc.local
+```
+
+## Updating the package manifest
+
+When you install a new tool you want on every Mac:
+
+```sh
+brew install <thing>
+$EDITOR ~/.dotfiles/Brewfile           # add the entry, group it sensibly
+brew bundle check --file=~/.dotfiles/Brewfile     # confirm clean
+git add Brewfile && git commit && git push
+```
+
+To see drift between this Mac and the canonical Brewfile:
+
+```sh
+brew bundle check --file=~/.dotfiles/Brewfile --verbose
+```
+
+## Layout
+
+| Path | Purpose |
+|---|---|
+| `bootstrap.sh` | One-shot installer for a fresh Mac |
+| `Brewfile` | Canonical macOS package manifest (`brew bundle`) |
+| `Brewfile.k8s` | Optional Kubernetes toolchain |
+| `zshrc` | Tracked `~/.zshrc` (symlinked into place by `link.zsh`) |
+| `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
+| `aliases/core.sh` | Shared aliases (loaded on every shell) |
+| `aliases/<project>.sh` | Per-project aliases auto-loaded by directory |
+| `functions/core.sh` | Shared shell functions |
+| `functions/project-aliases.sh` | `chpwd` hook that auto-sources project alias files |
+| `paths/core.sh` | Extra `PATH` entries |
+| `runtimes/*.sh` | Language runtime hooks (claude, sdkman, nvm — most lazy-loaded) |
+| `configurations/starship.toml` | Starship prompt config (symlinked) |
+| `scripts/macOS/link.zsh` | Idempotent symlink installer |
+| `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
+| `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
+
+## License
+
+MIT — see [LICENSE](LICENSE).
