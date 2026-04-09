@@ -165,7 +165,7 @@ disabled = false
 # Helpful reminder that environment variables have been mutated by
 # something other than your shell config.
 [direnv]
-disabled = false
+disabled = true
 symbol = "📂 "
 style = "bold orange"
 format = "[$symbol$loaded/$allowed]($style) "
