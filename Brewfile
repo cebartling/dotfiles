@@ -159,6 +159,7 @@ cask "witch"
 cask "flashspace"
 cask "maccy"
 cask "lookaway"
+cask "finetune"
 
 # ===== Dev utilities =====
 cask "devutils"
