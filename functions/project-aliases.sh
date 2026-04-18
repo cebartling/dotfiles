@@ -73,3 +73,31 @@ add-zsh-hook chpwd _project_aliases_chpwd
 
 # Run once at shell start in case we launched inside a project dir.
 _project_aliases_chpwd
+
+# Navigate to a registered project by its directory basename.
+# Usage: proj nfl-draft-2026
+proj() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: proj <project-name>"
+    echo "Available projects:"
+    for prefix in ${(ko)PROJECT_ALIAS_MAP}; do
+      echo "  ${prefix:t}"
+    done
+    return 1
+  fi
+
+  local target
+  for prefix in ${(k)PROJECT_ALIAS_MAP}; do
+    if [[ "${prefix:t}" == "$1" ]]; then
+      target="$prefix"
+      break
+    fi
+  done
+
+  if [[ -n "$target" ]]; then
+    cd "$target"
+  else
+    echo "Unknown project: $1"
+    return 1
+  fi
+}
