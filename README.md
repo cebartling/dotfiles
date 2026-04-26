@@ -108,6 +108,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/macOS/link.zsh` | Idempotent symlink installer |
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
+| [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, commands, hooks, skills) symlinked into `~/.claude` |
 
 ## Per-project aliases
 
