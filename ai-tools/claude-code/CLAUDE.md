@@ -70,3 +70,4 @@
 - Update plan documentation as you go
 - Learn from existing implementations
 - Stop after 3 failed attempts and reassess
+- When navigating code, prefer LSP tools (`goToDefinition`, `findReferences`) over grep for code intelligence. Fall back to grep/glob only for discovery tasks or when LSP cannot help.
