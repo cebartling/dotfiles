@@ -54,17 +54,26 @@ source $DOTFILES/paths/core.sh
 source $DOTFILES/functions/project-aliases.sh
 
 # ----- Lazy runtimes (huge startup speedup) -----
-# nvm: load on first use of nvm/node/npm/npx
+# nvm: load on first use of nvm/node/npm/npx.
+# Under Claude Code we eager-load instead — Claude Code's shell snapshot
+# captures the wrappers but drops the underscore-prefixed _nvm_load helper
+# they depend on, so subprocesses sourcing the snapshot infinite-loop on
+# FUNCNEST when invoking npx/npm/node.
 export NVM_DIR="$HOME/.nvm"
-_nvm_load() {
-  unset -f nvm node npm npx _nvm_load
+if [[ -n "$CLAUDECODE" ]]; then
   [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
   [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
-}
-nvm()  { _nvm_load; nvm  "$@"; }
-node() { _nvm_load; node "$@"; }
-npm()  { _nvm_load; npm  "$@"; }
-npx()  { _nvm_load; npx  "$@"; }
+else
+  _nvm_load() {
+    unset -f nvm node npm npx _nvm_load
+    [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
+    [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
+  }
+  nvm()  { _nvm_load; nvm  "$@"; }
+  node() { _nvm_load; node "$@"; }
+  npm()  { _nvm_load; npm  "$@"; }
+  npx()  { _nvm_load; npx  "$@"; }
+fi
 
 # sdkman: load on first use of sdk
 export SDKMAN_DIR="$HOME/.sdkman"
