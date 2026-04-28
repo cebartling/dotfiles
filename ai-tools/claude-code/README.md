@@ -1,8 +1,8 @@
 # Claude Code config
 
-User-scoped Claude Code config — `CLAUDE.md`, custom slash commands,
-hooks, and authored skills — tracked in this dotfiles repo and
-symlinked into `~/.claude` by [`install.sh`](install.sh).
+User-scoped Claude Code config — `CLAUDE.md`, `settings.json`, custom
+slash commands, hooks, and authored skills — tracked in this dotfiles
+repo and symlinked into `~/.claude` by [`install.sh`](install.sh).
 
 ## Install / sync
 
@@ -22,6 +22,7 @@ each machine after cloning the dotfiles repo.
 | Source (in repo) | Destination |
 |---|---|
 | `CLAUDE.md` | `~/.claude/CLAUDE.md` |
+| `settings.json` | `~/.claude/settings.json` |
 | `commands/<name>.md` | `~/.claude/commands/<name>.md` |
 | `hooks/<name>.yaml` | `~/.claude/hooks/<name>.yaml` |
 | `skills/<name>/` | `~/.claude/skills/<name>/` |
