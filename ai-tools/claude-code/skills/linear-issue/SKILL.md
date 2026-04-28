@@ -118,9 +118,13 @@ one does not already exist.
 
 ## Guardrails
 
-- Do not modify the Linear issue (no comments, no status changes, no
-  assignment) as part of this skill. This skill is read-only against
-  Linear.
+- Do not initiate writes to the Linear issue (no comments, no status
+  changes, no assignment) on your own. If the user explicitly asks
+  you to write the plan back to the issue, post a comment, update
+  the description, or change state, do it — `linear-cli issues
+  update <ID>` and `linear-cli comments create <ID>` are the right
+  tools. The default is read-only; explicit user instruction
+  overrides that.
 - Do not edit files or run build/test commands during plan mode. The
   light codebase pass in step 3 is read-only (`grep`, `find`,
   `Read`).
