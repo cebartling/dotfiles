@@ -49,6 +49,7 @@ brew "ast-grep"             # structural code search
 brew "atuin"                # better shell history (opt-in init in zshrc.local)
 brew "beads"                # bd issue tracker
 brew "cargo-binstall"
+brew "create-dmg"           # macOS .dmg builder for app distribution
 brew "direnv"
 brew "gh"                   # GitHub CLI
 brew "gitleaks"             # secret scanner
