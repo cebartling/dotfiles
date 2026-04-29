@@ -73,6 +73,7 @@
       }
     }
   },
+  "effortLevel": "medium",
   "skipAutoPermissionPrompt": true,
   "autoMemoryDirectory": "~/.claude/memory/"
 }
