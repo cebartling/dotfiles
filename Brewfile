@@ -63,6 +63,7 @@ brew "lazygit"              # TUI git client
 brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
 brew "semgrep"
+brew "swiftlint"            # Swift linter
 brew "tokei"                # fast cloc replacement
 brew "typescript-language-server"
 brew "vale"
