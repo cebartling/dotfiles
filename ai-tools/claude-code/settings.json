@@ -1,9 +1,10 @@
 {
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
-      "Bash(linear-cli *)"
-    ]
+      "Bash(linear-cli *)",
+      "Bash(gh api graphql *)"
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreCompact": [
@@ -74,6 +75,7 @@
     }
   },
   "effortLevel": "medium",
+  "autoMemoryDirectory": "~/.claude/memory/",
   "skipAutoPermissionPrompt": true,
-  "autoMemoryDirectory": "~/.claude/memory/"
+  "agentPushNotifEnabled": true
 }
