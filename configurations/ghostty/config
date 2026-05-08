@@ -1,0 +1,51 @@
+# Appearance
+macos-icon = retro
+#theme = Catppuccin Mocha
+theme = Tokyo Night
+title = " "
+macos-titlebar-proxy-icon = "hidden"
+
+# --- Keyboard ---
+# iTerm2 uses Option as Alt for shell shortcuts (e.g. Option+Left/Right to jump words)
+macos-option-as-alt = true
+
+# --- Window ---
+window-padding-x = 12
+window-padding-y = 12
+background-opacity = 0.95
+background-blur = macos-glass-regular
+
+# iTerm2 hides in the dock by default when using a hotkey window
+macos-hidden = always
+# Quick terminal dropdown (like iTerm2's hotkey window)
+keybind = global:shift+escape=toggle_quick_terminal
+# iTerm2 shows a confirmation dialog before closing
+confirm-close-surface = false
+
+# New tabs/splits inherit the current directory, like iTerm2
+window-inherit-working-directory = true
+
+
+# Fonts (Use Nerd Font to display icons)
+font-family = JetBrainsMono Nerd Font
+font-size = 16
+font-feature = liga
+font-thicken = true
+
+# Cursor
+adjust-cursor-thickness = 10
+
+# Copy-paste behavior optimization
+copy-on-select = "clipboard"
+clipboard-trim-trailing-spaces = true
+# iTerm2 warns you before pasting potentially dangerous commands
+clipboard-paste-protection = true
+
+# --- Splits ---
+# Dim inactive splits, similar to iTerm2's inactive pane dimming
+unfocused-split-opacity = 0.85
+
+# --- Shell Integration ---
+# Enables prompt jumping, marks, and other iTerm2-like shell features
+shell-integration = detect
+shell-integration-features = cursor,sudo,title
