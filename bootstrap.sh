@@ -103,6 +103,7 @@ Next steps:
   1. Open a new terminal tab (or run: exec zsh)
   2. Verify: readlink ~/.zshrc        # -> ~/.dotfiles/zshrc
              readlink ~/.config/starship.toml
+             readlink ~/.config/ghostty/config
              time zsh -i -c exit       # should be ~150ms
   3. First-time logins:
        gh auth login

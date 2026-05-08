@@ -45,8 +45,9 @@ link() {
 echo $fg[cyan]"Linking dotfiles from $DOTFILES..."$reset_color
 echo
 
-link "$DOTFILES/zshrc"                       "$HOME/.zshrc"
+link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
+link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 
 echo
 echo $fg[cyan]"Done."$reset_color
