@@ -48,6 +48,9 @@ echo
 link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
+link "$DOTFILES/configurations/cmux/cmux.json"      "$HOME/.config/cmux/cmux.json"
+link "$DOTFILES/configurations/cmux/settings.json"  "$HOME/.config/cmux/settings.json"
+link "$DOTFILES/configurations/cmux/config.ghostty" "$HOME/Library/Application Support/com.cmuxterm.app/config.ghostty"
 
 echo
 echo $fg[cyan]"Done."$reset_color

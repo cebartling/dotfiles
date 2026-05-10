@@ -22,9 +22,10 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
 3. `brew bundle` everything in [`Brewfile`](Brewfile)
 4. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
 5. Install sdkman if missing
-6. Symlink `~/.zshrc` → `$DOTFILES/zshrc` and
-   `~/.config/starship.toml` → `$DOTFILES/configurations/starship.toml`
-   (existing files are backed up to `<file>.backup.<timestamp>`)
+6. Symlink tracked config into place: `~/.zshrc`, starship, ghostty,
+   and cmux (both `~/.config/cmux/` and the embedded-Ghostty config under
+   `~/Library/Application Support/com.cmuxterm.app/`). Existing files are
+   backed up to `<file>.backup.<timestamp>`.
 
 After bootstrap completes, open a new terminal tab and run any of:
 
@@ -105,6 +106,8 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `paths/core.sh` | Extra `PATH` entries |
 | `runtimes/*.sh` | Language runtime hooks (claude, sdkman, nvm — most lazy-loaded) |
 | `configurations/starship.toml` | Starship prompt config (symlinked) |
+| `configurations/ghostty/config` | Standalone Ghostty.app config (symlinked into `~/.config/ghostty/`) |
+| [`configurations/cmux/`](configurations/cmux/README.md) | cmux app + embedded-Ghostty config (symlinked into `~/.config/cmux/` and `~/Library/Application Support/com.cmuxterm.app/`) |
 | `scripts/macOS/link.zsh` | Idempotent symlink installer |
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
