@@ -6,6 +6,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "sonnet",
   "hooks": {
     "PreCompact": [
       {
@@ -76,6 +77,8 @@
   },
   "effortLevel": "medium",
   "autoMemoryDirectory": "~/.claude/memory/",
-  "skipAutoPermissionPrompt": true,
-  "agentPushNotifEnabled": true
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }
