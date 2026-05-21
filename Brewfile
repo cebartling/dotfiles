@@ -88,6 +88,7 @@ brew "tailscale"
 # ===== Containers =====
 brew "colima"
 brew "podman"
+brew "podman-compose"
 
 # ===== Cloud CLIs =====
 brew "awscli"
