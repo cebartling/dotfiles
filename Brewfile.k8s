@@ -5,6 +5,7 @@
 tap "sozercan/kubectl-ai", "https://github.com/sozercan/kubectl-ai"
 tap "weaveworks/tap"
 
+brew "derailed/k9s/k9s"
 brew "helm"
 brew "kubectl-ai"
 brew "kubernetes-cli"

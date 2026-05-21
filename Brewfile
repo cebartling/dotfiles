@@ -78,7 +78,7 @@ brew "uv"
 # ===== HTTP / network =====
 brew "caddy"
 brew "dnsmasq"
-brew "doggo"                # DNS client
+brew "doggo"                # DNS client (replaces deprecated `dog`; run: brew uninstall dog)
 brew "grpcurl"              # curl for gRPC
 brew "httpie"
 brew "xh"                   # faster httpie
