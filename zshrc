@@ -116,3 +116,8 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # ----- Per-machine overrides (untracked, optional) -----
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/chris/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
