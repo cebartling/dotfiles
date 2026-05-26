@@ -145,11 +145,6 @@ cask "manaflow-ai/cmux/cmux"
 # ===== Cloud CLIs (cask form) =====
 cask "1password-cli"
 
-# ===== AI / coding agents =====
-cask "claude"
-cask "chatgpt"
-cask "copilot-cli"
-
 # ===== Editors / IDEs =====
 cask "visual-studio-code"   # required by `vscode "..."` extension lines below
 cask "zed"

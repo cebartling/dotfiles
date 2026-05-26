@@ -1,0 +1,10 @@
+# Brewfile.ai — AI / coding agents
+# These apps are opt-in per machine; install via:
+#   scripts/macOS/install_ai_tools.zsh
+#
+# Requires: arm64 + macOS 15 for osaurus
+
+cask "claude"
+cask "chatgpt"
+cask "copilot-cli"
+cask "osaurus"
