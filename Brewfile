@@ -10,6 +10,7 @@
 # requires sudo, so it can't run unattended from bootstrap.sh).
 
 # ===== Taps =====
+tap "atlassian-labs/acli"
 tap "azure/azd"
 tap "derailed/k9s"
 tap "hashicorp/tap"
@@ -51,6 +52,7 @@ brew "beads"                # bd issue tracker
 brew "cargo-binstall"
 brew "create-dmg"           # macOS .dmg builder for app distribution
 brew "direnv"
+brew "acli"                 # Atlassian CLI (Jira, Confluence, Bitbucket)
 brew "gh"                   # GitHub CLI
 brew "gitleaks"             # secret scanner
 brew "glow"                 # terminal markdown renderer
