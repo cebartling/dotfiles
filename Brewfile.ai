@@ -7,4 +7,5 @@
 cask "claude"
 cask "chatgpt"
 cask "copilot-cli"
+cask "comfyui"
 cask "osaurus"
