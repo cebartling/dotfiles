@@ -4,6 +4,7 @@
 # Apple-platform (Swift/Xcode) development. Install via:
 #   scripts/macOS/install_apple_tools.zsh
 
+brew "asc"                  # App Store Connect CLI (TestFlight, app submission)
 brew "create-dmg"           # macOS .dmg builder for app distribution
 brew "swiftlint"            # Swift linter
 brew "xcodegen"             # generate .xcodeproj from a YAML spec
