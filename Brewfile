@@ -29,6 +29,7 @@ tap "tednaleid/montty"
 brew "bash"
 brew "curl"
 brew "git"
+brew "git-lfs"              # large-file storage for git
 brew "openssl@3"
 brew "tmux"
 

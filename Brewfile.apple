@@ -3,8 +3,51 @@
 # Kept separate from the main Brewfile because not every Mac does
 # Apple-platform (Swift/Xcode) development. Install via:
 #   scripts/macOS/install_apple_tools.zsh
+#
+# Idempotent: safe to re-run on any machine.
 
-brew "asc"                  # App Store Connect CLI (TestFlight, app submission)
-brew "create-dmg"           # macOS .dmg builder for app distribution
-brew "swiftlint"            # Swift linter
-brew "xcodegen"             # generate .xcodeproj from a YAML spec
+# ─────────────────────────────────────────────────────────────
+# Taps
+# ─────────────────────────────────────────────────────────────
+tap "xcodesorg/made"          # xcodes CLI
+tap "peripheryapp/periphery"  # periphery dead-code scanner
+tap "chargepoint/xcparse"     # xcparse .xcresult extractor
+
+# ─────────────────────────────────────────────────────────────
+# Xcode & toolchain management
+# ─────────────────────────────────────────────────────────────
+brew "xcodes"             # install / switch between Xcode versions from the CLI
+                          # (use `cask "xcodes"` instead if you want the GUI app)
+brew "xcode-build-server" # SourceKit-LSP <-> xcodebuild bridge for non-Xcode editors
+brew "xcbeautify"         # readable xcodebuild output (modern xcpretty replacement)
+
+# ─────────────────────────────────────────────────────────────
+# Lint, format, codegen
+# ─────────────────────────────────────────────────────────────
+brew "swiftlint"   # Swift linter
+brew "swiftformat" # Swift formatter (Nick Lockwood)
+brew "sourcery"    # Swift code generation from templates
+brew "swiftgen"    # type-safe accessors for assets / strings / fonts
+brew "periphery"   # detect unused Swift code
+
+# ─────────────────────────────────────────────────────────────
+# Result parsing & on-device work
+# ─────────────────────────────────────────────────────────────
+brew "xcparse"    # extract screenshots / logs / attachments from .xcresult bundles
+brew "ios-deploy" # install & debug apps on physical iOS devices from the CLI
+
+# ─────────────────────────────────────────────────────────────
+# Dependency / project tooling (comment out what you don't use)
+# ─────────────────────────────────────────────────────────────
+brew "mint"        # run SPM-distributed Swift CLI tools, version-pinned per project
+brew "xcodegen"    # generate .xcodeproj from a YAML spec (avoids project-file conflicts)
+# brew "cocoapods" # only if you still consume Pods-based dependencies (SPM preferred)
+# cask "tuist"     # project generation/scaling — NOTE: tuist now recommends its own
+                   # mise-based installer over Homebrew; check docs before enabling
+
+# ─────────────────────────────────────────────────────────────
+# Release automation
+# ─────────────────────────────────────────────────────────────
+brew "fastlane"    # incumbent release tooling; useful behavioral reference for Gnomon
+brew "asc"         # App Store Connect CLI (TestFlight, app submission)
+brew "create-dmg"  # macOS .dmg builder for app distribution
