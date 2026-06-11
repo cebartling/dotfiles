@@ -115,9 +115,8 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
   source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # ----- Per-machine overrides (untracked, optional) -----
+# Docker Desktop's installer appends its own `fpath=(... ); compinit` block
+# here on first run. Don't keep it: $HOME/.docker/completions is already on
+# fpath above and the single `compinit -C` (line 98) picks it up. A second
+# compinit just re-runs compaudit/compdump on every shell.
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/chris/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
