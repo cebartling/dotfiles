@@ -5,6 +5,9 @@
 # Kubernetes-specific tools live in Brewfile.k8s and are installed
 # separately via scripts/macOS/install_k8s_tools.zsh.
 #
+# Apple-platform (iOS/iPadOS/macOS) dev tools live in Brewfile.apple
+# and are installed separately via scripts/macOS/install_apple_tools.zsh.
+#
 # The Tailscale GUI cask lives in Brewfile.tailscale and is installed
 # separately via scripts/macOS/install_tailscale_app.zsh (its installer
 # requires sudo, so it can't run unattended from bootstrap.sh).
@@ -50,7 +53,6 @@ brew "ast-grep"             # structural code search
 brew "atuin"                # better shell history (opt-in init in zshrc.local)
 brew "beads"                # bd issue tracker
 brew "cargo-binstall"
-brew "create-dmg"           # macOS .dmg builder for app distribution
 brew "direnv"
 brew "acli"                 # Atlassian CLI (Jira, Confluence, Bitbucket)
 brew "gh"                   # GitHub CLI
@@ -65,12 +67,10 @@ brew "lazygit"              # TUI git client
 brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
 brew "semgrep"
-brew "swiftlint"            # Swift linter
 brew "tokei"                # fast cloc replacement
 brew "typescript-language-server"
 brew "vale"
 brew "watchexec"
-brew "xcodegen"
 
 # ===== Runtimes / package managers =====
 brew "nvm"                  # lazy-loaded in zshrc

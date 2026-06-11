@@ -1,7 +1,7 @@
 #!/bin/zsh
 # doctor.zsh — diagnose drift between this Mac and the dotfiles repo.
 # Reports (but does not fix):
-#   - Missing brew packages from Brewfile / Brewfile.k8s
+#   - Missing brew packages from Brewfile / Brewfile.k8s / Brewfile.apple
 #   - Symlinks that don't point at $DOTFILES (or are missing)
 #   - Shell startup time
 #
@@ -73,6 +73,18 @@ if [[ -f "$DOTFILES/Brewfile.ai" ]]; then
     brew bundle check --file="$DOTFILES/Brewfile.ai" --verbose 2>&1 \
       | grep -E '^→' | sed 's/^/    /'
     # ai drift is not counted as overall drift since it's optional
+  fi
+fi
+
+if [[ -f "$DOTFILES/Brewfile.apple" ]]; then
+  hdr "Brewfile.apple"
+  if brew bundle check --file="$DOTFILES/Brewfile.apple" >/dev/null 2>&1; then
+    ok "Brewfile.apple satisfied"
+  else
+    warn "Brewfile.apple drift (run scripts/macOS/install_apple_tools.zsh to fix):"
+    brew bundle check --file="$DOTFILES/Brewfile.apple" --verbose 2>&1 \
+      | grep -E '^→' | sed 's/^/    /'
+    # apple drift is not counted as overall drift since it's optional
   fi
 fi
 

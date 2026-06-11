@@ -111,9 +111,11 @@ Next steps:
        nvm install --lts      # installs an LTS node on first call
   4. Optional: install k8s tooling:
        ~/.dotfiles/scripts/macOS/install_k8s_tools.zsh
-  5. Optional: install Tailscale GUI app (needs sudo):
+  5. Optional: install Apple (iOS/iPadOS/macOS) dev tools:
+       ~/.dotfiles/scripts/macOS/install_apple_tools.zsh
+  6. Optional: install Tailscale GUI app (needs sudo):
        ~/.dotfiles/scripts/macOS/install_tailscale_app.zsh
-  6. Optional: per-machine overrides:
+  7. Optional: per-machine overrides:
        cp ~/.dotfiles/.zshrc.local.example ~/.zshrc.local
        $EDITOR ~/.zshrc.local
 
