@@ -13,6 +13,14 @@
 # requires sudo, so it can't run unattended from bootstrap.sh).
 
 # ===== Taps =====
+# Homebrew 6.0+ no longer trusts third-party taps by default; formulae from
+# untrusted taps are skipped during `brew bundle`. After adding/restoring these
+# taps, trust their formulae once per machine, e.g.:
+#   brew trust --formula atlassian-labs/acli/acli weaveworks/tap/eksctl \
+#     confluentinc/tap/cli azure/azd/azd oven-sh/bun/bun \
+#     hashicorp/tap/vault hashicorp/tap/terraform heroku/brew/heroku \
+#     teamookla/speedtest/speedtest
+# See https://docs.brew.sh/Tap-Trust
 tap "atlassian-labs/acli"
 tap "azure/azd"
 tap "derailed/k9s"
