@@ -26,6 +26,7 @@ brew "heroku/brew/heroku"
 # ===== Infrastructure as code =====
 brew "hashicorp/tap/terraform"
 brew "hashicorp/tap/vault"
+brew "opentofu"            # open-source Terraform fork
 
 # ===== Cloud CLIs (cask form) =====
 cask "gcloud-cli"           # gcloud / gsutil / bq (formerly google-cloud-sdk)
