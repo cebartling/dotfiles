@@ -1,0 +1,28 @@
+# Brewfile.cloud — cloud management tooling (provider CLIs + infra-as-code).
+# Apply with:  brew bundle --file=$DOTFILES/Brewfile.cloud
+# Installed separately via scripts/macOS/install_cloud_tools.zsh.
+# Kept out of the main Brewfile because not every Mac manages cloud infra.
+#
+# Homebrew 6.0+ no longer trusts third-party taps by default; formulae from
+# untrusted taps are skipped during `brew bundle`. After adding/restoring these
+# taps, trust their formulae once per machine, e.g.:
+#   brew trust --formula azure/azd/azd hashicorp/tap/terraform \
+#     hashicorp/tap/vault heroku/brew/heroku
+# See https://docs.brew.sh/Tap-Trust
+
+# ===== Taps =====
+tap "azure/azd"
+tap "hashicorp/tap"
+tap "heroku/brew"
+
+# ===== Cloud CLIs =====
+brew "awscli"
+brew "awslogs"
+brew "azure-cli"
+brew "azure/azd/azd"        # Azure Developer CLI
+brew "doctl"               # DigitalOcean CLI
+brew "heroku/brew/heroku"
+
+# ===== Infrastructure as code =====
+brew "hashicorp/tap/terraform"
+brew "hashicorp/tap/vault"

@@ -11,21 +11,21 @@
 # The Tailscale GUI cask lives in Brewfile.tailscale and is installed
 # separately via scripts/macOS/install_tailscale_app.zsh (its installer
 # requires sudo, so it can't run unattended from bootstrap.sh).
+#
+# Cloud management tooling (provider CLIs + Hashicorp IaC) lives in
+# Brewfile.cloud and is installed separately via
+# scripts/macOS/install_cloud_tools.zsh.
 
 # ===== Taps =====
 # Homebrew 6.0+ no longer trusts third-party taps by default; formulae from
 # untrusted taps are skipped during `brew bundle`. After adding/restoring these
 # taps, trust their formulae once per machine, e.g.:
 #   brew trust --formula atlassian-labs/acli/acli weaveworks/tap/eksctl \
-#     confluentinc/tap/cli azure/azd/azd oven-sh/bun/bun \
-#     hashicorp/tap/vault hashicorp/tap/terraform heroku/brew/heroku \
+#     confluentinc/tap/cli oven-sh/bun/bun \
 #     teamookla/speedtest/speedtest
 # See https://docs.brew.sh/Tap-Trust
 tap "atlassian-labs/acli"
-tap "azure/azd"
 tap "derailed/k9s"
-tap "hashicorp/tap"
-tap "heroku/brew"
 tap "manaflow-ai/cmux"
 tap "oven-sh/bun"
 tap "productdevbook/tap"
@@ -101,17 +101,6 @@ brew "colima"
 brew "podman"
 brew "podman-compose"
 
-# ===== Cloud CLIs =====
-brew "awscli"
-brew "awslogs"
-brew "azure-cli"
-brew "doctl"
-brew "heroku/brew/heroku"
-
-# ===== Hashicorp =====
-brew "hashicorp/tap/terraform"
-brew "hashicorp/tap/vault"
-
 # ===== Document / image processing =====
 # poppler omitted: source build fails on this Homebrew prefix
 # (/Users/e9004590/homebrew) because the p11-kit dep times out in
@@ -129,7 +118,6 @@ brew "specify"
 brew "ollama"               # local LLM runner; pair with Claude for proprietary work
 
 # ===== Misc =====
-brew "azure/azd/azd"
 brew "cheat"
 brew "cliclick"
 brew "fastfetch"

@@ -96,6 +96,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `bootstrap.sh` | One-shot installer for a fresh Mac |
 | `Brewfile` | Canonical macOS package manifest (`brew bundle`) |
 | `Brewfile.k8s` | Optional Kubernetes toolchain |
+| `Brewfile.cloud` | Optional cloud management tooling (provider CLIs + Hashicorp IaC) |
 | [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package |
 | `zshrc` | Tracked `~/.zshrc` (symlinked into place by `link.zsh`) |
 | `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
@@ -111,6 +112,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/macOS/link.zsh` | Idempotent symlink installer |
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
+| `scripts/macOS/install_cloud_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.cloud` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, commands, hooks, skills) symlinked into `~/.claude` |
 
 ## Per-project aliases
