@@ -14,6 +14,7 @@
 tap "azure/azd"
 tap "hashicorp/tap"
 tap "heroku/brew"
+tap "nicholasbester/clickup-cli"
 
 # ===== Cloud CLIs =====
 brew "awscli"
@@ -22,6 +23,7 @@ brew "azure-cli"
 brew "azure/azd/azd"        # Azure Developer CLI
 brew "doctl"               # DigitalOcean CLI
 brew "heroku/brew/heroku"
+brew "nicholasbester/clickup-cli/clickup-cli"  # ClickUp CLI
 
 # ===== Infrastructure as code =====
 brew "hashicorp/tap/terraform"
