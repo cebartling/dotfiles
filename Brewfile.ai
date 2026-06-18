@@ -7,7 +7,6 @@
 cask "claude"
 cask "chatgpt"
 cask "copilot-cli"
-cask "comfyui"
+cask "comfy"
 cask "osaurus"
 cask "agentsview"
-brew "andyyyy64/whichllm/whichllm"
