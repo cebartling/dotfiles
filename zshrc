@@ -22,9 +22,6 @@ for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew "$HOME/homebre
 done
 unset _brew_candidate
 
-# Trust third-party taps without per-tap `brew trust` (records don't sync across machines).
-export HOMEBREW_NO_REQUIRE_TAP_TRUST=1
-
 # ----- PATH (consolidated, deduped) -----
 export PNPM_HOME="$HOME/Library/pnpm"
 typeset -U path                              # automatic dedupe

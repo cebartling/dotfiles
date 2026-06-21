@@ -1,13 +1,13 @@
 # Brewfile.cloud — cloud management tooling (provider CLIs + infra-as-code).
-# Apply with:  brew bundle --file=$DOTFILES/Brewfile.cloud
-# Installed separately via scripts/macOS/install_cloud_tools.zsh.
+# Apply with:  scripts/macOS/install_cloud_tools.zsh  (preferred)
+#         or:  brew bundle --file=$DOTFILES/Brewfile.cloud
 # Kept out of the main Brewfile because not every Mac manages cloud infra.
 #
-# Homebrew 6.0+ no longer trusts third-party taps by default; formulae from
-# untrusted taps are skipped during `brew bundle`. After adding/restoring these
-# taps, trust their formulae once per machine, e.g.:
-#   brew trust --formula azure/azd/azd hashicorp/tap/terraform \
-#     hashicorp/tap/vault heroku/brew/heroku
+# Homebrew 6.0+ requires third-party taps to be trusted with `brew trust`
+# before it will load their formulae/casks (HOMEBREW_REQUIRE_TAP_TRUST,
+# default true). The install script handles this: it derives the tap list
+# below and trusts each via scripts/macOS/lib/brew_trust.sh before running
+# `brew bundle`. Plain `brew bundle` skips untrusted taps — use the script.
 # See https://docs.brew.sh/Tap-Trust
 
 # ===== Taps =====

@@ -60,6 +60,9 @@ ensure_dotfiles_repo() {
 
 run_brew_bundle() {
   say "Installing packages from Brewfile (this can take a while on a fresh Mac)"
+  # Homebrew 6.0+ requires non-official taps to be trusted before it loads them.
+  source "$DOTFILES/scripts/macOS/lib/brew_trust.sh"
+  brew_trust_taps "$DOTFILES/Brewfile"
   brew bundle --file="$DOTFILES/Brewfile"
 }
 
