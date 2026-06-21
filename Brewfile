@@ -47,6 +47,7 @@ brew "eza"                  # ls replacement
 brew "fd"                   # find replacement
 brew "ripgrep"              # grep replacement
 brew "dust"                 # du replacement
+brew "mole"                 # disk cleanup / optimization (mole.fit)
 brew "procs"                # ps replacement
 brew "fzf"                  # fuzzy finder
 brew "tree"                 # directory layout
