@@ -77,7 +77,6 @@ brew "just"
 brew "lazygit"              # TUI git client
 brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
-brew "detachhead/tap/rebased"  # interactive git rebase tool
 brew "semgrep"
 brew "tokei"                # fast cloc replacement
 brew "typescript-language-server"
@@ -164,6 +163,7 @@ cask "finetune"
 # ===== Dev utilities =====
 cask "devutils"
 cask "gitkraken"
+cask "detachhead/tap/rebased"  # git client built on the IntelliJ platform
 cask "polypane"
 cask "postman"
 cask "ngrok"
