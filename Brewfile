@@ -65,7 +65,7 @@ brew "atuin"                # better shell history (opt-in init in zshrc.local)
 brew "beads"                # bd issue tracker
 brew "cargo-binstall"
 brew "direnv"
-brew "acli"                 # Atlassian CLI (Jira, Confluence, Bitbucket)
+brew "atlassian-labs/acli/acli" # Atlassian CLI (Jira, Confluence, Bitbucket)
 brew "gh"                   # GitHub CLI
 brew "gitleaks"             # secret scanner
 brew "glow"                 # terminal markdown renderer
