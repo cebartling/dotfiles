@@ -45,3 +45,6 @@ zsdoc/data
 
 # Per-machine zsh overrides (sourced from $HOME/.zshrc.local by zshrc)
 .zshrc.local
+
+# RTK (Rust Token Killer) runtime files
+.rtk/
