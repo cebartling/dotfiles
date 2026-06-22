@@ -64,13 +64,13 @@ if [[ -f "$DOTFILES/Brewfile.k8s" ]]; then
   fi
 fi
 
-if [[ -f "$DOTFILES/Brewfile.ai" ]]; then
-  hdr "Brewfile.ai"
-  if brew bundle check --file="$DOTFILES/Brewfile.ai" >/dev/null 2>&1; then
-    ok "Brewfile.ai satisfied"
+if [[ -f "$DOTFILES/Brewfile.aitools" ]]; then
+  hdr "Brewfile.aitools"
+  if brew bundle check --file="$DOTFILES/Brewfile.aitools" >/dev/null 2>&1; then
+    ok "Brewfile.aitools satisfied"
   else
-    warn "Brewfile.ai drift (run scripts/macOS/install_ai_tools.zsh to fix):"
-    brew bundle check --file="$DOTFILES/Brewfile.ai" --verbose 2>&1 \
+    warn "Brewfile.aitools drift (run scripts/macOS/install_ai_tools.zsh to fix):"
+    brew bundle check --file="$DOTFILES/Brewfile.aitools" --verbose 2>&1 \
       | grep -E '^→' | sed 's/^/    /'
     # ai drift is not counted as overall drift since it's optional
   fi
