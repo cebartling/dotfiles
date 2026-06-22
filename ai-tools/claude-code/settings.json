@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"/Users/christopherbartling/.claude/hooks/context-mode-cache-heal.mjs\""
+            "command": "\"$HOME/.claude/hooks/context-mode-cache-heal.mjs\""
           }
         ]
       }
