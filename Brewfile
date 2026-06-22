@@ -22,10 +22,11 @@
 # taps, trust their formulae once per machine, e.g.:
 #   brew trust --formula atlassian-labs/acli/acli weaveworks/tap/eksctl \
 #     confluentinc/tap/cli oven-sh/bun/bun \
-#     teamookla/speedtest/speedtest
+#     teamookla/speedtest/speedtest detachhead/tap/rebased
 # See https://docs.brew.sh/Tap-Trust
 tap "atlassian-labs/acli"
 tap "derailed/k9s"
+tap "detachhead/tap"
 tap "manaflow-ai/cmux"
 tap "oven-sh/bun"
 tap "productdevbook/tap"
@@ -76,6 +77,7 @@ brew "just"
 brew "lazygit"              # TUI git client
 brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
+brew "detachhead/tap/rebased"  # interactive git rebase tool
 brew "semgrep"
 brew "tokei"                # fast cloc replacement
 brew "typescript-language-server"
