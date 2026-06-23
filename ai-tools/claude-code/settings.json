@@ -90,9 +90,11 @@
     }
   },
   "effortLevel": "medium",
+  "tui": "fullscreen",
   "autoMemoryDirectory": "~/.claude/memory/",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "model": "sonnet"
 }
