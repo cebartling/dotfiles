@@ -1,0 +1,10 @@
+# Brewfile.netbird — NetBird GUI app.
+# Apply with:  brew bundle --file=$DOTFILES/Brewfile.netbird
+# Kept separate from the main Brewfile because the cask installer
+# requires sudo (it runs a privileged installer.sh), so it can't run
+# unattended from bootstrap.sh and is opt-in per machine.
+#
+# The netbird CLI formula lives in the main Brewfile; only the GUI app
+# is split out here.
+
+cask "netbirdio/tap/netbird-ui"

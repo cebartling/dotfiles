@@ -12,6 +12,10 @@
 # separately via scripts/macOS/install_tailscale_app.zsh (its installer
 # requires sudo, so it can't run unattended from bootstrap.sh).
 #
+# The NetBird GUI cask lives in Brewfile.netbird and is installed
+# separately via scripts/macOS/install_netbird_app.zsh (same sudo
+# constraint as Tailscale). The netbird CLI formula stays here.
+#
 # Cloud management tooling (provider CLIs + Hashicorp IaC) lives in
 # Brewfile.cloud and is installed separately via
 # scripts/macOS/install_cloud_tools.zsh.
