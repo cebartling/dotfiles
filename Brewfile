@@ -31,6 +31,7 @@
 tap "atlassian-labs/acli"
 tap "derailed/k9s"
 tap "detachhead/tap"
+tap "entireio/tap"
 tap "manaflow-ai/cmux"
 tap "netbirdio/tap"
 tap "oven-sh/bun"
@@ -169,6 +170,7 @@ cask "finetune"
 
 # ===== Dev utilities =====
 cask "devutils"
+cask "entireio/tap/entire"
 cask "gitkraken"
 cask "detachhead/tap/rebased"  # git client built on the IntelliJ platform
 cask "polypane"
