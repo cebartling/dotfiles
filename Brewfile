@@ -28,6 +28,7 @@ tap "atlassian-labs/acli"
 tap "derailed/k9s"
 tap "detachhead/tap"
 tap "manaflow-ai/cmux"
+tap "netbirdio/tap"
 tap "oven-sh/bun"
 tap "paninihouse/brewer-cmd"  # Brewer X GUI app's companion command (brewer-tap-content-info)
 tap "productdevbook/tap"
@@ -98,6 +99,7 @@ brew "httpie"
 brew "xh"                   # faster httpie
 brew "sniffnet"
 brew "tailscale"
+brew "netbirdio/tap/netbird"  # WireGuard-based mesh VPN (netbird-ui cask = GUI)
 
 # ===== Containers =====
 brew "colima"
