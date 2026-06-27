@@ -29,6 +29,7 @@ tap "derailed/k9s"
 tap "detachhead/tap"
 tap "manaflow-ai/cmux"
 tap "oven-sh/bun"
+tap "paninihouse/brewer-cmd"  # Brewer X GUI app's companion command (brewer-tap-content-info)
 tap "productdevbook/tap"
 tap "steveyegge/beads"
 tap "teamookla/speedtest"
