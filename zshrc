@@ -114,6 +114,8 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 [ -f "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
   source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
 # ----- Per-machine overrides (untracked, optional) -----
 # Docker Desktop's installer appends its own `fpath=(... ); compinit` block
 # here on first run. Don't keep it: $HOME/.docker/completions is already on
