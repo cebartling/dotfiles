@@ -1,11 +1,9 @@
-# Project Instructions for AI Agents
-
-This file provides instructions and context for AI coding agents working on this project.
+# AI Agent Instructions
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
 
-This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+Uses **bd (beads)** for tracking. Run `bd prime` for full context.
 
 ### Quick Reference
 
@@ -18,41 +16,41 @@ bd close <id>         # Complete work
 
 ### Rules
 
-- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
-- Run `bd prime` for detailed command reference and session close protocol
-- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
+- `bd` for ALL task tracking — NOT TodoWrite, TaskCreate, or markdown TODO lists
+- `bd prime` for detailed commands + session close protocol
+- `bd remember` for persistent knowledge — NOT MEMORY.md files
 
 ## Session Completion
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+Work NOT complete until `git push` succeeds.
 
-**MANDATORY WORKFLOW:**
+**MANDATORY:**
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
+1. File issues for remaining work
+2. Run quality gates (tests, linters, builds) if code changed
+3. Update issue status — close finished, update in-progress
+4. **PUSH TO REMOTE:**
    ```bash
    git pull --rebase
    bd dolt push
    git push
    git status  # MUST show "up to date with origin"
    ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+5. Clear stashes, prune remote branches
+6. Verify all changes committed AND pushed
+7. Hand off context for next session
 
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+**CRITICAL:**
+- NOT complete until `git push` succeeds
+- NEVER stop before pushing — leaves work stranded locally
+- NEVER say "ready to push when you are" — YOU push
+- Push fails → resolve and retry until succeeds
 <!-- END BEADS INTEGRATION -->
 
 
 ## Build & Test
 
-_Add your build and test commands here_
+_Add build and test commands here_
 
 ```bash
 # Example:
@@ -62,20 +60,20 @@ _Add your build and test commands here_
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+_Add brief architecture overview here_
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+_Add project-specific conventions here_
 
 <!-- rtk-instructions v2 -->
-# RTK (Rust Token Killer) - Token-Optimized Commands
+# RTK (Rust Token Killer)
 
 ## Golden Rule
 
-**Always prefix commands with `rtk`**. If RTK has a dedicated filter, it uses it. If not, it passes through unchanged. This means RTK is always safe to use.
+**Always prefix with `rtk`**. Dedicated filter → uses it. No filter → passes through unchanged. Always safe.
 
-**Important**: Even in command chains with `&&`, use `rtk`:
+**In `&&` chains too:**
 ```bash
 # ❌ Wrong
 git add . && git commit -m "msg" && git push
@@ -84,7 +82,7 @@ git add . && git commit -m "msg" && git push
 rtk git add . && rtk git commit -m "msg" && rtk git push
 ```
 
-## RTK Commands by Workflow
+## Commands by Workflow
 
 ### Build & Compile (80-90% savings)
 ```bash
@@ -126,7 +124,7 @@ rtk git stash           # Compact stash
 rtk git worktree        # Compact worktree
 ```
 
-Note: Git passthrough works for ALL subcommands, even those not explicitly listed.
+Passthrough works for ALL git subcommands, even unlisted.
 
 ### GitHub (26-87% savings)
 ```bash
@@ -137,7 +135,7 @@ rtk gh issue list       # Compact issue list (80%)
 rtk gh api              # Compact API responses (26%)
 ```
 
-### JavaScript/TypeScript Tooling (70-90% savings)
+### JavaScript/TypeScript (70-90% savings)
 ```bash
 rtk pnpm list           # Compact dependency tree (70%)
 rtk pnpm outdated       # Compact outdated packages (80%)
@@ -181,7 +179,7 @@ rtk curl <url>          # Compact HTTP responses (70%)
 rtk wget <url>          # Compact download output (65%)
 ```
 
-### Meta Commands
+### Meta
 ```bash
 rtk gain                # View token savings statistics
 rtk gain --history      # View command history with savings
@@ -191,7 +189,7 @@ rtk init                # Add RTK instructions to CLAUDE.md
 rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
 ```
 
-## Token Savings Overview
+## Token Savings
 
 | Category | Commands | Typical Savings |
 |----------|----------|-----------------|
@@ -204,5 +202,5 @@ rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
 | Infrastructure | docker, kubectl | 85% |
 | Network | curl, wget | 65-70% |
 
-Overall average: **60-90% token reduction** on common development operations.
+Overall: **60-90% token reduction** on common dev ops.
 <!-- /rtk-instructions -->
