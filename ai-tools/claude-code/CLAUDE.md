@@ -10,12 +10,12 @@
 ## Philosophy
 
 - Small changes that compile and pass tests. No big bangs.
-- Study and plan before implementing.
+- Study before implementing.
 - Adapt to project reality. Not dogmatic.
 - Boring and obvious over clever.
 - Single responsibility per function/class.
 - No premature abstractions.
-- No clever tricks. If you need to explain it, too complex.
+- No clever tricks. Explain needed = too complex.
 
 ## Technical Standards
 
@@ -31,16 +31,13 @@
 ## Project Integration
 
 - Find similar features/components first.
-- Use same libraries/utilities as project.
-- Follow existing test patterns.
-- Use project's build system, test framework, formatter/linter.
+- Same libraries/utilities as project.
+- Existing test patterns.
+- Project build system, test framework, formatter/linter.
 - No new tools without strong justification.
-- Follow existing code conventions.
+- Existing code conventions.
 - Check linter config and .editorconfig if present.
 - Text files end with empty line.
-
-## MCP Tool Use
-
 
 ## Rules
 
@@ -55,4 +52,4 @@
 - Update plan docs as you go
 - Learn from existing implementations
 - Stop after 3 failed attempts and reassess
-- Prefer LSP (`goToDefinition`, `findReferences`) over grep for code navigation. Grep/glob only for discovery or when LSP can't help.
+- Prefer LSP (`goToDefinition`, `findReferences`) over grep. Grep/glob for discovery or when LSP can't help.
