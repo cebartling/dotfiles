@@ -75,6 +75,7 @@ brew "direnv"
 brew "atlassian-labs/acli/acli" # Atlassian CLI (Jira, Confluence, Bitbucket)
 brew "gh"                   # GitHub CLI
 brew "gitleaks"             # secret scanner
+brew "trivy"                # vulnerability scanner (containers, IaC, filesystems)
 brew "glow"                 # terminal markdown renderer
 brew "hyperfine"
 brew "jq"
