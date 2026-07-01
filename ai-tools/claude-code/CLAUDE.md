@@ -53,3 +53,5 @@
 - Learn from existing implementations
 - Stop after 3 failed attempts and reassess
 - Prefer LSP (`goToDefinition`, `findReferences`) over grep. Grep/glob for discovery or when LSP can't help.
+
+@RTK.md
