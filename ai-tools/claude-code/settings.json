@@ -77,6 +77,118 @@
             "command": "rtk hook claude"
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-hook.sh'; else cat >/dev/null 2>&1 || :; fi",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
@@ -114,5 +226,9 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "statusLine": {
+    "type": "command",
+    "command": "if [ -f '/Users/christopherbartling/.orca/agent-hooks/claude-statusline.sh' ] && [ -r '/Users/christopherbartling/.orca/agent-hooks/claude-statusline.sh' ] && [ -x '/Users/christopherbartling/.orca/agent-hooks/claude-statusline.sh' ]; then /bin/sh '/Users/christopherbartling/.orca/agent-hooks/claude-statusline.sh'; else cat >/dev/null 2>&1 || :; fi"
+  }
 }
