@@ -128,6 +128,7 @@ brew "specify"
 
 # ===== Local LLM =====
 brew "ollama"               # local LLM runner; pair with Claude for proprietary work
+brew "hf"                   # Hugging Face CLI (formerly huggingface-cli)
 
 # ===== Misc =====
 brew "cheat"
