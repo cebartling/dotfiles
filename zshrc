@@ -108,6 +108,9 @@ command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 # ----- zoxide (frecency cd: `z partial-name`) -----
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
+# ----- direnv (per-directory env from .envrc; `direnv allow` to trust one) -----
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
 # ----- zsh plugins (autosuggestions, then syntax-highlighting LAST) -----
 [ -f "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
   source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
