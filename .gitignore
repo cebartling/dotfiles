@@ -48,3 +48,6 @@ zsdoc/data
 
 # RTK (Rust Token Killer) runtime files
 .rtk/
+
+# Installer backups (e.g. Orca rewriting claude-code settings.json)
+*.bak
