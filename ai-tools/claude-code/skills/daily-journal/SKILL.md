@@ -1,6 +1,6 @@
 ---
 name: daily-journal
-description: Append a summary of the current conversation's work to the user's Obsidian daily work journal (Consulting/{Client}/Daily Journal/...), matching the file's existing dated-section conventions. Use when the user asks to "update my journal", "update the work summary in Obsidian", invokes /daily-journal, or wants today's work logged to their daily journal.
+description: Append a summary of the current conversation's work to the user's Obsidian daily work journal (Consulting/{Client}/Daily Journal/...), matching the file's existing dated-section conventions. Use when the user asks to "update my journal", "update the work summary in Obsidian", invokes /daily-journal, or wants today's work logged to their daily journal. Accepts an optional target-file path (e.g. `/daily-journal <path>`) that overrides the inferred client/week file.
 tools: Bash, Read, Write, Glob, AskUserQuestion
 ---
 
@@ -27,11 +27,45 @@ journal's existing conventions exactly, without disturbing anything already writ
 - File bodies have **no frontmatter and no title line** — they start directly with the first
   `## Month Day, Year` header. Days are appended in chronological order down the file.
 - **Do not confuse this with `~/Documents/Default/Daily/YYYY-MM-DD.md`** — that's the vault's
-  separate built-in Obsidian daily-notes system and is not used by this skill.
+  separate built-in Obsidian daily-notes system, and inference never targets it. (An explicit
+  path argument may legitimately point there; see below.)
+
+## Optional argument
+
+The skill accepts a single optional argument — the path of the file to write:
+
+- *(no argument)* — **inferred mode** (default). Derive the target file from today's date and the
+  client, exactly as in workflow steps 1 and 2.
+- *a file path* — **explicit mode**. Use that file as the target and **skip steps 1 and 2
+  entirely** — no week-window math, no client inference, no client question.
+
+The argument chooses *which file* is written. It never changes *what* is written: steps 5–7 —
+today's-section detection, synthesis, and the append-only splice — behave identically in both
+modes.
+
+### Resolving the path
+
+- Absolute (`/…`) or `~`-prefixed → expand `~` and use as-is.
+- Anything else → resolve against the **vault root** `~/Documents/Default/`, *not* the current
+  working directory. So
+  `Consulting/Acme/Daily Journal/2026/08 - August/August 17-23, 2026.md` works as a short form.
+  Never resolve a bare relative path against the cwd — that risks writing into the project repo
+  being worked on.
+- Resolve symlinks and `..` segments *before* the boundary check below, so a path like
+  `../../etc/foo` can't slip past a naive prefix comparison.
+
+### Vault boundary
+
+After resolving, the path must be inside `~/Documents/Default/`. Anywhere in the vault is fair
+game — `Consulting/`, `Daily/`, anywhere else. If the resolved path falls **outside** the vault,
+stop and ask the user rather than writing.
 
 ## Workflow
 
 ### 1. Compute today's date and this week's file path
+
+*Skip this step in explicit mode — the target file is already known. You still need today's date
+for the section header in step 5, so compute `today` regardless.*
 
 ```bash
 today=$(date +%Y-%m-%d)
@@ -48,6 +82,9 @@ Build the filename `{Month} {startDay}-{endDay}, {YYYY}.md` (month name spelled 
 `August 10-16, 2026.md`) and the directory `{YYYY}/{MM} - {Month}/` (zero-padded month number).
 
 ### 2. Infer the client
+
+*Skip this step entirely in explicit mode — the user named the file, so there is nothing to infer
+and nothing to ask about.*
 
 The vault has one journal per client under `~/Documents/Default/Consulting/`. List them:
 
@@ -75,12 +112,32 @@ alphanumerics — so `Life-Time-Inc` and `Life Time, Inc.` both become `lifetime
 - **Zero matches, multiple matches, or not in a git repo at all** → do not guess. Use
   `AskUserQuestion` listing the client folder names found in step 2 and use the answer.
 
-### 3. Read the week file
+### 3. Resolve and validate an explicit path
 
-`Read` the file at the path computed in step 1. If the month directory or the week file doesn't
-exist yet, treat it as empty — you'll create it in step 6, not before.
+*Explicit mode only — skip in inferred mode.*
 
-### 4. Check for an existing "today" section
+Resolve the argument per **Resolving the path** above, then apply the **vault boundary** check. If
+the resolved path is outside `~/Documents/Default/`, stop and ask the user; do not write.
+
+Then check whether the file exists:
+
+```bash
+ls -l "$target"
+```
+
+- **Exists** → continue to step 4.
+- **Does not exist** → do **not** create it silently. Show the user the fully resolved absolute
+  path and use `AskUserQuestion` to confirm before creating the file and any missing parent
+  directories. A mistyped directory or a forgotten `.md` lands here — that's the point. If the
+  user declines, stop without writing anything.
+
+### 4. Read the target file
+
+`Read` the target file — the path computed in step 1 (inferred mode) or resolved in step 3
+(explicit mode). If the directories or the file don't exist yet, treat it as empty — you'll create
+it in step 7, not before.
+
+### 5. Check for an existing "today" section
 
 Look for the literal header `## {Month} {Day}, {Year}` (e.g. `## August 12, 2026`) in the content
 just read.
@@ -89,7 +146,7 @@ just read.
   content already captured under it; only add material that isn't already there.
 - **Absent** — this is the first update for today.
 
-### 5. Synthesize the day's content from this conversation
+### 6. Synthesize the day's content from this conversation
 
 Review the current conversation for substantive work: files changed, commands run, findings,
 decisions, live-test results, commits made. Write it in the voice already used in this file's
@@ -108,9 +165,9 @@ entries:
 - Don't pad. A short session gets a short entry. Never fabricate detail that isn't grounded in the
   actual conversation.
 
-### 6. Write the update
+### 7. Write the update
 
-Splice the new content into the content read in step 3, in memory, then `Write` the whole file
+Splice the new content into the content read in step 4, in memory, then `Write` the whole file
 back:
 
 - **No existing today section** (new file, or today just isn't in it yet): append at the true end
@@ -122,29 +179,38 @@ back:
 
   {new content}
   ```
-  Create the year/month directories first if they don't exist.
+  Create the parent directories first if they don't exist (in explicit mode this was already
+  confirmed in step 3).
 - **Existing today section**: insert the new `### Topic` subsection(s) (or bullets) immediately
   before the *next* `## ` header that follows today's, or at the true end of the file if today's
   section is currently the last one. Everything before the insertion point — including anything the
-  user wrote themselves — must come out byte-for-byte identical to what was read in step 3.
+  user wrote themselves — must come out byte-for-byte identical to what was read in step 4.
 
 Never use `Edit` for this — the surrounding content is too variable to safely anchor a unique
 `old_string`. Read the whole file, compute the new whole-file content in memory, `Write` it back.
 
-### 7. Report
+### 8. Report
 
-2–4 lines: which file was updated, which client was used (inferred or chosen, and how), and the
-new subsection title(s)/bullet(s) added. Don't paste the full appended text back if it's long — the
-user can open the file themselves.
+2–4 lines: which file was updated and the new subsection title(s)/bullet(s) added. Don't paste the
+full appended text back if it's long — the user can open the file themselves.
+
+- **Inferred mode** — also say which client was used and how it was determined (inferred or
+  chosen), so a wrong guess is easy to catch.
+- **Explicit mode** — say the path was supplied rather than inferred, and omit the client line
+  entirely; there was no inference to double-check.
 
 ## Guardrails
 
 - Append-only, always. Never edit, reorder, or remove anything already in the file — that includes
   content the user wrote themselves in a section this skill didn't create.
 - Never fabricate work that didn't happen in this conversation.
-- If client inference is ambiguous or the current directory isn't recognizably tied to any client,
-  ask — do not guess and silently write into the wrong client's journal.
-- This skill only touches files under `~/Documents/Default/Consulting/`. It never touches git,
-  commits, or pushes anything in the project repo being worked on.
+- In inferred mode, if client inference is ambiguous or the current directory isn't recognizably
+  tied to any client, ask — do not guess and silently write into the wrong client's journal.
+- This skill only touches files under `~/Documents/Default/`. An explicit path argument may point
+  anywhere inside that vault, but never outside it — a path that resolves outside stops and asks.
+  It never touches git, commits, or pushes anything in the project repo being worked on.
+- Never create a file at an explicitly supplied path without confirming first. Inferred mode may
+  create its week file unprompted; explicit mode may not.
 - This skill only targets *today*. If asked to log a different date, say this isn't supported yet
-  and stop rather than silently writing under the wrong date.
+  and stop rather than silently writing under the wrong date. The path argument selects a *file*,
+  not a *date* — pointed at last week's file, it still writes a section headed with today's date.
