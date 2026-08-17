@@ -26,9 +26,11 @@ journal's existing conventions exactly, without disturbing anything already writ
   `02 -  February` — that's a pre-existing typo; don't replicate it in anything you create.)
 - File bodies have **no frontmatter and no title line** — they start directly with the first
   `## Month Day, Year` header. Days are appended in chronological order down the file.
-- **Do not confuse this with `~/Documents/Default/Daily/YYYY-MM-DD.md`** — that's the vault's
-  separate built-in Obsidian daily-notes system, and inference never targets it. (An explicit
-  path argument may legitimately point there; see below.)
+- **Do not confuse this with the vault's `Daily/` tree** — that's the separate built-in Obsidian
+  daily-notes system, and inference never targets it. An explicit path argument may legitimately
+  point there. Its notes live at `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` — one file
+  per day, so the date is the filename and the body opens directly with a `## Topic` header rather
+  than a date header. Step 5 detects this; step 7 writes accordingly.
 
 ## Optional argument
 
@@ -137,14 +139,36 @@ ls -l "$target"
 (explicit mode). If the directories or the file don't exist yet, treat it as empty — you'll create
 it in step 7, not before.
 
-### 5. Check for an existing "today" section
+### 5. Determine the file's shape, then check for existing content for today
 
-Look for the literal header `## {Month} {Day}, {Year}` (e.g. `## August 12, 2026`) in the content
-just read.
+Two file shapes exist in this vault, and they date their content differently:
 
-- **Present** — this may be a second (or later) update in the same session. Do not re-summarize
-  content already captured under it; only add material that isn't already there.
-- **Absent** — this is the first update for today.
+- **Multi-day file** — one file holds many days, each introduced by a `## {Month} {Day}, {Year}`
+  header, with `### Topic` subsections beneath. Consulting week files are always this shape.
+- **Single-day note** — the file *is* one day; the date lives in the **filename**, so there is no
+  date header inside. Content opens directly with a `## Topic` header, `###` beneath. The
+  `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes are this shape.
+
+Decide the shape from the **filename** first, falling back to content:
+
+1. Filename is a date *range* (`August 17-23, 2026.md`) → multi-day.
+2. Filename is a single *date* (`August 17, 2026.md`) → single-day.
+3. Neither → inspect the content just read: any `## {Month} {Day}, {Year}` header present →
+   multi-day; otherwise single-day.
+
+Inferred mode always builds a range filename, so it is always multi-day — the shape check never
+changes its behavior.
+
+Then check whether today is already represented, which means different things per shape:
+
+- **Multi-day** — look for the literal header `## {Month} {Day}, {Year}` (e.g. `## August 12,
+  2026`) in the content just read. **Present** → this may be a second update in the same session.
+  **Absent** → first update for today.
+- **Single-day** — the whole file is today, so any existing content *is* today's. A non-empty file
+  means a second (or later) update in the same session.
+
+Either way, when today is already represented: do not re-summarize content already captured; only
+add material that isn't already there.
 
 ### 6. Synthesize the day's content from this conversation
 
@@ -155,9 +179,11 @@ entries:
 - Factual, third-person-omitted ("Investigated X", "Found Y", "Fixed Z" — not "I did X").
 - Concrete citations: exact file paths, exact error text, ticket/commit identifiers, in backticks.
 - Links as `[text](url)`.
-- Group related work into `### Topic` subsections when there are multiple distinct threads worth
-  separating (see `August 10, 2026`/`August 12, 2026` in this vault for the pattern) — a single
-  small item can just be a plain bullet under the date header instead, no subsection needed.
+- Group related work into topic sections when there are multiple distinct threads worth separating
+  (see `August 10, 2026`/`August 12, 2026` in this vault for the pattern). In a multi-day file
+  those are `### Topic` under the date header, and a single small item can just be a plain bullet
+  under that header instead. In a single-day note they are `## Topic` at the top level, with `###`
+  for subsections beneath.
 - When the new work resolves, contradicts, or otherwise relates to an open question/gap already
   logged earlier (in this file, or the previous week's file if relevant), say so explicitly — e.g.
   "Resolves the 8/10 open question directly...". Skim recent `##`/`###` headers for this before
@@ -168,10 +194,15 @@ entries:
 ### 7. Write the update
 
 Splice the new content into the content read in step 4, in memory, then `Write` the whole file
-back:
+back. Follow the branch for the shape determined in step 5 — **never write a `## {Month} {Day},
+{Year}` header into a single-day note**, where it would just duplicate the filename.
 
-- **No existing today section** (new file, or today just isn't in it yet): append at the true end
-  of the file:
+Create the parent directories first if they don't exist (in explicit mode this was already
+confirmed in step 3).
+
+**Multi-day file:**
+
+- *No existing today section* (new file, or today just isn't in it yet) — append at the true end:
   ```
   {existing content, if any}
 
@@ -179,12 +210,23 @@ back:
 
   {new content}
   ```
-  Create the parent directories first if they don't exist (in explicit mode this was already
-  confirmed in step 3).
-- **Existing today section**: insert the new `### Topic` subsection(s) (or bullets) immediately
+- *Existing today section* — insert the new `### Topic` subsection(s) (or bullets) immediately
   before the *next* `## ` header that follows today's, or at the true end of the file if today's
-  section is currently the last one. Everything before the insertion point — including anything the
-  user wrote themselves — must come out byte-for-byte identical to what was read in step 4.
+  section is currently the last one.
+
+**Single-day note:**
+
+- *New or empty file* — write the content on its own, opening with a `## Topic` header and no date
+  header:
+  ```
+  ## {Topic}
+
+  {new content}
+  ```
+- *Existing content* — append the new `## Topic` section(s) at the true end of the file.
+
+In every branch, everything before the insertion point — including anything the user wrote
+themselves — must come out byte-for-byte identical to what was read in step 4.
 
 Never use `Edit` for this — the surrounding content is too variable to safely anchor a unique
 `old_string`. Read the whole file, compute the new whole-file content in memory, `Write` it back.
