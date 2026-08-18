@@ -12,6 +12,7 @@
 
 # ===== Taps =====
 tap "azure/azd"
+tap "azure/kubelogin"
 tap "hashicorp/tap"
 tap "heroku/brew"
 tap "nicholasbester/clickup-cli"
@@ -21,6 +22,7 @@ brew "awscli"
 brew "awslogs"
 brew "azure-cli"
 brew "azure/azd/azd"        # Azure Developer CLI
+brew "azure/kubelogin/kubelogin"  # Azure AD auth for kubectl/AKS
 brew "doctl"               # DigitalOcean CLI
 brew "heroku/brew/heroku"
 brew "nicholasbester/clickup-cli/clickup-cli"  # ClickUp CLI
