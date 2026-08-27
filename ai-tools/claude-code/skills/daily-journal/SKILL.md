@@ -1,6 +1,6 @@
 ---
 name: daily-journal
-description: Append a summary of the current conversation's work to the user's Obsidian daily work journal (Consulting/{Client}/Daily Journal/...), matching the file's existing dated-section conventions. Use when the user asks to "update my journal", "update the work summary in Obsidian", invokes /daily-journal, or wants today's work logged to their daily journal. Accepts an optional target-file path (e.g. `/daily-journal <path>`) that overrides the inferred client/week file.
+description: Append a summary of the current conversation's work to the user's Obsidian daily work journal (Consulting/{Client}/Daily Journal/...), matching the file's existing dated-section conventions. Use when the user asks to "update my journal", "update the work summary in Obsidian", invokes /daily-journal, or wants today's work logged to their daily journal. Accepts an optional target-file path (e.g. `/daily-journal <path>`) that overrides the inferred client/period file.
 tools: Bash, Read, Write, Glob, AskUserQuestion
 ---
 
@@ -11,22 +11,49 @@ journal's existing conventions exactly, without disturbing anything already writ
 
 ## Vault layout
 
+Every journal lives under `~/Documents/Default/Consulting/{Client}/Daily Journal/{YYYY}/`, but
+**the file-naming convention below that differs per client**. Two conventions exist today. Never
+assume one — determine it from the client's own existing files (workflow step 2), and follow
+whatever that client already does.
+
+### Convention A — weekly files in month directories (most clients)
+
 ```
-~/Documents/Default/Consulting/{Client}/Daily Journal/{YYYY}/{MM} - {Month}/{Month} {startDay}-{endDay}, {YYYY}.md
+Consulting/{Client}/Daily Journal/{YYYY}/{MM} - {Month}/{Month} {startDay}-{endDay}, {YYYY}.md
 ```
 
 - Weeks are **Monday–Sunday**, clamped to the current calendar month — a week that would otherwise
   span two months gets truncated at the month boundary (e.g. `July 27-31, 2026.md` stops at
   month-end rather than continuing into August; the next week starts fresh, e.g.
   `August 3-9, 2026.md`).
-- Week files only exist when there's actual content — there is no empty placeholder file for an
-  idle week or weekend. Don't be surprised by gaps in the sequence.
 - Month directory names are zero-padded with a single space around the dash: `08 - August`,
   `01 - January`. (One existing directory in this vault has a stray double space —
   `02 -  February` — that's a pre-existing typo; don't replicate it in anything you create.)
+- Used by *Campfire Studio* and *Life Time, Inc* as of August 2026.
+
+### Convention B — half-month files, sequentially numbered, flat in the year directory
+
+```
+Consulting/{Client}/Daily Journal/{YYYY}/{NN} - {Month} {startDay}-{endDay}, {YYYY}.md
+```
+
+- **No month subdirectory** — the files sit directly in `{YYYY}/`.
+- Periods are **half-months**: day `1-15`, then day `16` through the month's last day (`16-31`,
+  `16-30`, `16-28`). Not weeks, and never spanning a month boundary.
+- `{NN}` is a zero-padded **sequential counter across the whole journal**, not derived from the
+  date — it just increments as periods are added (`01 - February 15-28, 2026.md`,
+  `02 - March 1-15, 2026.md`, … `13 - August 16-31, 2026.md`). The first file may cover a partial
+  period, since it starts whenever the engagement did. To create a new file, take the highest
+  existing `{NN}` and add one.
+- Used by *Schoolhouse Educational Services* as of August 2026.
+
+### Shared by both conventions
+
+- Files only exist when there's actual content — there is no empty placeholder for an idle period.
+  Don't be surprised by gaps in the sequence.
 - File bodies have **no frontmatter and no title line** — they start directly with the first
   `## Month Day, Year` header. Days are appended in chronological order down the file.
-- **Do not confuse this with the vault's `Daily/` tree** — that's the separate built-in Obsidian
+- **Do not confuse either with the vault's `Daily/` tree** — that's the separate built-in Obsidian
   daily-notes system, and inference never targets it. An explicit path argument may legitimately
   point there. Its notes live at `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` — one file
   per day, so the date is the filename and the body opens directly with a `## Topic` header rather
@@ -39,7 +66,7 @@ The skill accepts a single optional argument — the path of the file to write:
 - *(no argument)* — **inferred mode** (default). Derive the target file from today's date and the
   client, exactly as in workflow steps 1 and 2.
 - *a file path* — **explicit mode**. Use that file as the target and **skip steps 1 and 2
-  entirely** — no week-window math, no client inference, no client question.
+  entirely** — no client inference, no convention detection, no period math.
 
 The argument chooses *which file* is written. It never changes *what* is written: steps 5–7 —
 today's-section detection, synthesis, and the append-only splice — behave identically in both
@@ -64,29 +91,13 @@ stop and ask the user rather than writing.
 
 ## Workflow
 
-### 1. Compute today's date and this week's file path
-
-*Skip this step in explicit mode — the target file is already known. You still need today's date
-for the section header in step 5, so compute `today` regardless.*
-
-```bash
-today=$(date +%Y-%m-%d)
-dow=$(date +%u)   # 1=Mon .. 7=Sun
-monday=$(date -j -v-$((dow-1))d -f "%Y-%m-%d" "$today" +%Y-%m-%d)
-sunday=$(date -j -v+$((7-dow))d -f "%Y-%m-%d" "$today" +%Y-%m-%d)
-```
-
-Clamp `monday`/`sunday` to the current calendar month: if `monday`'s month differs from today's
-month, replace it with the 1st of today's month; if `sunday`'s month differs from today's month,
-replace it with the last day of today's month (`date -j -v1m -v+1d -v-1d ...` or equivalent).
-
-Build the filename `{Month} {startDay}-{endDay}, {YYYY}.md` (month name spelled out once, e.g.
-`August 10-16, 2026.md`) and the directory `{YYYY}/{MM} - {Month}/` (zero-padded month number).
-
-### 2. Infer the client
+### 1. Infer the client
 
 *Skip this step entirely in explicit mode — the user named the file, so there is nothing to infer
 and nothing to ask about.*
+
+This comes first because the file-naming convention is **per client** (see **Vault layout**), so
+the target path cannot be computed until the client is known.
 
 The vault has one journal per client under `~/Documents/Default/Consulting/`. List them:
 
@@ -108,11 +119,64 @@ pwd
 
 Normalize both the signals and each client folder name (lowercase, strip everything but
 alphanumerics — so `Life-Time-Inc` and `Life Time, Inc.` both become `lifetimeinc`) and compare.
+Either signal alone is enough — the remote org and the sandbox directory often disagree (e.g.
+`WICI-Apps` matches no client folder while its parent directory
+`schoolhouse-educational-services` matches *Schoolhouse Educational Services* exactly).
 
 - **Exactly one confident match** → use it, and mention which client you picked in your final
   report (so a wrong guess is easy to catch).
 - **Zero matches, multiple matches, or not in a git repo at all** → do not guess. Use
-  `AskUserQuestion` listing the client folder names found in step 2 and use the answer.
+  `AskUserQuestion` listing the client folder names found above and use the answer.
+
+### 2. Determine the client's convention and compute the target path
+
+*Skip the path computation in explicit mode — the target file is already known. You still need
+today's date for the section header in step 5, so compute `today` regardless.*
+
+```bash
+today=$(date +%Y-%m-%d)
+```
+
+Look at what the client already has, newest last:
+
+```bash
+find "$HOME/Documents/Default/Consulting/{Client}/Daily Journal" -name '*.md' | sort | tail -5
+```
+
+Match the result against **Vault layout**: paths containing a `{MM} - {Month}/` directory are
+Convention A; `.md` files sitting directly in `{YYYY}/` with an `{NN} - ` prefix are Convention B.
+An empty journal (a client with no files yet) defaults to Convention A.
+
+**Convention A — compute this week's Monday–Sunday window:**
+
+```bash
+dow=$(date +%u)   # 1=Mon .. 7=Sun
+monday=$(date -j -v-$((dow-1))d -f "%Y-%m-%d" "$today" +%Y-%m-%d)
+sunday=$(date -j -v+$((7-dow))d -f "%Y-%m-%d" "$today" +%Y-%m-%d)
+```
+
+Clamp `monday`/`sunday` to the current calendar month: if `monday`'s month differs from today's
+month, replace it with the 1st of today's month; if `sunday`'s month differs from today's month,
+replace it with the last day of today's month (`date -j -v1m -v+1d -v-1d ...` or equivalent).
+
+Build the filename `{Month} {startDay}-{endDay}, {YYYY}.md` (month name spelled out once, e.g.
+`August 10-16, 2026.md`) and the directory `{YYYY}/{MM} - {Month}/` (zero-padded month number).
+
+**Convention B — compute this half-month period:**
+
+- Today's day-of-month ≤ 15 → the period is `1-15`.
+- Otherwise → the period is `16-{last day of this month}`
+  (`date -j -v1d -v+1m -v-1d +%d`).
+
+Then find the file for that period in `{YYYY}/`:
+
+- **A file for this period already exists** → that's the target; keep its existing `{NN}` prefix.
+- **It doesn't exist** → take the highest `{NN}` currently in `{YYYY}/`, add one, zero-pad to two
+  digits, and build `{NN} - {Month} {startDay}-{endDay}, {YYYY}.md`. There is no month
+  subdirectory — the file goes directly in `{YYYY}/`.
+
+Never create a Convention A path for a Convention B client (or vice versa) — that silently
+fragments the journal into two parallel layouts.
 
 ### 3. Resolve and validate an explicit path
 
@@ -135,7 +199,7 @@ ls -l "$target"
 
 ### 4. Read the target file
 
-`Read` the target file — the path computed in step 1 (inferred mode) or resolved in step 3
+`Read` the target file — the path computed in step 2 (inferred mode) or resolved in step 3
 (explicit mode). If the directories or the file don't exist yet, treat it as empty — you'll create
 it in step 7, not before.
 
@@ -144,7 +208,8 @@ it in step 7, not before.
 Two file shapes exist in this vault, and they date their content differently:
 
 - **Multi-day file** — one file holds many days, each introduced by a `## {Month} {Day}, {Year}`
-  header, with `### Topic` subsections beneath. Consulting week files are always this shape.
+  header, with `### Topic` subsections beneath. Consulting journal files are always this shape,
+  under either convention.
 - **Single-day note** — the file *is* one day; the date lives in the **filename**, so there is no
   date header inside. Content opens directly with a `## Topic` header, `###` beneath. The
   `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes are this shape.
@@ -248,11 +313,15 @@ full appended text back if it's long — the user can open the file themselves.
 - Never fabricate work that didn't happen in this conversation.
 - In inferred mode, if client inference is ambiguous or the current directory isn't recognizably
   tied to any client, ask — do not guess and silently write into the wrong client's journal.
+- Never assume a naming convention. Read the client's existing files and follow them, even where
+  that contradicts this document — the journal is the source of truth, and this document may
+  simply be out of date. If a client's layout matches neither convention, follow what's there and
+  say so in the report rather than "correcting" it.
 - This skill only touches files under `~/Documents/Default/`. An explicit path argument may point
   anywhere inside that vault, but never outside it — a path that resolves outside stops and asks.
   It never touches git, commits, or pushes anything in the project repo being worked on.
 - Never create a file at an explicitly supplied path without confirming first. Inferred mode may
-  create its week file unprompted; explicit mode may not.
+  create its period file unprompted; explicit mode may not.
 - This skill only targets *today*. If asked to log a different date, say this isn't supported yet
   and stop rather than silently writing under the wrong date. The path argument selects a *file*,
   not a *date* — pointed at last week's file, it still writes a section headed with today's date.
