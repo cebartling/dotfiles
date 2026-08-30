@@ -40,9 +40,9 @@ nvm install --lts     # installs an LTS node on first call
 
 ## Setting up a new Ubuntu box
 
-There is no Homebrew on Linux here — Ubuntu 24.04+ carries nearly every CLI
-formula from the Brewfile in apt, so apt is the source of truth and
-snap/upstream installers fill the few gaps.
+There is no Homebrew here. Ubuntu 24.04+ carries nearly every CLI formula from
+the Brewfile in apt, so **apt is the source of truth on Linux**, with snap and
+upstream release binaries filling the gaps.
 
 ```sh
 git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
@@ -51,25 +51,34 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
 
 `scripts/Ubuntu/bootstrap.sh` is idempotent. It will:
 
-1. `scripts/Ubuntu/install_tools.sh` — zsh, the two zsh plugins, starship
-   and the CLI toolchain via apt; `vale`/`difftastic` via snap; `uv`,
-   `watchexec` and `ast-grep` via their upstream installers. It also shims
-   Debian's renamed `batcat`/`fdfind` back to `bat`/`fd` in `~/.local/bin`.
+1. [`install_tools.sh`](scripts/Ubuntu/install_tools.sh) — the CLI toolchain
+   (see [Where Linux packages come from](#where-linux-packages-come-from))
 2. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
 3. Install sdkman if missing
-4. Install nvm into `$NVM_DIR` (no Homebrew formula to lean on)
-5. `scripts/Ubuntu/install_fonts.sh` — JetBrainsMono Nerd Font, which
-   `eza --icons` and the starship prompt both need
-6. `scripts/Ubuntu/link.sh` — symlink `~/.zshrc` and
-   `~/.config/starship.toml` (the cmux links are macOS-only and are skipped;
-   ghostty is linked only if installed). Existing files are backed up to
+4. Install nvm into `$NVM_DIR` — there is no Homebrew nvm formula to lean on,
+   so nvm proper is installed with `PROFILE=/dev/null` to keep its installer
+   out of `~/.zshrc`
+5. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
+   Font, which `eza --icons` and the starship prompt both need
+6. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc` and
+   `~/.config/starship.toml`. The cmux links are macOS-only and skipped;
+   ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 
-Bootstrap deliberately does **not** change your login shell. Verify first,
-then switch:
+Then install the Claude Code config, which bootstrap deliberately does not
+touch (see [ai-tools/claude-code/](ai-tools/claude-code/README.md)):
 
 ```sh
-zsh -i -c exit          # should print nothing
+bash ~/.dotfiles/ai-tools/claude-code/install.sh
+```
+
+### Switching to zsh
+
+Bootstrap does **not** run `chsh` — verify the config works before committing
+your login shell to it:
+
+```sh
+zsh -i -c exit          # should print nothing at all
 time zsh -i -c exit     # ~150ms
 chsh -s /usr/bin/zsh    # asks for your password; log out/in afterwards
 ```
@@ -81,23 +90,71 @@ gsettings set org.gnome.Ptyxis use-system-font false
 gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 ```
 
-Not available on Linux and intentionally skipped: `beads`/`bd`, `rtk`,
-`mole`, `cliclick`, `whisperkit-cli`, and every `cask` / `vscode` entry in
-the Brewfiles.
+### Where Linux packages come from
 
-## Syncing an existing Mac
+| Source | Packages |
+|---|---|
+| **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry |
+| **snap** | vale, difftastic |
+| **upstream release** | uv, watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk) |
+
+Anything installed from an upstream release lands in `~/.local/bin`, which the
+tracked `zshrc` already puts on `$path` — no sudo for single binaries.
+
+**Renamed binaries.** Debian ships `bat` as `batcat` and `fd-find` as `fdfind`
+to avoid file clashes. `install_tools.sh` shims both back to their upstream
+names in `~/.local/bin`, so `aliases/core.sh` needs no Linux special-casing.
+`git-delta` correctly installs `/usr/bin/delta` and needs no shim.
+
+**Two traps worth remembering:**
+
+- The npm package named `rtk` is [cliffano/rtk](https://github.com/cliffano/rtk),
+  an unrelated changelog tool. The Rust Token Killer is `rtk-ai/rtk`. When
+  hunting for a Linux build of a Brewfile formula, the Homebrew core API
+  (`formulae.brew.sh/api/formula/<name>.json`) gives you the real homepage and
+  source URL — far more reliable than guessing at GitHub orgs.
+- `ast-grep` also ships an `sg` alias, which collides with the setgid binary
+  from the `login` package on some systems. `install_tools.sh` only takes `sg`
+  if nothing else owns the name.
+
+Not available on Linux and intentionally skipped: `mole`, `cliclick`,
+`whisperkit-cli`, and every `cask` / `vscode` entry in the Brewfiles. The
+optional k8s and cloud toolchains have no Linux installer yet.
+
+### How the shared zshrc stays cross-platform
+
+`zshrc` is one file used by both platforms. Every OS-specific branch is guarded
+so a `git pull` on the other machine is a behavioural no-op:
+
+| Concern | How it is guarded |
+|---|---|
+| `$EDITOR` | first of `code`/`cursor`/`zed`/`nvim`/`vim`/`nano` that is installed |
+| `PNPM_HOME` | `$OSTYPE` — `~/Library/pnpm` on macOS, XDG path elsewhere |
+| zsh plugins | first hit across `$HOMEBREW_PREFIX/share`, `/usr/share`, `/usr/local/share` |
+| nvm | resolves `$HOMEBREW_PREFIX/opt/nvm` then `$NVM_DIR`; **defines no wrappers at all if neither exists** |
+| oh-my-zsh | guarded, with an actionable message instead of a hard error |
+| libpq | only prepended where the directory exists |
+
+That nvm guard fixes a real bug: the `nvm`/`node`/`npm`/`npx` wrappers used to
+be defined unconditionally, so on any machine without the Homebrew nvm formula
+the first `node` call would `unset -f` itself, fail to source a missing
+`nvm.sh`, then recurse into a command that was no longer there.
+
+## Syncing an existing machine
 
 When `main` advances and you want to pull the changes onto another machine:
 
 ```sh
 cd ~/.dotfiles
 git pull --ff-only
-~/.dotfiles/bootstrap.sh    # idempotent — only acts on what's missing
-exec zsh                    # reload the shell
+~/.dotfiles/bootstrap.sh                     # macOS
+~/.dotfiles/scripts/Ubuntu/bootstrap.sh      # Linux
+exec zsh                                     # reload the shell
 ```
 
-The bootstrap will pick up any newly added Brewfile entries and re-run
-`link.zsh` (a no-op if everything is already linked correctly).
+The bootstrap will pick up any newly added packages and re-run the linker
+(a no-op if everything is already linked correctly). Re-run
+`ai-tools/claude-code/install.sh` too if the Claude Code config changed.
 
 To verify the sync worked:
 
@@ -166,7 +223,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
-| [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, commands, hooks, skills) symlinked into `~/.claude` |
+| [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 
 ## Per-project aliases
 

@@ -9,6 +9,10 @@ human-readable reference for *why* each thing is on the list.
 To install everything: `brew bundle --file=$DOTFILES/Brewfile`
 To check drift:        `brew bundle check --file=$DOTFILES/Brewfile`
 
+**On Linux there is no Homebrew** — see
+[Linux equivalents](#linux-equivalents) at the bottom of this file for where
+each of these comes from on Ubuntu.
+
 ---
 
 ## Brewfile
@@ -305,3 +309,78 @@ The Brewfile also tracks two non-Homebrew toolchains via `brew bundle`:
   `linear-cli`, `sqlx-cli`, `trunk`). Installed via `cargo install`
   triggered by `brew bundle`. The Rust toolchain itself must be present
   separately (e.g., via `rustup`).
+
+---
+
+## Linux equivalents
+
+Ubuntu has no Homebrew in this setup. The Brewfiles remain the macOS source of
+truth; [`scripts/Ubuntu/install_tools.sh`](scripts/Ubuntu/install_tools.sh) is
+the Linux counterpart. Ubuntu 24.04+ carries most of the CLI list in apt.
+
+### From apt
+
+`zsh` · `zsh-autosuggestions` · `zsh-syntax-highlighting` · `starship` ·
+`eza` · `bat` · `fd-find` · `ripgrep` · `fzf` · `zoxide` · `git-delta` ·
+`du-dust` · `procs` · `tree` · `tmux` · `jq` · `yq` · `direnv` · `atuin` ·
+`lazygit` · `glow` · `hyperfine` · `just` · `tokei` · `pre-commit` ·
+`gitleaks` · `httpie` · `xh` · `gh` · `pipx` · `python3-poetry` · plus base
+packages (`build-essential`, `git`, `git-lfs`, `curl`, `wget`, `unzip`,
+`openssl`, `fontconfig`, `net-tools`)
+
+Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
+
+### From snap
+
+`vale` · `difftastic`
+
+### From upstream releases (into `~/.local/bin`, no sudo)
+
+| Tool | Source |
+|---|---|
+| `uv` | `astral.sh/uv/install.sh` |
+| `watchexec` | `watchexec/watchexec` GitHub release `.deb` |
+| `ast-grep` | `ast-grep/ast-grep` GitHub release zip |
+| `bd` (beads) | `steveyegge/beads` GitHub release tarball |
+| `rtk` | `rtk-ai/rtk` GitHub release `.deb`, unpacked |
+
+### Installed by bootstrap, not by the package manager
+
+`oh-my-zsh` (unattended installer) · `sdkman` · `nvm` (installed proper, since
+there is no Homebrew formula to lean on) · JetBrainsMono Nerd Font
+
+### Renamed binaries
+
+Debian renames two of these to avoid file clashes. `install_tools.sh` shims
+them back to their upstream names in `~/.local/bin`:
+
+| Brewfile name | Debian binary | Shim |
+|---|---|---|
+| `bat` | `/usr/bin/batcat` | `~/.local/bin/bat` |
+| `fd` | `/usr/bin/fdfind` | `~/.local/bin/fd` |
+| `git-delta` | `/usr/bin/delta` | none needed |
+
+`ast-grep` also ships an `sg` alias which collides with the setgid binary from
+the `login` package on some systems; it is only installed if nothing else owns
+that name.
+
+### Not available on Linux
+
+`mole` · `cliclick` · `whisperkit-cli` · every `cask` entry · every `vscode`
+entry. The `Brewfile.k8s` and `Brewfile.cloud` toolchains have no Linux
+installer yet.
+
+### Finding a Linux build for a Brewfile formula
+
+Query the Homebrew core API rather than guessing at GitHub orgs — it gives the
+real homepage, source URL, and which platforms have bottles:
+
+```sh
+curl -fsSL https://formulae.brew.sh/api/formula/rtk.json | jq '{desc, homepage, urls, bottle: .bottle.stable.files | keys}'
+```
+
+This matters: `rtk` was initially and wrongly written off as macOS-only after
+searching plausible-looking GitHub orgs turned up nothing. The formula API
+points straight at `rtk-ai/rtk`, which publishes Linux bottles and a `.deb`.
+It also disambiguates name collisions — the npm package called `rtk` is
+[cliffano/rtk](https://github.com/cliffano/rtk), an unrelated changelog tool.
