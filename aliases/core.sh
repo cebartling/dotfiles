@@ -7,16 +7,29 @@
 alias cat='bat --paging=never'
 alias ls='eza -l --group-directories-first --color=auto --icons --no-permissions --no-user'
 alias ll='eza -lahF --group-directories-first --color=auto --icons'
-alias daily-update="brew update && brew upgrade && brew cleanup && claude update"
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias daily-update="brew update && brew upgrade && brew cleanup && claude update"
+else
+  alias daily-update="sudo apt-get update && sudo apt-get -y upgrade && sudo apt-get -y autoremove && claude update"
+fi
 
-alias zshconfig="code ~/.zshrc"
-alias aliases-config="code ~/.dotfiles/aliases/core.sh"
-alias ohmyzsh="code ~/.oh-my-zsh"
+# $EDITOR is resolved in zshrc and may carry a blocking flag (`code --wait`).
+# These aliases just open a file, so drop the flags.
+_edit="${EDITOR%% *}"
+alias zshconfig="$_edit ~/.zshrc"
+alias aliases-config="$_edit ~/.dotfiles/aliases/core.sh"
+alias ohmyzsh="$_edit ~/.oh-my-zsh"
 
 alias git-log-enhanced="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
-alias hostfile="sudo code /etc/hosts"
+alias hostfile="sudo $_edit /etc/hosts"
+unset _edit
 alias external-ip="curl https://diagnostic.opendns.com/myip ; echo"
-alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+if [[ "$OSTYPE" == darwin* ]]; then
+  alias local-ip="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
+else
+  # iproute2 is standard on Linux; net-tools/ifconfig often isn't installed.
+  alias local-ip="ip -brief address show scope global | awk '{ \$1=\$1; print }'"
+fi
 
 alias git-config="git config user.name && git config user.email"
 

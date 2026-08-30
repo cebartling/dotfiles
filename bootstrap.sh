@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # bootstrap.sh — end-to-end setup for cebartling/dotfiles on macOS.
 #
+# On Linux, use scripts/Ubuntu/bootstrap.sh instead.
+#
 # Idempotent: safe to re-run on a Mac that's already partially set up.
 # On a brand-new Mac, run with:
 #
@@ -18,7 +20,11 @@ warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
 require_macos() {
-  [[ "$(uname -s)" == "Darwin" ]] || die "bootstrap.sh only supports macOS"
+  [[ "$(uname -s)" == "Darwin" ]] && return 0
+  if [[ "$(uname -s)" == "Linux" && -x "$DOTFILES/scripts/Ubuntu/bootstrap.sh" ]]; then
+    die "this is the macOS bootstrap; on Linux run $DOTFILES/scripts/Ubuntu/bootstrap.sh"
+  fi
+  die "bootstrap.sh only supports macOS"
 }
 
 # ---------- steps ----------

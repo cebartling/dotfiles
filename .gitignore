@@ -51,3 +51,8 @@ zsdoc/data
 
 # Installer backups (e.g. Orca rewriting claude-code settings.json)
 *.bak
+
+# Editor swap files
+*.swp
+*.swo
+*~

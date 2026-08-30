@@ -1,10 +1,12 @@
 # dotfiles
 
-Christopher Bartling's macOS shell configuration: oh-my-zsh + starship,
-lazy-loaded nvm/sdkman, syntax highlighting, autosuggestions, per-project
-alias auto-loading, and a curated Brewfile.
+Christopher Bartling's shell configuration for macOS and Ubuntu:
+oh-my-zsh + starship, lazy-loaded nvm/sdkman, syntax highlighting,
+autosuggestions, per-project alias auto-loading, and a curated Brewfile.
 
-Lives at `$HOME/.dotfiles` on each machine.
+Lives at `$HOME/.dotfiles` on each machine. The tracked
+[`zshrc`](zshrc) is shared by both platforms — every OS-specific branch in
+it is guarded, so pulling on the other machine is a behavioural no-op.
 
 ## Setting up a new Mac
 
@@ -35,6 +37,53 @@ sdk version           # initializes sdkman on first call
 nvm install --lts     # installs an LTS node on first call
 ~/.dotfiles/scripts/macOS/install_k8s_tools.zsh   # optional: k8s toolchain
 ```
+
+## Setting up a new Ubuntu box
+
+There is no Homebrew on Linux here — Ubuntu 24.04+ carries nearly every CLI
+formula from the Brewfile in apt, so apt is the source of truth and
+snap/upstream installers fill the few gaps.
+
+```sh
+git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
+"$HOME/.dotfiles/scripts/Ubuntu/bootstrap.sh"
+```
+
+`scripts/Ubuntu/bootstrap.sh` is idempotent. It will:
+
+1. `scripts/Ubuntu/install_tools.sh` — zsh, the two zsh plugins, starship
+   and the CLI toolchain via apt; `vale`/`difftastic` via snap; `uv`,
+   `watchexec` and `ast-grep` via their upstream installers. It also shims
+   Debian's renamed `batcat`/`fdfind` back to `bat`/`fd` in `~/.local/bin`.
+2. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
+3. Install sdkman if missing
+4. Install nvm into `$NVM_DIR` (no Homebrew formula to lean on)
+5. `scripts/Ubuntu/install_fonts.sh` — JetBrainsMono Nerd Font, which
+   `eza --icons` and the starship prompt both need
+6. `scripts/Ubuntu/link.sh` — symlink `~/.zshrc` and
+   `~/.config/starship.toml` (the cmux links are macOS-only and are skipped;
+   ghostty is linked only if installed). Existing files are backed up to
+   `<file>.backup.<timestamp>`.
+
+Bootstrap deliberately does **not** change your login shell. Verify first,
+then switch:
+
+```sh
+zsh -i -c exit          # should print nothing
+time zsh -i -c exit     # ~150ms
+chsh -s /usr/bin/zsh    # asks for your password; log out/in afterwards
+```
+
+Point the terminal at the Nerd Font (Ptyxis is the GNOME default on 24.04+):
+
+```sh
+gsettings set org.gnome.Ptyxis use-system-font false
+gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
+```
+
+Not available on Linux and intentionally skipped: `beads`/`bd`, `rtk`,
+`mole`, `cliclick`, `whisperkit-cli`, and every `cask` / `vscode` entry in
+the Brewfiles.
 
 ## Syncing an existing Mac
 
@@ -93,12 +142,12 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 
 | Path | Purpose |
 |---|---|
-| `bootstrap.sh` | One-shot installer for a fresh Mac |
+| `bootstrap.sh` | One-shot installer for a fresh Mac (redirects to `scripts/Ubuntu/bootstrap.sh` on Linux) |
 | `Brewfile` | Canonical macOS package manifest (`brew bundle`) |
 | `Brewfile.k8s` | Optional Kubernetes toolchain |
 | `Brewfile.cloud` | Optional cloud management tooling (provider CLIs + Hashicorp IaC) |
 | [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package |
-| `zshrc` | Tracked `~/.zshrc` (symlinked into place by `link.zsh`) |
+| `zshrc` | Tracked `~/.zshrc`, shared by macOS and Linux (symlinked into place by `link.zsh` / `link.sh`) |
 | `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
 | `aliases/core.sh` | Shared aliases (loaded on every shell) |
 | `aliases/<project>.sh` | Per-project aliases auto-loaded by directory |
@@ -113,6 +162,10 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
 | `scripts/macOS/install_cloud_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.cloud` |
+| `scripts/Ubuntu/bootstrap.sh` | One-shot installer for a fresh Ubuntu box |
+| `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
+| `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
+| `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, commands, hooks, skills) symlinked into `~/.claude` |
 
 ## Per-project aliases

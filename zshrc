@@ -1,20 +1,31 @@
 # =============================================================
 #  zshrc — managed by cebartling/dotfiles
-#  Symlinked into place by scripts/macOS/link.zsh.
-#  Do NOT edit ~/.zshrc directly on a managed Mac — edit this
+#  Symlinked into place by scripts/macOS/link.zsh (macOS) or
+#  scripts/Ubuntu/link.sh (Linux).
+#  Do NOT edit ~/.zshrc directly on a managed machine — edit this
 #  file in $DOTFILES/zshrc and `git pull` everywhere else.
+#  This file is shared by macOS and Linux: every platform-specific
+#  branch below must be guarded, so a pull is a no-op on the other.
 #  Per-machine overrides go in ~/.zshrc.local (gitignored).
 # =============================================================
 
 # ----- Core env -----
 export DOTFILES="$HOME/.dotfiles"
 export ZSH="$HOME/.oh-my-zsh"
-export EDITOR='code --wait'
+# First editor that's actually installed wins, so $EDITOR is never a
+# command that doesn't exist (a Linux box generally has no `code`).
+for _ed in 'code --wait' 'cursor --wait' 'zed --wait' nvim vim nano vi; do
+  (( $+commands[${_ed%% *}] )) && { export EDITOR="$_ed"; break }
+done
+unset _ed
+: ${EDITOR:=vi}
 export VISUAL="$EDITOR"
 export LANG=en_US.UTF-8
 
-# ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew) -----
-for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew "$HOME/homebrew/bin/brew"; do
+# ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew,
+#       and linuxbrew — no-op on a Linux box installed from apt) -----
+for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew \
+                       "$HOME/homebrew/bin/brew" /home/linuxbrew/.linuxbrew/bin/brew; do
   if [ -x "$_brew_candidate" ]; then
     eval "$("$_brew_candidate" shellenv)"
     break
@@ -23,7 +34,11 @@ done
 unset _brew_candidate
 
 # ----- PATH (consolidated, deduped) -----
-export PNPM_HOME="$HOME/Library/pnpm"
+if [[ "$OSTYPE" == darwin* ]]; then
+  export PNPM_HOME="$HOME/Library/pnpm"
+else
+  export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+fi
 typeset -U path                              # automatic dedupe
 path=(
   "$HOME/bin"
@@ -45,7 +60,12 @@ setopt AUTO_CD EXTENDED_GLOB NO_BEEP INTERACTIVE_COMMENTS
 
 # ----- oh-my-zsh (theme is empty; starship handles the prompt) -----
 source $DOTFILES/oh-my-zsh/core.sh
-source $ZSH/oh-my-zsh.sh
+if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
+  source $ZSH/oh-my-zsh.sh
+else
+  print -u2 "zshrc: oh-my-zsh not found at $ZSH — install it with:"
+  print -u2 "  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+fi
 
 # ----- Dotfiles helpers -----
 source $DOTFILES/functions/core.sh
@@ -55,24 +75,46 @@ source $DOTFILES/functions/project-aliases.sh
 
 # ----- Lazy runtimes (huge startup speedup) -----
 # nvm: load on first use of nvm/node/npm/npx.
+# macOS gets nvm from the Homebrew formula ($HOMEBREW_PREFIX/opt/nvm);
+# Linux installs nvm proper into $NVM_DIR. Resolve whichever exists — and
+# if NEITHER does, define no wrappers at all: a wrapper whose nvm.sh is
+# missing would unset itself and then recurse into a command that isn't
+# there, so plain `node` from the system package would break.
 # Under Claude Code we eager-load instead — Claude Code's shell snapshot
 # captures the wrappers but drops the underscore-prefixed _nvm_load helper
 # they depend on, so subprocesses sourcing the snapshot infinite-loop on
 # FUNCNEST when invoking npx/npm/node.
-export NVM_DIR="$HOME/.nvm"
-if [[ -n "$CLAUDECODE" ]]; then
-  [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
-  [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
-else
-  _nvm_load() {
-    unset -f nvm node npm npx _nvm_load
-    [ -s "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/nvm.sh"
-    [ -s "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm" ] && \. "${HOMEBREW_PREFIX}/opt/nvm/etc/bash_completion.d/nvm"
-  }
-  nvm()  { _nvm_load; nvm  "$@"; }
-  node() { _nvm_load; node "$@"; }
-  npm()  { _nvm_load; npm  "$@"; }
-  npx()  { _nvm_load; npx  "$@"; }
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+_nvm_sh=""
+_nvm_completion=""
+for _nvm_prefix in "${HOMEBREW_PREFIX}/opt/nvm" "$NVM_DIR"; do
+  [ -s "$_nvm_prefix/nvm.sh" ] || continue
+  _nvm_sh="$_nvm_prefix/nvm.sh"
+  # Homebrew ships completion under etc/, nvm's own installer at the root.
+  for _nvm_comp_candidate in \
+        "$_nvm_prefix/etc/bash_completion.d/nvm" \
+        "$_nvm_prefix/bash_completion"; do
+    [ -s "$_nvm_comp_candidate" ] && { _nvm_completion="$_nvm_comp_candidate"; break }
+  done
+  break
+done
+unset _nvm_prefix _nvm_comp_candidate
+
+if [[ -n "$_nvm_sh" ]]; then
+  if [[ -n "$CLAUDECODE" ]]; then
+    \. "$_nvm_sh"
+    [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
+  else
+    _nvm_load() {
+      unset -f nvm node npm npx _nvm_load
+      \. "$_nvm_sh"
+      [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
+    }
+    nvm()  { _nvm_load; nvm  "$@"; }
+    node() { _nvm_load; node "$@"; }
+    npm()  { _nvm_load; npm  "$@"; }
+    npx()  { _nvm_load; npx  "$@"; }
+  fi
 fi
 
 # sdkman: load on first use of sdk
@@ -112,12 +154,22 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
 # ----- zsh plugins (autosuggestions, then syntax-highlighting LAST) -----
-[ -f "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
-  source "${HOMEBREW_PREFIX}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-[ -f "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
-  source "${HOMEBREW_PREFIX}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+# Homebrew keeps these under $HOMEBREW_PREFIX/share; the Debian/Ubuntu
+# packages install them under /usr/share. Source the first hit, and keep
+# syntax-highlighting last — it has to wrap everything before it.
+for _zsh_plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+  for _zsh_plugin_dir in "${HOMEBREW_PREFIX}/share" /usr/share /usr/local/share; do
+    if [ -f "$_zsh_plugin_dir/$_zsh_plugin/$_zsh_plugin.zsh" ]; then
+      source "$_zsh_plugin_dir/$_zsh_plugin/$_zsh_plugin.zsh"
+      break
+    fi
+  done
+done
+unset _zsh_plugin _zsh_plugin_dir
 
-export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+# libpq is keg-only on Homebrew; only prepend it where it exists.
+[[ -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/libpq/bin" ]] && \
+  path=("${HOMEBREW_PREFIX:-/opt/homebrew}/opt/libpq/bin" $path)
 
 # ----- Per-machine overrides (untracked, optional) -----
 # Docker Desktop's installer appends its own `fpath=(... ); compinit` block
