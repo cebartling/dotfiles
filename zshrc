@@ -121,6 +121,20 @@ if [[ -n "$_nvm_sh" ]]; then
   fi
 fi
 
+# pyenv: put its shims on $path directly rather than paying for
+# `eval "$(pyenv init -)"` (a subprocess) on every shell. The shims are all
+# that `python`/`pip` resolution needs; the full init only matters for
+# `pyenv shell`, so the pyenv function below does it on first call.
+export PYENV_ROOT="${PYENV_ROOT:-$HOME/.pyenv}"
+if [[ -d "$PYENV_ROOT/bin" ]]; then
+  path=("$PYENV_ROOT/bin" "$PYENV_ROOT/shims" $path)
+  pyenv() {
+    unset -f pyenv
+    eval "$("$PYENV_ROOT/bin/pyenv" init -)"
+    pyenv "$@"
+  }
+fi
+
 # sdkman: load on first use of sdk
 export SDKMAN_DIR="$HOME/.sdkman"
 sdk() {

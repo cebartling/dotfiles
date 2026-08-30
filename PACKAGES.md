@@ -346,6 +346,7 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `bun` | `oven-sh/bun` GitHub release zip (plus a `bunx` link) |
 | `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
+| `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
 
 ### Installed by bootstrap, not by the package manager
 
@@ -385,6 +386,23 @@ this repo. Both are handled:
   it on `$path`, so the standalone release tarball is used instead.
 - **rustup** — installed with `--no-modify-path`. `zshrc` prepends
   `~/.cargo/bin` itself when that directory exists.
+- **uv** — installed with `INSTALLER_NO_MODIFY_PATH=1`. It appends to
+  `.zshrc .zshenv` only when its install dir is not already on `PATH`, so it
+  stayed quiet here by luck rather than by design; the flag makes it
+  deterministic.
+- **oh-my-zsh** is the one that actually bit. `KEEP_ZSHRC=yes` preserves an
+  *existing* `~/.zshrc` but does not stop it creating one, and sdkman then
+  appends to that template. `scripts/Ubuntu/bootstrap.sh` snapshots whether
+  `~/.zshrc` existed before any installer ran and discards a generated one
+  before linking, so no stray `.backup` file is left behind.
+
+**pyenv is the exception that writes nothing** — `pyenv.run` only prints shell
+instructions. But it needs a compiler toolchain, since it builds CPython from
+source; `install_tools.sh` installs the
+[suggested build environment](https://github.com/pyenv/pyenv/wiki#suggested-build-environment)
+(`libssl-dev`, `libreadline-dev`, `libsqlite3-dev`, `libffi-dev`, …) alongside
+it. Without those, `pyenv install` fails deep in `configure` with errors like
+`GNU readline is not installed`.
 
 Two of these are not lone binaries and cannot simply be dropped into
 `~/.local/bin`:

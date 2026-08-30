@@ -96,7 +96,7 @@ gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 |---|---|
 | **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry |
 | **snap** | vale, difftastic |
-| **upstream release** | uv, watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun), [pnpm](https://github.com/pnpm/pnpm), [rustup](https://rustup.rs) |
+| **upstream release** | [uv](https://astral.sh/uv), watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun), [pnpm](https://github.com/pnpm/pnpm), [rustup](https://rustup.rs), [pyenv](https://github.com/pyenv/pyenv) |
 
 Anything installed from an upstream release lands in `~/.local/bin`, which the
 tracked `zshrc` already puts on `$path` — no sudo for single binaries.
@@ -135,6 +135,7 @@ so a `git pull` on the other machine is a behavioural no-op:
 | oh-my-zsh | guarded, with an actionable message instead of a hard error |
 | libpq | only prepended where the directory exists |
 | `~/.cargo/bin` | prepended only when the directory exists (rustup is installed with `--no-modify-path`) |
+| pyenv | `$PYENV_ROOT/bin` + `shims` prepended when present; the full `pyenv init` is deferred to first use of `pyenv` |
 
 That nvm guard fixes a real bug: the `nvm`/`node`/`npm`/`npx` wrappers used to
 be defined unconditionally, so on any machine without the Homebrew nvm formula

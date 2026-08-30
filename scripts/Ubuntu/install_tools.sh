@@ -77,6 +77,24 @@ APT_DEV=(
   python3-poetry
 )
 
+# Build dependencies for pyenv — CPython is compiled from source, and a
+# missing header here surfaces much later as a half-built interpreter.
+# https://github.com/pyenv/pyenv/wiki#suggested-build-environment
+APT_PYENV_BUILD=(
+  libssl-dev
+  zlib1g-dev
+  libbz2-dev
+  libreadline-dev
+  libsqlite3-dev
+  libncursesw5-dev
+  xz-utils
+  tk-dev
+  libxml2-dev
+  libxmlsec1-dev
+  libffi-dev
+  liblzma-dev
+)
+
 install_apt() {
   say "Updating apt package lists"
   sudo -n true 2>/dev/null || say "sudo password may be required"
@@ -86,7 +104,7 @@ install_apt() {
   # Recommends are left on deliberately: git/pipx/pre-commit pull in
   # genuinely useful companions, and this is a desktop, not a container.
   sudo apt-get install -y \
-    "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}"
+    "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}" "${APT_PYENV_BUILD[@]}"
 }
 
 # ---------- binary name shims ----------
@@ -127,8 +145,11 @@ install_uv() {
     say "uv already installed"
     return 0
   fi
+  # INSTALLER_NO_MODIFY_PATH: uv's installer appends to ".zshrc .zshenv" when
+  # its install dir isn't already on PATH. ~/.zshrc is a symlink into this
+  # repo, and the tracked zshrc already puts ~/.local/bin on $path.
   say "Installing uv (astral.sh)"
-  curl -LsSf https://astral.sh/uv/install.sh | sh
+  curl -LsSf https://astral.sh/uv/install.sh | env INSTALLER_NO_MODIFY_PATH=1 sh
 }
 
 install_watchexec() {
@@ -382,6 +403,23 @@ install_rustup() {
   fi
 }
 
+install_pyenv() {
+  if [[ -d "${PYENV_ROOT:-$HOME/.pyenv}" ]]; then
+    say "pyenv already installed"
+    return 0
+  fi
+  # pyenv-installer clones pyenv plus the virtualenv/update/doctor plugins and
+  # only *prints* shell-config instructions — it writes no profile itself, so
+  # no opt-out flag is needed here. The tracked zshrc owns the wiring.
+  say "Installing pyenv (+ virtualenv/update/doctor plugins)"
+  if curl -fsSL https://pyenv.run | bash; then
+    say "pyenv installed; zshrc puts its shims on \$path on the next shell"
+  else
+    warn "pyenv install failed"
+    SKIPPED+=("pyenv")
+  fi
+}
+
 # ---------- summary ----------
 
 print_summary() {
@@ -390,7 +428,7 @@ print_summary() {
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo; do
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo pyenv; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -424,6 +462,7 @@ main() {
   install_bun
   install_pnpm
   install_rustup
+  install_pyenv
   print_summary
 }
 

@@ -65,17 +65,23 @@ ensure_sdkman() {
     return 0
   fi
   say "Installing sdkman"
-  # sdkman's installer appends its own init stanza to ~/.zshrc. The tracked
-  # zshrc already lazy-loads sdk(), and ~/.zshrc is about to become a symlink
-  # into the repo — so if the installer conjures that file into existence,
-  # drop it again and let link.sh own the path.
-  local had_zshrc=0
-  [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]] && had_zshrc=1
   curl -s "https://get.sdkman.io" | bash
-  if (( ! had_zshrc )) && [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]]; then
-    say "Discarding the ~/.zshrc that sdkman created (zshrc lazy-loads sdk already)"
-    rm -f "$HOME/.zshrc"
-  fi
+}
+
+# Several installers in this flow will write a ~/.zshrc if none exists:
+# oh-my-zsh drops its template (KEEP_ZSHRC=yes only preserves an *existing*
+# file, it does not stop creation), and sdkman then appends its init stanza to
+# whatever is there. link.zsh/link.sh would dutifully back that up and leave a
+# stray .backup file behind on every fresh machine.
+#
+# The tracked zshrc already covers everything those snippets set up, so if
+# ~/.zshrc did not exist when bootstrap started and is now a generated regular
+# file, discard it and let link.sh own the path.
+discard_generated_zshrc() {
+  (( HAD_ZSHRC )) && return 0
+  [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]] || return 0
+  say "Discarding the ~/.zshrc generated during install (the tracked zshrc supersedes it)"
+  rm -f "$HOME/.zshrc"
 }
 
 ensure_nvm() {
@@ -136,12 +142,16 @@ EOF
 # ---------- main ----------
 main() {
   require_linux
+  # Snapshot before any installer runs — see discard_generated_zshrc.
+  HAD_ZSHRC=0
+  [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]] && HAD_ZSHRC=1
   ensure_dotfiles_repo
   run_install_tools
   ensure_oh_my_zsh
   ensure_sdkman
   ensure_nvm
   run_install_fonts
+  discard_generated_zshrc
   run_link
   print_next_steps
 }
