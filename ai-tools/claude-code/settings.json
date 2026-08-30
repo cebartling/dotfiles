@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$HOME/.claude/hooks/context-mode-cache-heal.mjs\""
+            "command": "if [ -x \"$HOME/.claude/hooks/context-mode-cache-heal.mjs\" ]; then \"$HOME/.claude/hooks/context-mode-cache-heal.mjs\"; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; printf '{}\\n'; fi"
           }
         ]
       },
@@ -71,7 +71,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "rudel hooks claude session-end",
+            "command": "if command -v rudel >/dev/null 2>&1; then rudel hooks claude session-end; fi",
             "async": true
           }
         ]
@@ -83,7 +83,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "rtk hook claude"
+            "command": "if command -v rtk >/dev/null 2>&1; then rtk hook claude; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; printf '{}\\n'; fi"
           }
         ]
       },
