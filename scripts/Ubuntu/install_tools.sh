@@ -266,6 +266,57 @@ install_rtk() {
   rm -rf "$tmp"
 }
 
+install_bun() {
+  if command -v bun >/dev/null 2>&1; then
+    say "bun already installed"
+    return 0
+  fi
+  # Brewfile installs bun via the oven-sh/bun tap on macOS. On Linux the
+  # official installer (bun.sh/install) appends its own block to ~/.zshrc —
+  # which is a symlink into this repo — so take the release zip instead.
+  say "Installing bun from GitHub release"
+  local variant url tmp
+  case "$(uname -m)" in
+    x86_64)
+      # The default x64 build requires AVX2; older CPUs need the baseline build.
+      if grep -qm1 '\bavx2\b' /proc/cpuinfo 2>/dev/null; then
+        variant="bun-linux-x64"
+      else
+        say "no AVX2 on this CPU — using the baseline build"
+        variant="bun-linux-x64-baseline"
+      fi
+      ;;
+    aarch64) variant="bun-linux-aarch64" ;;
+    *) warn "no bun build for $(uname -m)"; SKIPPED+=("bun"); return 0 ;;
+  esac
+  # Match the exact asset name: the -profile variants are large debug builds.
+  url="$(curl -fsSL https://api.github.com/repos/oven-sh/bun/releases/latest \
+        | grep -o "https://[^\"]*/${variant}\.zip" | head -1)" || true
+  if [[ -z "$url" ]]; then
+    warn "could not resolve a bun download URL for ${variant}"
+    SKIPPED+=("bun")
+    return 0
+  fi
+  tmp="$(mktemp -d)"
+  if curl -fsSL -o "$tmp/bun.zip" "$url" && unzip -qo "$tmp/bun.zip" -d "$tmp"; then
+    local bin
+    bin="$(find "$tmp" -type f -name bun -perm -u+x | head -1)"
+    if [[ -n "$bin" ]]; then
+      mkdir -p "$HOME/.local/bin"
+      install -m 0755 "$bin" "$HOME/.local/bin/bun"
+      # bun's own installer provides bunx as a link to the same binary.
+      ln -sf bun "$HOME/.local/bin/bunx"
+    else
+      warn "no bun binary inside the archive"
+      SKIPPED+=("bun")
+    fi
+  else
+    warn "bun download/extract failed"
+    SKIPPED+=("bun")
+  fi
+  rm -rf "$tmp"
+}
+
 # ---------- summary ----------
 
 print_summary() {
@@ -274,7 +325,7 @@ print_summary() {
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk; do
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -305,6 +356,7 @@ main() {
   install_ast_grep
   install_beads
   install_rtk
+  install_bun
   print_summary
 }
 

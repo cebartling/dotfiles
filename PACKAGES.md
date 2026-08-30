@@ -343,6 +343,7 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `ast-grep` | `ast-grep/ast-grep` GitHub release zip |
 | `bd` (beads) | `steveyegge/beads` GitHub release tarball |
 | `rtk` | `rtk-ai/rtk` GitHub release `.deb`, unpacked |
+| `bun` | `oven-sh/bun` GitHub release zip (plus a `bunx` link) |
 
 ### Installed by bootstrap, not by the package manager
 
@@ -363,6 +364,20 @@ them back to their upstream names in `~/.local/bin`:
 `ast-grep` also ships an `sg` alias which collides with the setgid binary from
 the `login` package on some systems; it is only installed if nothing else owns
 that name.
+
+### Installers that would write into the tracked zshrc
+
+Two upstream installers append their own init block to `~/.zshrc`, which on a
+linked machine **is** `$DOTFILES/zshrc` — so they would commit themselves into
+this repo. Both are handled:
+
+- **nvm** — installed with `PROFILE=/dev/null`, since the tracked `zshrc`
+  already has a lazy loader that finds `$NVM_DIR/nvm.sh`.
+- **sdkman** — `scripts/Ubuntu/bootstrap.sh` records whether `~/.zshrc` existed
+  beforehand and deletes the one sdkman conjures up, letting `link.sh` own that
+  path. The tracked `zshrc` lazy-loads `sdk` already.
+- **bun** — the reason `install_tools.sh` uses the release zip rather than
+  `curl bun.sh/install | bash`.
 
 ### Not available on Linux
 

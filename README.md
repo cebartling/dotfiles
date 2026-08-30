@@ -96,7 +96,7 @@ gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 |---|---|
 | **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry |
 | **snap** | vale, difftastic |
-| **upstream release** | uv, watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk) |
+| **upstream release** | uv, watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun) |
 
 Anything installed from an upstream release lands in `~/.local/bin`, which the
 tracked `zshrc` already puts on `$path` — no sudo for single binaries.
