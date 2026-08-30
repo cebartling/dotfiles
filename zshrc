@@ -46,6 +46,10 @@ path=(
   "$PNPM_HOME"
   $path
 )
+# rustup's toolchain shims. rustup-init is run with --no-modify-path (it would
+# otherwise append its own block to ~/.zshrc, which is this file), so PATH is
+# owned here instead of by a generated snippet.
+[[ -d "$HOME/.cargo/bin" ]] && path=("$HOME/.cargo/bin" $path)
 
 # ----- History -----
 HISTSIZE=50000

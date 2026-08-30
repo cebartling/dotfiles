@@ -317,6 +317,71 @@ install_bun() {
   rm -rf "$tmp"
 }
 
+install_pnpm() {
+  if command -v pnpm >/dev/null 2>&1; then
+    say "pnpm already installed"
+    return 0
+  fi
+  # `curl get.pnpm.io/install.sh | sh` runs `pnpm setup`, which appends a
+  # PNPM_HOME block to ~/.zshrc — that file is a symlink into this repo. The
+  # tracked zshrc already exports PNPM_HOME and puts it on $path, so take the
+  # standalone release instead.
+  #
+  # The archive is a tree, not a lone binary: a `pnpm` launcher that resolves
+  # its own realpath to find a sibling `dist/`. Install the whole thing under
+  # ~/.local/lib and symlink just the launcher onto PATH.
+  say "Installing pnpm from GitHub release"
+  local variant url tmp dest
+  case "$(uname -m)" in
+    x86_64)  variant="pnpm-linux-x64" ;;
+    aarch64) variant="pnpm-linux-arm64" ;;
+    *) warn "no pnpm build for $(uname -m)"; SKIPPED+=("pnpm"); return 0 ;;
+  esac
+  # Anchor to .tar.gz so the -musl variant of the same stem isn't matched.
+  url="$(curl -fsSL https://api.github.com/repos/pnpm/pnpm/releases/latest \
+        | grep -o "https://[^\"]*/${variant}\.tar\.gz" | head -1)" || true
+  if [[ -z "$url" ]]; then
+    warn "could not resolve a pnpm download URL for ${variant}"
+    SKIPPED+=("pnpm")
+    return 0
+  fi
+  tmp="$(mktemp -d)"
+  dest="$HOME/.local/lib/pnpm"
+  if curl -fsSL -o "$tmp/pnpm.tgz" "$url" && tar -xzf "$tmp/pnpm.tgz" -C "$tmp"; then
+    if [[ -x "$tmp/pnpm" && -d "$tmp/dist" ]]; then
+      rm -rf "$dest"
+      mkdir -p "$dest" "$HOME/.local/bin" "${PNPM_HOME:-$HOME/.local/share/pnpm}"
+      cp -R "$tmp/pnpm" "$tmp/dist" "$dest/"
+      ln -sf "$dest/pnpm" "$HOME/.local/bin/pnpm"
+    else
+      warn "unexpected pnpm archive layout (no launcher + dist/)"
+      SKIPPED+=("pnpm")
+    fi
+  else
+    warn "pnpm download/extract failed"
+    SKIPPED+=("pnpm")
+  fi
+  rm -rf "$tmp"
+}
+
+install_rustup() {
+  if command -v rustup >/dev/null 2>&1; then
+    say "rustup already installed"
+    return 0
+  fi
+  # --no-modify-path: rustup-init would otherwise append a ~/.cargo/env source
+  # line to ~/.zshrc (this repo's tracked zshrc). That file puts
+  # ~/.cargo/bin on $path itself when the directory exists.
+  say "Installing rustup + the stable toolchain (this pulls ~300MB)"
+  if curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
+       | sh -s -- -y --no-modify-path --default-toolchain stable --profile default; then
+    say "rustup installed; ~/.cargo/bin is picked up by zshrc on next shell"
+  else
+    warn "rustup install failed"
+    SKIPPED+=("rustup")
+  fi
+}
+
 # ---------- summary ----------
 
 print_summary() {
@@ -325,7 +390,7 @@ print_summary() {
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun; do
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -357,6 +422,8 @@ main() {
   install_beads
   install_rtk
   install_bun
+  install_pnpm
+  install_rustup
   print_summary
 }
 

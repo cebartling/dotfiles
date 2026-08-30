@@ -344,6 +344,8 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `bd` (beads) | `steveyegge/beads` GitHub release tarball |
 | `rtk` | `rtk-ai/rtk` GitHub release `.deb`, unpacked |
 | `bun` | `oven-sh/bun` GitHub release zip (plus a `bunx` link) |
+| `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
+| `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 
 ### Installed by bootstrap, not by the package manager
 
@@ -378,6 +380,20 @@ this repo. Both are handled:
   path. The tracked `zshrc` lazy-loads `sdk` already.
 - **bun** — the reason `install_tools.sh` uses the release zip rather than
   `curl bun.sh/install | bash`.
+- **pnpm** — `get.pnpm.io/install.sh` runs `pnpm setup`, which appends a
+  `PNPM_HOME` block. The tracked `zshrc` already exports `PNPM_HOME` and puts
+  it on `$path`, so the standalone release tarball is used instead.
+- **rustup** — installed with `--no-modify-path`. `zshrc` prepends
+  `~/.cargo/bin` itself when that directory exists.
+
+Two of these are not lone binaries and cannot simply be dropped into
+`~/.local/bin`:
+
+- **pnpm**'s archive is a tree — a launcher that resolves its own realpath to
+  find a sibling `dist/`. It is unpacked to `~/.local/lib/pnpm` with only the
+  launcher symlinked onto `PATH`. (Modern pnpm ships no `pnpx`; use `pnpm dlx`.)
+- **bun**'s default `linux-x64` build requires AVX2; `install_tools.sh` falls
+  back to the `-baseline` build when `/proc/cpuinfo` lacks it.
 
 ### Not available on Linux
 
