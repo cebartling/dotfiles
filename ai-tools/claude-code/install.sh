@@ -54,6 +54,10 @@ echo
 mkdir -p "$DEST_DIR/commands" "$DEST_DIR/hooks" "$DEST_DIR/skills"
 
 link "$SOURCE_DIR/CLAUDE.md" "$DEST_DIR/CLAUDE.md"
+# CLAUDE.md ends with `@RTK.md`. Link it alongside so the import resolves
+# whether Claude Code follows the CLAUDE.md symlink to the repo or resolves
+# relative to ~/.claude.
+link "$SOURCE_DIR/RTK.md" "$DEST_DIR/RTK.md"
 link "$SOURCE_DIR/settings.json" "$DEST_DIR/settings.json"
 
 for src in "$SOURCE_DIR/commands/"*; do

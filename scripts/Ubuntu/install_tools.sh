@@ -11,9 +11,8 @@
 #   ~/.dotfiles/scripts/Ubuntu/install_tools.sh
 #
 # Deliberately NOT installed on Linux (no Linux distribution exists, or the
-# package is macOS-only): rtk, mole, cliclick, whisperkit-cli, and every
-# `cask` / `vscode` entry in the Brewfile. Note the npm package named `rtk`
-# is an unrelated release tool, not the Rust Token Killer — don't install it.
+# package is macOS-only): mole, cliclick, whisperkit-cli, and every `cask` /
+# `vscode` entry in the Brewfile.
 
 set -euo pipefail
 
@@ -232,6 +231,41 @@ install_beads() {
   rm -rf "$tmp"
 }
 
+install_rtk() {
+  if command -v rtk >/dev/null 2>&1; then
+    say "rtk already installed"
+    return 0
+  fi
+  # Rust Token Killer — upstream is rtk-ai/rtk (NOT the unrelated npm package
+  # named `rtk`, which is a changelog/release tool). Homebrew has it on macOS;
+  # upstream ships a .deb for Linux.
+  say "Installing rtk (Rust Token Killer) from GitHub release"
+  local url tmp
+  if [[ "$(uname -m)" != "x86_64" ]]; then
+    warn "rtk .deb is amd64 only; skipping on $(uname -m)"
+    SKIPPED+=("rtk")
+    return 0
+  fi
+  url="$(curl -fsSL https://api.github.com/repos/rtk-ai/rtk/releases/latest \
+        | grep -o "https://[^\"]*rtk_amd64\.deb" | head -1)" || true
+  if [[ -z "$url" ]]; then
+    warn "could not resolve an rtk download URL"
+    SKIPPED+=("rtk")
+    return 0
+  fi
+  tmp="$(mktemp -d)"
+  # Unpack rather than `apt-get install ./rtk.deb`: the payload is a single
+  # binary, and ~/.local/bin keeps it consistent with the other shims here.
+  if curl -fsSL -o "$tmp/rtk.deb" "$url" && dpkg-deb -x "$tmp/rtk.deb" "$tmp/x"; then
+    mkdir -p "$HOME/.local/bin"
+    install -m 0755 "$tmp/x/usr/bin/rtk" "$HOME/.local/bin/rtk"
+  else
+    warn "rtk download/extract failed"
+    SKIPPED+=("rtk")
+  fi
+  rm -rf "$tmp"
+}
+
 # ---------- summary ----------
 
 print_summary() {
@@ -240,7 +274,7 @@ print_summary() {
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd; do
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -270,6 +304,7 @@ main() {
   install_watchexec
   install_ast_grep
   install_beads
+  install_rtk
   print_summary
 }
 
