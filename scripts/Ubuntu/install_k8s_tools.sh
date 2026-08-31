@@ -151,13 +151,47 @@ install_radar() {
   rm -rf "$tmp"
 }
 
+install_radar_desktop() {
+  if command -v radar-desktop >/dev/null 2>&1 || dpkg -s radar-desktop >/dev/null 2>&1; then
+    say "radar-desktop already installed"; return 0
+  fi
+  # The GUI half of Radar, and like freelens a .deb rather than a tarball so it
+  # gets a desktop entry and icon. Its binary is `radar-desktop`, so it does not
+  # collide with the `radar` CLI installed above.
+  local base ver tmp deb want
+  base="$(curl -fsSL https://api.github.com/repos/skyhook-io/radar/releases/latest \
+        | grep -o 'https://[^"]*/download/[^"/]*' | head -1)" || true
+  [[ -n "$base" ]] || { warn "could not resolve the radar-desktop release URL"; SKIPPED+=(radar-desktop); return 0; }
+  ver="${base##*/}"
+  deb="radar-desktop_${ver}_linux_amd64.deb"
+  # Check for usable sudo first — no point pulling 44MB to fail at the last step.
+  if ! sudo -n true 2>/dev/null; then
+    warn "radar-desktop needs sudo to install its .deb, and sudo is not available non-interactively here."
+    warn "Run this script from a real terminal to include it."
+    SKIPPED+=("radar-desktop (no sudo)")
+    return 0
+  fi
+  say "Installing radar-desktop $ver (~44MB .deb; needs sudo)"
+  tmp="$(mktemp -d)"
+  if curl -fsSL -o "$tmp/$deb" "$base/$deb" \
+     && curl -fsSL -o "$tmp/checksums-desktop.txt" "$base/checksums-desktop.txt"; then
+    want="$(awk -v f="$deb" '{ sub(/^\*/, "", $2); if ($2 == f) { print $1; exit } }' "$tmp/checksums-desktop.txt")"
+    if [[ -n "$want" ]]; then verify_sha256 "$tmp/$deb" "$want"
+    else warn "no checksum line for $deb; installing unverified"; fi
+    sudo apt-get install -y "$tmp/$deb" || { warn "radar-desktop install failed"; SKIPPED+=(radar-desktop); }
+  else
+    warn "radar-desktop download failed"; SKIPPED+=(radar-desktop)
+  fi
+  rm -rf "$tmp"
+}
+
 install_freelens() {
   if command -v freelens >/dev/null 2>&1 || dpkg -s freelens >/dev/null 2>&1; then
     say "freelens already installed"; return 0
   fi
-  # The one GUI app here, and the one step that needs root: a .deb gets a
-  # desktop entry and icon, which an AppImage in ~/.local/bin would not.
-  # freelens is the maintained successor to openlens (dead since 2023-06-30).
+  # A .deb rather than an AppImage in ~/.local/bin, for the desktop entry and
+  # icon. freelens is the maintained successor to openlens (dead since
+  # 2023-06-30).
   local url tmp
   url="$(curl -fsSL https://api.github.com/repos/freelensapp/freelens/releases/latest \
         | grep -o 'https://[^"]*Freelens-[0-9.]*-linux-amd64\.deb' | head -1)" || true
@@ -184,7 +218,7 @@ install_freelens() {
 print_summary() {
   echo
   say "Verifying"
-  for t in kubectl helm stern k3d radar freelens; do
+  for t in kubectl helm stern k3d radar radar-desktop freelens; do
     if command -v "$t" >/dev/null 2>&1; then printf '  \033[32mok\033[0m      %s\n' "$t"
     else printf '  \033[31mmissing\033[0m %s\n' "$t"; fi
   done
@@ -199,6 +233,7 @@ main() {
   install_stern
   install_k3d
   install_radar
+  install_radar_desktop
   install_freelens
   print_summary
 }

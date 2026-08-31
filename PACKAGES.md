@@ -295,6 +295,7 @@ Optional Kubernetes toolchain. Installed separately via
 |---|---|---|
 | `freelens` | Free, community-maintained fork of OpenLens | [github.com/freelensapp/freelens](https://github.com/freelensapp/freelens) |
 | `openlens` | Open-source build of the Lens Kubernetes IDE | [github.com/MuhammedKalkan/OpenLens](https://github.com/MuhammedKalkan/OpenLens) |
+| `radar-desktop` | Desktop app build of Radar; the GUI counterpart to the `radar` CLI | [github.com/skyhook-io/radar](https://github.com/skyhook-io/radar) |
 
 ---
 

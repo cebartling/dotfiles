@@ -166,7 +166,8 @@ Ubuntu packages none of this, and every vendor's install doc wants a
 third-party apt repository — `pkgs.k8s.io`, `baltocdn`, and so on. **None of
 that is necessary.** Each CLI is a static Go binary published upstream, so they
 go into `~/.local/bin` with no root and no extra apt sources, checksum-verified
-where upstream publishes one.
+where upstream publishes one. The two `.deb`s are the exception: they need sudo
+for `apt-get install`, so run the script from a real terminal to get them.
 
 | Tool | Source |
 |---|---|
@@ -175,7 +176,8 @@ where upstream publishes one.
 | `stern` | GitHub release |
 | `k3d` | GitHub release — **runs the cluster**; the others are only clients |
 | `radar` | GitHub release — installs as `kubectl-radar` with a `radar` symlink, matching the Homebrew formula |
-| `freelens` | GitHub `.deb`. The one step needing sudo, so run the script from a real terminal |
+| `radar-desktop` | GitHub `.deb`. Its binary is `radar-desktop`, so no clash with the `radar` CLI |
+| `freelens` | GitHub `.deb` |
 
 A deliberate subset of [`Brewfile.k8s`](Brewfile.k8s): `k9s`, `eksctl`,
 `kubeshark` and `kubectl-ai` are not installed on Linux. `openlens` has been

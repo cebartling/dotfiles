@@ -18,3 +18,4 @@ brew "weaveworks/tap/eksctl"
 cask "freelens"
 # openlens removed 2026-08-30 — dead upstream, last release 2023-06-30.
 # freelens is the maintained successor.
+cask "radar-desktop"
