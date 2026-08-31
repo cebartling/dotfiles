@@ -123,6 +123,34 @@ install_k3d() {
   fi
 }
 
+install_radar() {
+  if command -v kubectl-radar >/dev/null 2>&1; then say "radar already installed ($(kubectl-radar --version 2>/dev/null | head -1))"; return 0; fi
+  # skyhook-io/radar — a Kubernetes UI plus MCP server in one static binary.
+  # The tarball ships it as `kubectl-radar` so `kubectl radar` picks it up as a
+  # plugin; the `radar` symlink mirrors what the Homebrew formula does.
+  local base ver tgz tmp want
+  base="$(curl -fsSL https://api.github.com/repos/skyhook-io/radar/releases/latest \
+        | grep -o 'https://[^"]*/download/[^"/]*' | head -1)" || true
+  [[ -n "$base" ]] || { warn "could not resolve the radar release URL"; SKIPPED+=(radar); return 0; }
+  ver="${base##*/}"
+  say "Installing radar $ver"
+  tmp="$(mktemp -d)"
+  tgz="radar_${ver}_linux_amd64.tar.gz"
+  if curl -fsSL -o "$tmp/$tgz" "$base/$tgz" \
+     && curl -fsSL -o "$tmp/checksums.txt" "$base/checksums.txt"; then
+    want="$(awk -v f="$tgz" '$2 == f {print $1; exit}' "$tmp/checksums.txt")"
+    if [[ -n "$want" ]]; then verify_sha256 "$tmp/$tgz" "$want"
+    else warn "no checksum line for $tgz; installing unverified"; fi
+    tar -xzf "$tmp/$tgz" -C "$tmp"
+    mkdir -p "$BIN"
+    install -m 0755 "$tmp/kubectl-radar" "$BIN/kubectl-radar"
+    ln -sf kubectl-radar "$BIN/radar"
+  else
+    warn "radar download failed"; SKIPPED+=(radar)
+  fi
+  rm -rf "$tmp"
+}
+
 install_freelens() {
   if command -v freelens >/dev/null 2>&1 || dpkg -s freelens >/dev/null 2>&1; then
     say "freelens already installed"; return 0
@@ -156,7 +184,7 @@ install_freelens() {
 print_summary() {
   echo
   say "Verifying"
-  for t in kubectl helm stern k3d freelens; do
+  for t in kubectl helm stern k3d radar freelens; do
     if command -v "$t" >/dev/null 2>&1; then printf '  \033[32mok\033[0m      %s\n' "$t"
     else printf '  \033[31mmissing\033[0m %s\n' "$t"; fi
   done
@@ -170,6 +198,7 @@ main() {
   install_helm
   install_stern
   install_k3d
+  install_radar
   install_freelens
   print_summary
 }

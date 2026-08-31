@@ -273,6 +273,7 @@ Optional Kubernetes toolchain. Installed separately via
 
 | Tap | Purpose |
 |---|---|
+| [`skyhook-io/tap`](https://github.com/skyhook-io/homebrew-tap) | Radar and other Skyhook tools |
 | [`sozercan/kubectl-ai`](https://github.com/sozercan/kubectl-ai) | AI-powered kubectl assistant |
 | [`weaveworks/tap`](https://github.com/weaveworks/homebrew-tap) | eksctl and related Weaveworks tools |
 
@@ -284,6 +285,7 @@ Optional Kubernetes toolchain. Installed separately via
 | `kubectl-ai` | Use natural language to interact with Kubernetes via kubectl | [github.com/sozercan/kubectl-ai](https://github.com/sozercan/kubectl-ai) |
 | `kubernetes-cli` | `kubectl` — the official Kubernetes command-line client | [github.com/kubernetes/kubernetes](https://github.com/kubernetes/kubernetes) |
 | `kubeshark` | API traffic analyzer for Kubernetes; "Wireshark for k8s" | [github.com/kubeshark/kubeshark](https://github.com/kubeshark/kubeshark) |
+| `skyhook-io/tap/radar` | Kubernetes UI (topology, issues, Helm, GitOps) with a built-in MCP server; installs as `kubectl-radar` plus a `radar` link | [github.com/skyhook-io/radar](https://github.com/skyhook-io/radar) |
 | `stern` | Multi-pod and container log tailing for Kubernetes | [github.com/stern/stern](https://github.com/stern/stern) |
 | `weaveworks/tap/eksctl` | Official CLI for Amazon EKS clusters | [github.com/eksctl-io/eksctl](https://github.com/eksctl-io/eksctl) |
 

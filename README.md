@@ -174,6 +174,7 @@ where upstream publishes one.
 | `helm` | `get.helm.sh` |
 | `stern` | GitHub release |
 | `k3d` | GitHub release — **runs the cluster**; the others are only clients |
+| `radar` | GitHub release — installs as `kubectl-radar` with a `radar` symlink, matching the Homebrew formula |
 | `freelens` | GitHub `.deb`. The one step needing sudo, so run the script from a real terminal |
 
 A deliberate subset of [`Brewfile.k8s`](Brewfile.k8s): `k9s`, `eksctl`,

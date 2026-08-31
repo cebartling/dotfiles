@@ -2,6 +2,7 @@
 # Apply with:  brew bundle --file=$DOTFILES/Brewfile.k8s
 # Kept separate from the main Brewfile because not every Mac needs k8s.
 
+tap "skyhook-io/tap"
 tap "sozercan/kubectl-ai", "https://github.com/sozercan/kubectl-ai"
 tap "weaveworks/tap"
 
@@ -10,6 +11,7 @@ brew "helm"
 brew "kubectl-ai"
 brew "kubernetes-cli"
 brew "kubeshark"
+brew "skyhook-io/tap/radar"
 brew "stern"
 brew "weaveworks/tap/eksctl"
 
