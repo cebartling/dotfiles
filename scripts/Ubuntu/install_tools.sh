@@ -77,6 +77,14 @@ APT_DEV=(
   python3-poetry
 )
 
+# Playwright browser dependencies — the bundled Chromium/Firefox/WebKit
+# builds need these shared libraries beyond what `playwright install-deps`
+# resolves on 24.04+.
+APT_PLAYWRIGHT=(
+  libavif16
+  libmanette-0.2-0
+)
+
 # Headless Wayland display — the xvfb/xvfb-run stand-in for Wayland-native
 # clients. weston's headless backend is the display; scripts/Ubuntu/wlheadless-run
 # is the xvfb-run half, which nothing packages. wayland-utils supplies
@@ -114,7 +122,7 @@ install_apt() {
   # genuinely useful companions, and this is a desktop, not a container.
   sudo apt-get install -y \
     "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}" \
-    "${APT_WAYLAND[@]}" "${APT_PYENV_BUILD[@]}"
+    "${APT_WAYLAND[@]}" "${APT_PYENV_BUILD[@]}" "${APT_PLAYWRIGHT[@]}"
 }
 
 # ---------- binary name shims ----------
