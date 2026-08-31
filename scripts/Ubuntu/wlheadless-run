@@ -81,7 +81,17 @@ cleanup() {
     rm -f "$LOG"
   fi
 }
-trap cleanup EXIT INT TERM
+# EXIT does the teardown. INT/TERM tear down too, but must also exit
+# 128+signum — a run killed by Ctrl-C that reports success would be read as a
+# pass by anything scripting this.
+on_signal() {
+  cleanup
+  trap - EXIT
+  exit $((128 + $1))
+}
+trap cleanup EXIT
+trap 'on_signal 2'  INT
+trap 'on_signal 15' TERM
 
 # --no-config so a stray ~/.config/weston.ini cannot change behaviour;
 # --renderer=pixman to stay off the GPU; --idle-time=0 so the display does not

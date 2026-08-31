@@ -138,7 +138,9 @@ wlheadless-run --size 1280x720 -- my-test
 ```
 
 Each run gets a private socket, so concurrent invocations do not collide — the
-behaviour `xvfb-run` puts behind `-a`, here unconditional. Exit codes propagate.
+behaviour `xvfb-run` puts behind `-a`, here unconditional. Exit codes propagate,
+including `128+signum` when the wrapper itself is interrupted (130 on `SIGINT`,
+143 on `SIGTERM`), so an interrupted run is never mistaken for a pass.
 The compositor runs with `--renderer=pixman` (no GPU), `--no-config` (a stray
 `~/.config/weston.ini` cannot change behaviour) and `--idle-time=0` (no blanking
 mid-run).
