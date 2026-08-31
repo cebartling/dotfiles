@@ -107,6 +107,15 @@ $EDITOR ~/.dotfiles/ai-tools/claude-code/skills/my-skill/SKILL.md
 bash ~/.dotfiles/ai-tools/claude-code/install.sh
 ```
 
+> **The manifest must be `SKILL.md`, uppercase.** macOS will not catch a
+> lowercase `skill.md` — APFS is case-insensitive by default, so it resolves
+> anyway and the skill loads fine. On a case-sensitive filesystem (ext4 on the
+> Linux boxes) it simply never loads, silently: no error, the skill is just
+> absent. `github-pr-comments` and `squash-merge` shipped this way for a while
+> and worked on the Mac the whole time. Since `install.sh` symlinks each skill
+> as a whole directory, a rename inside the repo takes effect immediately with
+> no re-install.
+
 The skill is now available as `/my-skill` in any Claude Code session.
 
 Adding a new command or hook follows the same pattern — drop the file
