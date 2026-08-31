@@ -155,6 +155,37 @@ mid-run).
 work; `weston` is installed here because the headless backend is a first-class
 feature of the reference compositor rather than an env-var side door.
 
+### Kubernetes (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_k8s_tools.sh
+```
+
+Not wired into bootstrap, mirroring `scripts/macOS/install_k8s_tools.zsh`.
+Ubuntu packages none of this, and every vendor's install doc wants a
+third-party apt repository — `pkgs.k8s.io`, `baltocdn`, and so on. **None of
+that is necessary.** Each CLI is a static Go binary published upstream, so they
+go into `~/.local/bin` with no root and no extra apt sources, checksum-verified
+where upstream publishes one.
+
+| Tool | Source |
+|---|---|
+| `kubectl` | `dl.k8s.io` (tracks `stable.txt`) |
+| `helm` | `get.helm.sh` |
+| `stern` | GitHub release |
+| `k3d` | GitHub release — **runs the cluster**; the others are only clients |
+| `freelens` | GitHub `.deb`. The one step needing sudo, so run the script from a real terminal |
+
+A deliberate subset of [`Brewfile.k8s`](Brewfile.k8s): `k9s`, `eksctl`,
+`kubeshark` and `kubectl-ai` are not installed on Linux. `openlens` has been
+dropped from the Brewfile entirely — dead upstream since 2023-06-30, superseded
+by `freelens`.
+
+> **Docker's ufw bypass applies to k3d.** k3d publishes ports through Docker,
+> which on these boxes reaches the LAN regardless of ufw. Bind to loopback
+> (`--api-port 127.0.0.1:6550`, `-p 127.0.0.1:8080:80@loadbalancer`) or apply
+> `DOCKER-USER` rules before creating a cluster with published ports.
+
 ### How the shared zshrc stays cross-platform
 
 `zshrc` is one file used by both platforms. Every OS-specific branch is guarded
@@ -260,6 +291,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
+| `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 
