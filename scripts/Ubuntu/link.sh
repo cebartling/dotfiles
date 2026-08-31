@@ -51,6 +51,10 @@ echo
 link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
 
+# The one tracked executable meant to land on $PATH. ~/.local/bin is already
+# on $path via zshrc; link() creates the directory if it is missing.
+link "$DOTFILES/scripts/Ubuntu/wlheadless-run" "$HOME/.local/bin/wlheadless-run"
+
 if command -v ghostty >/dev/null 2>&1; then
   link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 else

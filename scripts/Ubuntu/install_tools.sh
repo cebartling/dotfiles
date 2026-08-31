@@ -77,6 +77,15 @@ APT_DEV=(
   python3-poetry
 )
 
+# Headless Wayland display — the xvfb/xvfb-run stand-in for Wayland-native
+# clients. weston's headless backend is the display; scripts/Ubuntu/wlheadless-run
+# is the xvfb-run half, which nothing packages. wayland-utils supplies
+# `wayland-info`, which is how you check the display actually came up.
+APT_WAYLAND=(
+  weston
+  wayland-utils
+)
+
 # Build dependencies for pyenv — CPython is compiled from source, and a
 # missing header here surfaces much later as a half-built interpreter.
 # https://github.com/pyenv/pyenv/wiki#suggested-build-environment
@@ -104,7 +113,8 @@ install_apt() {
   # Recommends are left on deliberately: git/pipx/pre-commit pull in
   # genuinely useful companions, and this is a desktop, not a container.
   sudo apt-get install -y \
-    "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}" "${APT_PYENV_BUILD[@]}"
+    "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}" \
+    "${APT_WAYLAND[@]}" "${APT_PYENV_BUILD[@]}"
 }
 
 # ---------- binary name shims ----------
@@ -428,7 +438,7 @@ print_summary() {
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo pyenv; do
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo pyenv weston; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else

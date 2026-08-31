@@ -94,7 +94,7 @@ gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 
 | Source | Packages |
 |---|---|
-| **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry |
+| **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry, weston, wayland-utils |
 | **snap** | vale, difftastic |
 | **upstream release** | [uv](https://astral.sh/uv), watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun), [pnpm](https://github.com/pnpm/pnpm), [rustup](https://rustup.rs), [pyenv](https://github.com/pyenv/pyenv) |
 
@@ -120,6 +120,38 @@ names in `~/.local/bin`, so `aliases/core.sh` needs no Linux special-casing.
 Not available on Linux and intentionally skipped: `mole`, `cliclick`,
 `whisperkit-cli`, and every `cask` / `vscode` entry in the Brewfiles. The
 optional k8s and cloud toolchains have no Linux installer yet.
+
+### Headless Wayland (`wlheadless-run`)
+
+The Wayland stand-in for `xvfb` / `xvfb-run`. There is no single drop-in, because
+the job splits in two: the display is a headless compositor (`weston --backend=headless`),
+and the `xvfb-run` half is **not packaged by anyone** — Wayland has no `-displayfd`,
+so something has to poll for the compositor's socket in `$XDG_RUNTIME_DIR`.
+
+[`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) is that half. It is
+the one tracked executable in this repo meant to land on `$PATH`; `link.sh` symlinks
+it into `~/.local/bin`.
+
+```sh
+wlheadless-run -- wayland-info              # the `xvfb-run xdpyinfo` equivalent
+wlheadless-run --size 1280x720 -- my-test
+```
+
+Each run gets a private socket, so concurrent invocations do not collide — the
+behaviour `xvfb-run` puts behind `-a`, here unconditional. Exit codes propagate.
+The compositor runs with `--renderer=pixman` (no GPU), `--no-config` (a stray
+`~/.config/weston.ini` cannot change behaviour) and `--idle-time=0` (no blanking
+mid-run).
+
+> **This does not replace `xvfb`.** An X11-only program under Wayland needs this
+> compositor *plus* nested Xwayland — more moving parts than just running Xvfb,
+> which is still in apt and still correct there. Use `wlheadless-run` for
+> Wayland-native clients. For browser tests you likely need neither: Chrome and
+> Firefox have real headless modes.
+
+`cage`, `sway`, `labwc` and `mutter --headless` are all in apt too and would each
+work; `weston` is installed here because the headless backend is a first-class
+feature of the reference compositor rather than an env-var side door.
 
 ### How the shared zshrc stays cross-platform
 
@@ -205,7 +237,8 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `Brewfile` | Canonical macOS package manifest (`brew bundle`) |
 | `Brewfile.k8s` | Optional Kubernetes toolchain |
 | `Brewfile.cloud` | Optional cloud management tooling (provider CLIs + Hashicorp IaC) |
-| [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package |
+| `Brewfile.apple` / `.aitools` / `.tailscale` / `.netbird` | Further opt-in macOS manifests, applied by their own `scripts/macOS/install_*.zsh` |
+| [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package, plus where each comes from on Linux |
 | `zshrc` | Tracked `~/.zshrc`, shared by macOS and Linux (symlinked into place by `link.zsh` / `link.sh`) |
 | `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
 | `aliases/core.sh` | Shared aliases (loaded on every shell) |
@@ -213,7 +246,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `functions/core.sh` | Shared shell functions |
 | `functions/project-aliases.sh` | `chpwd` hook that auto-sources project alias files |
 | `paths/core.sh` | Extra `PATH` entries |
-| `runtimes/*.sh` | Language runtime hooks (claude, sdkman, nvm — most lazy-loaded) |
+| `runtimes/claude.sh` | The **only** file under `runtimes/` that `zshrc` sources. The nvm/sdkman/pyenv loaders were inlined into `zshrc`; the remaining `runtimes/*.sh` are unreferenced legacy and several hardcode macOS paths — do not assume they run |
 | `configurations/starship.toml` | Starship prompt config (symlinked) |
 | `configurations/ghostty/config` | Standalone Ghostty.app config (symlinked into `~/.config/ghostty/`) |
 | [`configurations/cmux/`](configurations/cmux/README.md) | cmux app + embedded-Ghostty config (symlinked into `~/.config/cmux/` and `~/Library/Application Support/com.cmuxterm.app/`) |
@@ -225,6 +258,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
+| [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 
 ## Per-project aliases

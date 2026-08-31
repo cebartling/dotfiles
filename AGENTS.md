@@ -36,6 +36,27 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Privileged Operations
+
+**Assume you cannot run `sudo`.** On the Linux boxes this repo provisions, sudo
+is password-required and an agent session usually has no TTY — both `sudo -n`
+and a plain `sudo` fail with *"a terminal is required to authenticate"*. There
+is no `NOPASSWD` rule to lean on.
+
+Practical consequences:
+
+- Prefer installs that need no root. A single binary can be unpacked with
+  `dpkg-deb -x` and dropped into `~/.local/bin` (already on `$path`) instead of
+  `apt-get install ./thing.deb`.
+- When a step genuinely needs root, **write it and hand it over** rather than
+  attempting it. Say exactly which command the user must run in a real
+  terminal, and verify the result afterwards.
+- `pkexec` is not a workaround: these sessions typically have no `DISPLAY` or
+  `WAYLAND_DISPLAY` either, so there is nowhere to draw the prompt.
+
+Anything privileged that *was* run this way should be recorded, so a later
+session does not assume the machine is in a state it never reached.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 ## Beads Issue Tracker
 

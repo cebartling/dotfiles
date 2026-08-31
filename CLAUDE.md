@@ -50,21 +50,77 @@ Work NOT complete until `git push` succeeds.
 
 ## Build & Test
 
-_Add build and test commands here_
+There is no build. "Tests" here means: does a shell still start cleanly, and do
+the scripts still parse. Run these after touching `zshrc`, `aliases/`,
+`functions/`, or anything under `scripts/`.
 
 ```bash
-# Example:
-# npm install
-# npm test
+# Parse checks — never commit a script that does not parse
+bash -n scripts/Ubuntu/*.sh bootstrap.sh ai-tools/claude-code/install.sh
+zsh  -n zshrc aliases/core.sh functions/*.sh oh-my-zsh/core.sh
+
+# A login shell must start SILENTLY. Any stderr is a bug.
+env -u CLAUDECODE zsh -i -c exit
+
+# Startup budget is ~150ms. Measure with hyperfine, not `time` — and unset
+# CLAUDECODE, or zshrc takes its eager-nvm branch and you will measure ~350ms
+# and "fix" a problem that does not exist.
+hyperfine --warmup 3 'env -u CLAUDECODE zsh -i -c exit'
+
+# Linkers are idempotent: a second run prints `ok` for every entry, never
+# `backup`. A `backup` line on a re-run means something diverged.
+scripts/Ubuntu/link.sh          # or scripts/macOS/link.zsh
+bash ai-tools/claude-code/install.sh
+
+# Relative links in the docs must resolve
+grep -roE '\]\([^)h][^)]*\)' README.md PACKAGES.md ai-tools/claude-code/README.md
 ```
 
 ## Architecture Overview
 
-_Add brief architecture overview here_
+One repo, two platforms, three moving parts:
+
+- **`zshrc` is a single file shared by macOS and Linux.** There is no per-OS
+  copy. Every platform-specific branch is guarded by `$OSTYPE` or an existence
+  test, so pulling on the other machine is a behavioural no-op.
+- **Per-OS installers.** `scripts/macOS/*` drives Homebrew and the `Brewfile*`
+  manifests. `scripts/Ubuntu/*` drives apt, with snap and upstream release
+  binaries for the gaps — there is no Homebrew on Linux here.
+- **Everything reaches `$HOME` by symlink**, never by copy, so edits in either
+  tree show up in both and `git status` is a faithful diff. The linkers back up
+  any pre-existing real file to `<path>.backup.<timestamp>`.
+
+`bootstrap.sh` is macOS and redirects to `scripts/Ubuntu/bootstrap.sh` on Linux.
+The Claude Code config under `ai-tools/claude-code/` is a separate, manual
+`install.sh` — bootstrap does not run it.
 
 ## Conventions & Patterns
 
-_Add project-specific conventions here_
+**Guard, do not fork.** When something differs per platform, branch inside the
+shared file behind `$OSTYPE` or a `command -v` / `-d` test. Never create a
+parallel copy of a tracked config.
+
+**Beware installers that write to shell profiles.** `~/.zshrc` is a symlink to
+`$DOTFILES/zshrc`, so an installer appending to it is editing this repo. Known
+offenders and their opt-outs: nvm (`PROFILE=/dev/null`), uv
+(`INSTALLER_NO_MODIFY_PATH=1`), rustup (`--no-modify-path`), bun and pnpm (use
+the release archive, not the curl installer), oh-my-zsh and sdkman (they write
+one anyway — `scripts/Ubuntu/bootstrap.sh` snapshots and discards it).
+**Check for this on every new tool.**
+
+**Single binaries go to `~/.local/bin`, not `/usr/bin`.** It is already on
+`$path`, and `dpkg-deb -x` + `install -m 0755` needs no root. Assume sudo is
+password-prompted and unavailable to an agent.
+
+**Prefer lazy loading in `zshrc`.** nvm, sdkman and pyenv all load on first use.
+An eager `eval "$(tool init -)"` is a subprocess on every single shell.
+
+**Verify against the machine, not from memory.** Package names and binary names
+drift (Debian ships `bat` as `batcat`, `fd` as `fdfind`). To find whether a
+Homebrew formula has a Linux build, query the formula API —
+`https://formulae.brew.sh/api/formula/<name>.json` gives the real homepage,
+source URL and bottle platforms. Guessing at GitHub orgs has produced wrong
+"it does not exist on Linux" conclusions more than once.
 
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer)

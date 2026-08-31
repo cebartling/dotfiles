@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# wlheadless-run — run a command against a throwaway headless Wayland display.
+#
+# The Wayland counterpart to xvfb-run. Neither Debian nor Ubuntu ships one:
+# the compositor half exists (weston's headless backend), but the wrapper half
+# does not, because Wayland has no `-displayfd`. The compositor just creates a
+# socket in $XDG_RUNTIME_DIR whenever it is ready, so something has to poll for
+# it — that polling loop is most of what this script is.
+#
+#   wlheadless-run [--size WxH] [--server-args "..."] [--] COMMAND [ARGS...]
+#
+#   wlheadless-run -- wayland-info
+#   wlheadless-run --size 1280x720 -- my-gui-test
+#
+# This does NOT replace xvfb. An X11-only program under Wayland needs this
+# compositor *plus* nested Xwayland — more moving parts than simply running
+# Xvfb, which is still packaged and still the right answer there. Use this for
+# Wayland-native clients.
+#
+# Each run gets its own socket, so concurrent invocations do not collide
+# (the behaviour xvfb-run puts behind -a, here unconditional).
+
+set -euo pipefail
+
+SIZE="1920x1080"
+SERVER_ARGS=""
+
+say()  { printf '\033[36m==>\033[0m %s\n' "$*" >&2; }
+warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
+die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'
+  exit "${1:-0}"
+}
+
+while (( $# )); do
+  case "$1" in
+    --size)        SIZE="${2:-}"; shift 2 ;;
+    --size=*)      SIZE="${1#*=}"; shift ;;
+    --server-args) SERVER_ARGS="${2:-}"; shift 2 ;;
+    --server-args=*) SERVER_ARGS="${1#*=}"; shift ;;
+    -h|--help)     usage 0 ;;
+    --)            shift; break ;;
+    -*)            die "unknown option: $1 (see --help)" ;;
+    *)             break ;;
+  esac
+done
+
+(( $# )) || usage 1
+
+[[ "$SIZE" =~ ^([0-9]+)x([0-9]+)$ ]] || die "--size must look like WxH, got: $SIZE"
+WIDTH="${BASH_REMATCH[1]}"
+HEIGHT="${BASH_REMATCH[2]}"
+
+command -v weston >/dev/null 2>&1 \
+  || die "weston not found — install it with: sudo apt-get install -y weston"
+
+# Weston puts its socket here. Inventing one under /tmp would be a permissions
+# smell, so say plainly what is wrong instead of guessing.
+[[ -n "${XDG_RUNTIME_DIR:-}" && -d "$XDG_RUNTIME_DIR" ]] \
+  || die "XDG_RUNTIME_DIR is unset or missing — a login session normally sets it (e.g. /run/user/\$UID). Set it to a private 0700 directory you own and re-run."
+
+SOCKET="wayland-headless-$$"
+LOG="$(mktemp -t wlheadless-XXXXXX.log)"
+WESTON_PID=""
+FAILED=0
+
+cleanup() {
+  if [[ -n "$WESTON_PID" ]] && kill -0 "$WESTON_PID" 2>/dev/null; then
+    kill "$WESTON_PID" 2>/dev/null || :
+    wait "$WESTON_PID" 2>/dev/null || :
+  fi
+  rm -f "$XDG_RUNTIME_DIR/$SOCKET" "$XDG_RUNTIME_DIR/$SOCKET.lock"
+  # Only surface the compositor log when something actually went wrong —
+  # a successful run should be as quiet as the command it wrapped.
+  if (( FAILED )) && [[ -s "$LOG" ]]; then
+    warn "weston log ($LOG):"
+    sed 's/^/    /' "$LOG" >&2
+  else
+    rm -f "$LOG"
+  fi
+}
+trap cleanup EXIT INT TERM
+
+# --no-config so a stray ~/.config/weston.ini cannot change behaviour;
+# --renderer=pixman to stay off the GPU; --idle-time=0 so the display does not
+# blank part-way through a long run.
+# shellcheck disable=SC2086  # SERVER_ARGS is intentionally word-split
+weston \
+  --backend=headless \
+  --renderer=pixman \
+  --no-config \
+  --idle-time=0 \
+  --width="$WIDTH" \
+  --height="$HEIGHT" \
+  --socket="$SOCKET" \
+  --log="$LOG" \
+  $SERVER_ARGS \
+  >/dev/null 2>&1 &
+WESTON_PID=$!
+
+# Wait for the socket rather than sleeping a fixed amount.
+for _ in $(seq 100); do
+  [[ -S "$XDG_RUNTIME_DIR/$SOCKET" ]] && break
+  if ! kill -0 "$WESTON_PID" 2>/dev/null; then
+    FAILED=1
+    die "weston exited before creating a socket"
+  fi
+  sleep 0.1
+done
+
+if [[ ! -S "$XDG_RUNTIME_DIR/$SOCKET" ]]; then
+  FAILED=1
+  die "timed out after 10s waiting for $XDG_RUNTIME_DIR/$SOCKET"
+fi
+
+# Propagate the command's exit status — a wrapper that swallows it is useless
+# in CI. `|| rc=$?` keeps `set -e` from killing us first.
+rc=0
+WAYLAND_DISPLAY="$SOCKET" "$@" || rc=$?
+(( rc == 0 )) || FAILED=1
+exit "$rc"

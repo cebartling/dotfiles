@@ -324,7 +324,8 @@ the Linux counterpart. Ubuntu 24.04+ carries most of the CLI list in apt.
 `eza` · `bat` · `fd-find` · `ripgrep` · `fzf` · `zoxide` · `git-delta` ·
 `du-dust` · `procs` · `tree` · `tmux` · `jq` · `yq` · `direnv` · `atuin` ·
 `lazygit` · `glow` · `hyperfine` · `just` · `tokei` · `pre-commit` ·
-`gitleaks` · `httpie` · `xh` · `gh` · `pipx` · `python3-poetry` · plus base
+`gitleaks` · `httpie` · `xh` · `gh` · `pipx` · `python3-poetry` · `weston` ·
+`wayland-utils` · plus base
 packages (`build-essential`, `git`, `git-lfs`, `curl`, `wget`, `unzip`,
 `openssl`, `fontconfig`, `net-tools`)
 
@@ -412,6 +413,20 @@ Two of these are not lone binaries and cannot simply be dropped into
   launcher symlinked onto `PATH`. (Modern pnpm ships no `pnpx`; use `pnpm dlx`.)
 - **bun**'s default `linux-x64` build requires AVX2; `install_tools.sh` falls
   back to the `-baseline` build when `/proc/cpuinfo` lacks it.
+
+### Headless Wayland, and why there is a script for it
+
+`weston` supplies the headless *compositor* — the `xvfb` half. The `xvfb-run` half
+is unpackaged in Debian and Ubuntu and had to be written:
+[`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run), symlinked onto
+`PATH` by `link.sh`. Wayland has no `-displayfd`, so a wrapper has to poll for the
+compositor's socket in `$XDG_RUNTIME_DIR` before running the command.
+
+`wayland-utils` is pulled in for `wayland-info`, which is the only convenient way
+to confirm a headless display actually came up.
+
+None of this deprecates `xvfb` — see the note in the README. Alternatives that
+would also have worked: `cage`, `sway`, `labwc`, `mutter --headless`.
 
 ### Not available on Linux
 
