@@ -443,6 +443,13 @@ install_pyenv() {
 print_summary() {
   echo
   say "Verifying installed tools"
+  # This bash process inherited its PATH before any of the installs above ran,
+  # so a tool just dropped into ~/.local/bin or ~/.cargo/bin would report as
+  # missing here even though it is installed and works in the next shell.
+  # pyenv is never on $path at all: zshrc exposes it as a lazy-loading function
+  # wrapping $PYENV_ROOT/bin/pyenv. Resolve against the install locations so
+  # only a genuine failure is reported.
+  local PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:$PATH"
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
            lazygit gh jq yq just glow hyperfine tokei procs dust \
@@ -461,8 +468,7 @@ print_summary() {
   fi
   if (( ${#missing[@]} )); then
     echo
-    warn "not on PATH in this shell: ${missing[*]}"
-    warn "(~/.local/bin entries appear after you start a new shell)"
+    warn "not installed: ${missing[*]}"
   fi
   echo
   say "Finished installing tools on Ubuntu."
