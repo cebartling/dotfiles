@@ -172,6 +172,7 @@ cask "flashspace"
 cask "maccy"
 cask "lookaway"
 cask "finetune"
+cask "handy"  # open-source push-to-talk dictation
 
 # ===== Dev utilities =====
 cask "devutils"
