@@ -96,6 +96,7 @@ gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 |---|---|
 | **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry, weston, wayland-utils |
 | **snap** | vale, difftastic |
+| **apt (`pkgs.tailscale.com`)** | tailscale — opt-in, the only third-party apt source here (see below) |
 | **upstream release** | [uv](https://astral.sh/uv), watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun), [pnpm](https://github.com/pnpm/pnpm), [rustup](https://rustup.rs), [pyenv](https://github.com/pyenv/pyenv) |
 
 Anything installed from an upstream release lands in `~/.local/bin`, which the
@@ -188,6 +189,46 @@ by `freelens`.
 > which on these boxes reaches the LAN regardless of ufw. Bind to loopback
 > (`--api-port 127.0.0.1:6550`, `-p 127.0.0.1:8080:80@loadbalancer`) or apply
 > `DOCKER-USER` rules before creating a cluster with published ports.
+
+### Tailscale (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_tailscale.sh
+```
+
+Not wired into bootstrap, mirroring `Brewfile.tailscale` and
+`scripts/macOS/install_tailscale_app.zsh` on macOS — joining a tailnet is a
+per-machine decision.
+
+This is the **one exception** to the no-third-party-apt-repository rule above,
+and it is deliberate. Everything in the k8s toolchain is a static Go binary that
+drops into `~/.local/bin` with no root; Tailscale is not. The CLI is only half of
+it — `tailscaled` is a privileged daemon that opens a TUN device and needs a
+systemd unit, so root is unavoidable. Once it is, the signed vendor repo beats a
+hand-rolled unit: it keeps a network-exposed daemon on the unattended-upgrade
+path. Ubuntu's own `tailscale` in universe lags upstream by a release cycle,
+which is the wrong trade here.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/usr/share/keyrings/tailscale-archive-keyring.gpg` |
+| apt source | `/etc/apt/sources.list.d/tailscale.list`, suite = this box's `lsb_release -cs`, falling back to `plucky` if Tailscale has not packaged the release yet |
+| `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
+
+The script installs the package and runs `systemctl enable --now tailscaled`,
+then stops. Joining the tailnet opens a browser login, so it stays manual:
+
+```sh
+sudo tailscale up --ssh --accept-routes
+```
+
+`--ssh` allows SSH into this box over the tailnet, gated by the tailnet ACLs;
+`--accept-routes` consumes subnet routes other nodes advertise. This box
+advertises nothing.
+
+> **The Docker firewall does not know about `tailscale0`.** `~/bin/docker-user-firewall.sh`
+> hardcodes `WAN_IFS`, so container traffic over the tailnet bypasses the
+> `DOCKER-USER` containment those rules provide. Tracked as beads `dotfiles-0qc`.
 
 ### How the shared zshrc stays cross-platform
 
@@ -295,6 +336,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
+| `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; the only script that adds an apt repository) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 

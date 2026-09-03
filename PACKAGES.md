@@ -352,6 +352,26 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
 
+### Tailscale (opt-in, the one third-party apt repository)
+
+`scripts/Ubuntu/install_tailscale.sh` — not wired into bootstrap, mirroring
+`Brewfile.tailscale` on macOS. This is the only place in the repo that adds an
+apt source, because Tailscale is not a single static binary: `tailscaled` is a
+privileged daemon that opens a TUN device and needs a systemd unit, so root is
+unavoidable, and once it is, the signed vendor repo beats a hand-rolled unit and
+keeps a network-exposed daemon on the unattended-upgrade path. Ubuntu's own
+`tailscale` in universe lags upstream by a release cycle.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/usr/share/keyrings/tailscale-archive-keyring.gpg` |
+| apt source | `/etc/apt/sources.list.d/tailscale.list` (suite = this box's `lsb_release -cs`) |
+| `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
+
+The script stops after `systemctl enable --now tailscaled`. Joining the tailnet
+is a manual step because it opens a browser login: `sudo tailscale up --ssh
+--accept-routes`.
+
 ### Installed by bootstrap, not by the package manager
 
 `oh-my-zsh` (unattended installer) · `sdkman` · `nvm` (installed proper, since
@@ -434,8 +454,9 @@ would also have worked: `cage`, `sway`, `labwc`, `mutter --headless`.
 ### Not available on Linux
 
 `mole` · `cliclick` · `whisperkit-cli` · every `cask` entry · every `vscode`
-entry. The `Brewfile.k8s` and `Brewfile.cloud` toolchains have no Linux
-installer yet.
+entry. The `Brewfile.cloud` toolchain has no Linux installer yet;
+`Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
+and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not.
 
 ### Finding a Linux build for a Brewfile formula
 
