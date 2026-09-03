@@ -81,9 +81,10 @@ AND over the tailnet, which docker-user-firewall.sh trusts on purpose:
     || echo "no answer"; done
 
 Expected:
-  18080  000      <- unless ufw explicitly allows in on tailscale0. tailscale up
-                     adds no ufw rule, so the host-native listener stays behind
-                     ufw's default deny on INPUT.
+  18080  200      <- observed on bartling-lab01 2026-09-03: this host admits
+                     tailnet traffic on INPUT, so even the non-Docker listener
+                     answers. A 000 here is not a failure of the container rule,
+                     it just means the host firewall is stricter on tailscale0.
   18081  200      <- container reachable: tailscale0 is in TRUSTED_IFS. Published
                      ports are DNAT'd and FORWARDed, so they never hit INPUT and
                      ufw's policy does not apply — which is the whole bypass,
