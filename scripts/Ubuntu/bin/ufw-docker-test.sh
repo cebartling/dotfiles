@@ -38,6 +38,24 @@ echo
 echo "==> Host-side listeners:"
 ss -tlnp | grep -E '1808[0-2]' | sed 's/^/    /'
 
+# Positive control. Every port in this test is expected to answer 000 from the
+# LAN, so a harness that quietly died produces output identical to a working
+# firewall. Prove from loopback that all three are actually serving before
+# trusting any 000 from off-box as evidence of blocking.
+echo
+echo "==> Positive control — all three MUST answer 200 on loopback right now:"
+ctrl_ok=1
+for p in 18080 18081 18082; do
+  code="$(curl -s -m 3 -o /dev/null -w '%{http_code}' "http://127.0.0.1:$p/" || echo 000)"
+  printf '    %-6s %s' "$p" "$code"
+  if [ "$code" = "200" ]; then echo; else echo "   <- NOT SERVING"; ctrl_ok=0; fi
+done
+if [ "$ctrl_ok" -eq 0 ]; then
+  echo
+  echo "    Control failed: at least one listener is down, so a 000 from off-box"
+  echo "    would prove nothing. Fix that before reading the results below."
+fi
+
 cat <<PROMPT
 
 ────────────────────────────────────────────────────────────────
@@ -47,7 +65,8 @@ NOW, ON THE MAC, run this over the LAN:
     curl -s -m 3 -o /dev/null -w "%{http_code}\\n" http://$LANIP:\$p/ \\
     || echo "no answer"; done
 
-Expected once docker-user-firewall.sh has been applied:
+Expected once docker-user-firewall.sh has been applied — and only meaningful
+if the loopback control above answered 200 on all three:
   18080  000      <- control blocked by ufw
   18081  000      <- container blocked by DOCKER-USER   <<< the fix
   18082  000      <- loopback-only, blocked
