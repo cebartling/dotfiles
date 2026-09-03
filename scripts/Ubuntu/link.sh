@@ -55,6 +55,13 @@ link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
 # on $path via zshrc; link() creates the directory if it is missing.
 link "$DOTFILES/scripts/Ubuntu/wlheadless-run" "$HOME/.local/bin/wlheadless-run"
 
+# Host-maintenance scripts. These keep their historical home in ~/bin (also on
+# $path) rather than moving to ~/.local/bin — they are run by hand, usually
+# under sudo, and the paths are quoted in the provisioning journal.
+for s in docker-user-firewall.sh install-docker.sh ufw-docker-test.sh; do
+  link "$DOTFILES/scripts/Ubuntu/bin/$s" "$HOME/bin/$s"
+done
+
 if command -v ghostty >/dev/null 2>&1; then
   link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 else

@@ -186,9 +186,12 @@ dropped from the Brewfile entirely — dead upstream since 2023-06-30, supersede
 by `freelens`.
 
 > **Docker's ufw bypass applies to k3d.** k3d publishes ports through Docker,
-> which on these boxes reaches the LAN regardless of ufw. Bind to loopback
-> (`--api-port 127.0.0.1:6550`, `-p 127.0.0.1:8080:80@loadbalancer`) or apply
-> `DOCKER-USER` rules before creating a cluster with published ports.
+> which reaches the LAN regardless of ufw.
+> `scripts/Ubuntu/bin/docker-user-firewall.sh` now contains that by default, and
+> k3d's per-network bridges match its trusted `br-+` wildcard so cluster
+> networking is unaffected. Binding to loopback (`--api-port 127.0.0.1:6550`,
+> `-p 127.0.0.1:8080:80@loadbalancer`) is still the better habit — belt and
+> braces, and it does not depend on the chain having been applied.
 
 ### Tailscale (opt-in)
 
@@ -226,9 +229,11 @@ sudo tailscale up --ssh --accept-routes
 `--accept-routes` consumes subnet routes other nodes advertise. This box
 advertises nothing.
 
-> **The Docker firewall does not know about `tailscale0`.** `~/bin/docker-user-firewall.sh`
-> hardcodes `WAN_IFS`, so container traffic over the tailnet bypasses the
-> `DOCKER-USER` containment those rules provide. Tracked as beads `dotfiles-0qc`.
+> **The tailnet is trusted by the Docker firewall, on purpose.**
+> `scripts/Ubuntu/bin/docker-user-firewall.sh` lists `tailscale0` in
+> `TRUSTED_IFS`, so your own devices reach published container ports over the
+> tailnet while the LAN stays contained. Access control there is the tailnet
+> ACLs, not iptables. Drop `tailscale0` from that list to contain it like the LAN.
 
 ### How the shared zshrc stays cross-platform
 
@@ -337,6 +342,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; the only script that adds an apt repository) |
+| [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand under sudo, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 
