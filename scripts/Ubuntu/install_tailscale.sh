@@ -116,6 +116,15 @@ enable_daemon() {
     || warn "tailscaled is installed but not running — 'systemctl status tailscaled' will say why. 'tailscale up' will not work until it does."
 }
 
+# Every step below needs root, so a re-run on a finished box should short-circuit
+# before the sudo gate rather than warn about a password it does not need.
+nothing_to_do() {
+  command -v tailscale >/dev/null 2>&1 \
+    && [[ -s "$KEYRING" && -s "$SOURCES" ]] \
+    && [[ "$(systemctl is-enabled tailscaled 2>/dev/null | head -1)" == "enabled" ]] \
+    && systemctl is-active --quiet tailscaled
+}
+
 print_summary() {
   echo
   say "Verifying"
@@ -141,6 +150,11 @@ print_summary() {
 }
 
 main() {
+  if nothing_to_do; then
+    say "Tailscale is already installed and tailscaled is running"
+    print_summary
+    return 0
+  fi
   require_sudo || { print_summary; return 0; }
   add_repo     || { print_summary; return 0; }
   install_tailscale || { print_summary; return 0; }
