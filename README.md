@@ -235,6 +235,46 @@ advertises nothing.
 > tailnet while the LAN stays contained. Access control there is the tailnet
 > ACLs, not iptables. Drop `tailscale0` from that list to contain it like the LAN.
 
+### mosh (roaming SSH)
+
+A plain SSH session to this box dies whenever the client sleeps or changes
+network — the TCP connection cannot survive either. `mosh` bootstraps over SSH,
+then hands the session to a UDP protocol that roams. The client is `brew "mosh"`
+in the [`Brewfile`](Brewfile); Ubuntu has it from apt.
+
+`mosh-server` binds one UDP port in **60000–61000**, and ufw must let it in or
+the client hangs at `Connecting...` forever. Both paths need a rule:
+
+```sh
+# LAN — confirm the subnet with `ip -4 addr`
+sudo ufw allow from 192.168.4.0/24 to any port 60000:61000 proto udp \
+  comment 'mosh (LAN)'
+
+# tailnet
+sudo ufw allow in on tailscale0 to any port 60000:61000 proto udp \
+  comment 'mosh (tailnet)'
+```
+
+> **`tailscale0` in `TRUSTED_IFS` does not cover this.** That list is the
+> `DOCKER-USER`/`FORWARD` chain, which is about published *container* ports.
+> Host `INPUT` still filters `tailscale0` — the same asymmetry
+> `scripts/Ubuntu/bin/ufw-docker-test.sh` reports when a tailnet probe fails
+> while a LAN one succeeds. Hence the second rule.
+
+Narrow the window with `mosh -p 60000:60005 <host>` and a matching ufw range if
+the thousand-port range is unwelcome; it costs one port per live session.
+
+Two things to know before relying on it:
+
+- **`tailscale up --ssh` replaces sshd on port 22 for tailnet connections**, and
+  mosh bootstraps by running `mosh-server new` over that session. Test the
+  tailnet path explicitly. If the bootstrap fails, reach the real `sshd`
+  instead of Tailscale SSH, or drop `--ssh`.
+- **mosh has no scrollback, no port forwarding and no agent forwarding.** It
+  does not replace `ssh` for `git`, `scp` and `rsync`. Run tmux on the far side
+  (`mosh lab01 -- tmux new -A -s main`) for scrollback and to survive a *server*
+  reboot as well as a client one.
+
 ### How the shared zshrc stays cross-platform
 
 `zshrc` is one file used by both platforms. Every OS-specific branch is guarded

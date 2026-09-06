@@ -105,6 +105,7 @@ each of these comes from on Ubuntu.
 | `doggo` | Modern, colorful command-line DNS client | [github.com/mr-karan/doggo](https://github.com/mr-karan/doggo) |
 | `grpcurl` | Like `curl` but for gRPC services | [github.com/fullstorydev/grpcurl](https://github.com/fullstorydev/grpcurl) |
 | `httpie` | User-friendly HTTP client (`http`, `https` commands) | [github.com/httpie/cli](https://github.com/httpie/cli) |
+| `mosh` | Roaming remote shell; survives sleep, IP changes and flaky links | [mosh.org](https://mosh.org) |
 | `xh` | Friendly and fast HTTP client; faster httpie clone in Rust | [github.com/ducaale/xh](https://github.com/ducaale/xh) |
 | `sniffnet` | Cross-platform application to monitor network traffic | [github.com/GyulyVGC/sniffnet](https://github.com/GyulyVGC/sniffnet) |
 | `tailscale` | Tailscale CLI (the daemon side; GUI is the cask) | [github.com/tailscale/tailscale](https://github.com/tailscale/tailscale) |
@@ -327,7 +328,7 @@ the Linux counterpart. Ubuntu 24.04+ carries most of the CLI list in apt.
 `eza` · `bat` · `fd-find` · `ripgrep` · `fzf` · `zoxide` · `git-delta` ·
 `du-dust` · `procs` · `tree` · `tmux` · `jq` · `yq` · `direnv` · `atuin` ·
 `lazygit` · `glow` · `hyperfine` · `just` · `tokei` · `pre-commit` ·
-`gitleaks` · `httpie` · `xh` · `gh` · `pipx` · `python3-poetry` · `weston` ·
+`gitleaks` · `httpie` · `mosh` · `xh` · `gh` · `pipx` · `python3-poetry` · `weston` ·
 `wayland-utils` · plus base
 packages (`build-essential`, `git`, `git-lfs`, `curl`, `wget`, `unzip`,
 `openssl`, `fontconfig`, `net-tools`)

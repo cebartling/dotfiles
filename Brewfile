@@ -104,6 +104,7 @@ brew "dnsmasq"
 brew "doggo"                # DNS client (replaces deprecated `dog`; run: brew uninstall dog)
 brew "grpcurl"              # curl for gRPC
 brew "httpie"
+brew "mosh"                 # roaming SSH: survives sleep and network changes
 brew "xh"                   # faster httpie
 brew "sniffnet"
 brew "tailscale"

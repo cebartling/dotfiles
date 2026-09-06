@@ -71,6 +71,7 @@ APT_DEV=(
   pre-commit
   gitleaks
   httpie
+  mosh
   xh
   gh
   pipx
