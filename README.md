@@ -242,6 +242,13 @@ network — the TCP connection cannot survive either. `mosh` bootstraps over SSH
 then hands the session to a UDP protocol that roams. The client is `brew "mosh"`
 in the [`Brewfile`](Brewfile); Ubuntu has it from apt.
 
+**Reach the box over the tailnet by default, and keep the LAN as a fallback.**
+`~/.ssh/config` on the Mac is arranged that way: `lab01` (with `lab01-ts` and
+`bartling-lab01` as aliases) is the MagicDNS name, and `lab01-lan` (with
+`bartling-lab01.local`) is the mDNS one. The two callouts below are the reasons
+— the LAN path can silently land on the slow NIC, and it needs a macOS
+permission the tailnet path does not.
+
 `mosh-server` binds one UDP port in **60000–61000**, and ufw must let it in or
 the client hangs at `Connecting...` forever. Both paths need a rule:
 
@@ -291,8 +298,18 @@ the thousand-port range is unwelcome; it costs one port per live session.
 > ~100ms against the wire's ~6ms). `mosh-server` is started with `-s`, so it
 > binds the address the ssh connection arrived on, and `bartling-lab01.local`
 > advertises both. A session that lands on `.42` works but feels worse for no
-> obvious reason. Pin the wired address in `~/.ssh/config` (`HostName
-> 192.168.4.26`) if that matters.
+> obvious reason. **Do not pin the wired address to fix it.** `enp87s0` is
+> `ipv4.method auto` on a 4-hour lease with no router reservation, and its
+> NetworkManager journal shows it holding `.154` and `.54` earlier the same
+> month — while `.42`, the Wi-Fi address, has itself been `.26` twelve times.
+> The address identifies neither the host nor the NIC reliably. Check before
+> trusting any of this on another network:
+>
+> ```sh
+> journalctl -u NetworkManager --since '30 days ago' --no-pager \
+>   | grep -oE 'dhcp4 \((enp|wlp)[^)]*\): state changed new lease, address=[0-9.]+' \
+>   | sort | uniq -c | sort -rn
+> ```
 >
 > **The tailnet sidesteps both problems.** MagicDNS resolves `bartling-lab01`
 > to one address, so there is no NIC coin-flip, and the tailnet is not the
