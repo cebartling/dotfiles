@@ -51,13 +51,59 @@ Consulting/{Client}/Daily Journal/{YYYY}/{NN} - {Month} {startDay}-{endDay}, {YY
 
 - Files only exist when there's actual content — there is no empty placeholder for an idle period.
   Don't be surprised by gaps in the sequence.
-- File bodies have **no frontmatter and no title line** — they start directly with the first
+- Files have **no title line** — after the frontmatter they start directly with the first
   `## Month Day, Year` header. Days are appended in chronological order down the file.
+- **Every file this skill creates gets YAML frontmatter** — see **Frontmatter** below. Most files
+  already in the vault predate that rule and have none; they are left exactly as they are.
 - **Do not confuse either with the vault's `Daily/` tree** — that's the separate built-in Obsidian
   daily-notes system, and inference never targets it. An explicit path argument may legitimately
   point there. Its notes live at `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` — one file
   per day, so the date is the filename and the body opens directly with a `## Topic` header rather
   than a date header. Step 5 detects this; step 7 writes accordingly.
+
+## Frontmatter
+
+**Every journal file this skill creates opens with YAML frontmatter.** The two file shapes date
+themselves differently, because one covers a range and the other covers a day:
+
+**Multi-day file** (Consulting journals, under either convention) — the filename is a period, so
+the frontmatter carries that period, not a single date:
+
+```yaml
+---
+period: 2026-08-16/2026-08-31
+tags:
+  - journal
+  - schoolhouse
+  - pin-193
+---
+```
+
+**Single-day note** (`Daily/…`) — the filename is one date, so `date` is exact:
+
+```yaml
+---
+date: 2026-09-05
+tags:
+  - journal
+  - storyboard-2026
+  - tdd
+---
+```
+
+Rules for both:
+
+- `period` is `{startDate}/{endDate}`, both `YYYY-MM-DD`, matching the range in the filename.
+  `date` is a single `YYYY-MM-DD`. Never both.
+- `tags` is a list, always led by `journal`. After that: the client or project slug (lowercase,
+  hyphenated — `schoolhouse`, `life-time`, `storyboard-2026`), then a handful of topic tags drawn
+  from the day's actual work (`mongodb`, `code-review`, `tdd`, a ticket id like `pin-193`).
+  Lowercase and hyphenated throughout. Don't invent tags the entry doesn't support, and don't pad
+  past roughly eight.
+- **Never modify frontmatter on a file that already has it**, and never add frontmatter to a file
+  that doesn't. On a second update to a file this skill created earlier the same day, the tag list
+  stays as written — appending a section is not a reason to rewrite the header. This keeps the
+  append-only guarantee whole: the skill only ever writes frontmatter as part of creating a file.
 
 ## Optional argument
 
@@ -211,8 +257,9 @@ Two file shapes exist in this vault, and they date their content differently:
   header, with `### Topic` subsections beneath. Consulting journal files are always this shape,
   under either convention.
 - **Single-day note** — the file *is* one day; the date lives in the **filename**, so there is no
-  date header inside. Content opens directly with a `## Topic` header, `###` beneath. The
-  `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes are this shape.
+  date *header* inside (it does go in the frontmatter as `date`). Content opens with a `## Topic`
+  header, `###` beneath. The `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes are this
+  shape.
 
 Decide the shape from the **filename** first, falling back to content:
 
@@ -267,9 +314,24 @@ confirmed in step 3).
 
 **Multi-day file:**
 
-- *No existing today section* (new file, or today just isn't in it yet) — append at the true end:
+- *Creating the file* — frontmatter (see **Frontmatter**), then today's section:
   ```
-  {existing content, if any}
+  ---
+  period: {startDate}/{endDate}
+  tags:
+    - journal
+    - {client-slug}
+    - {topic}
+  ---
+
+  ## {Month} {Day}, {Year}
+
+  {new content}
+  ```
+- *Existing file, today not in it yet* — append at the true end, adding **no** frontmatter even if
+  the file has none:
+  ```
+  {existing content}
 
   ## {Month} {Day}, {Year}
 
@@ -281,17 +343,27 @@ confirmed in step 3).
 
 **Single-day note:**
 
-- *New or empty file* — write the content on its own, opening with a `## Topic` header and no date
-  header:
+- *Creating the file* — frontmatter, then straight into the first topic. No date header: the
+  filename already carries the date, and repeating it inside is duplication.
   ```
+  ---
+  date: {YYYY-MM-DD}
+  tags:
+    - journal
+    - {project-slug}
+    - {topic}
+  ---
+
   ## {Topic}
 
   {new content}
   ```
-- *Existing content* — append the new `## Topic` section(s) at the true end of the file.
+- *Existing content* — append the new `## Topic` section(s) at the true end of the file, leaving
+  any existing frontmatter untouched and adding none if there is none.
 
 In every branch, everything before the insertion point — including anything the user wrote
-themselves — must come out byte-for-byte identical to what was read in step 4.
+themselves, and any frontmatter already present — must come out byte-for-byte identical to what was
+read in step 4. Frontmatter is written **only** when the file is being created.
 
 Never use `Edit` for this — the surrounding content is too variable to safely anchor a unique
 `old_string`. Read the whole file, compute the new whole-file content in memory, `Write` it back.
@@ -309,7 +381,11 @@ full appended text back if it's long — the user can open the file themselves.
 ## Guardrails
 
 - Append-only, always. Never edit, reorder, or remove anything already in the file — that includes
-  content the user wrote themselves in a section this skill didn't create.
+  content the user wrote themselves in a section this skill didn't create, and any frontmatter
+  already at the top of it.
+- Frontmatter is written **only** when creating a file. Never backfill it onto an existing file and
+  never revise it on one — most of the vault predates the rule, and prepending to a file the skill
+  didn't create is exactly the edit the line above forbids.
 - Never fabricate work that didn't happen in this conversation.
 - In inferred mode, if client inference is ambiguous or the current directory isn't recognizably
   tied to any client, ask — do not guess and silently write into the wrong client's journal.
