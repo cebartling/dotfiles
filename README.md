@@ -293,13 +293,21 @@ the thousand-port range is unwelcome; it costs one port per live session.
 > advertises both. A session that lands on `.42` works but feels worse for no
 > obvious reason. Pin the wired address in `~/.ssh/config` (`HostName
 > 192.168.4.26`) if that matters.
+>
+> **The tailnet sidesteps both problems.** MagicDNS resolves `bartling-lab01`
+> to one address, so there is no NIC coin-flip, and the tailnet is not the
+> local subnet — so mosh over it works from a terminal that has *not* been
+> granted Local Network access, which the LAN path requires. Verified from
+> both sides on 2026-09-06.
 
 Two things to know before relying on it:
 
-- **`tailscale up --ssh` replaces sshd on port 22 for tailnet connections**, and
-  mosh bootstraps by running `mosh-server new` over that session. Test the
-  tailnet path explicitly. If the bootstrap fails, reach the real `sshd`
-  instead of Tailscale SSH, or drop `--ssh`.
+- **mosh bootstraps fine through Tailscale SSH** — verified 2026-09-06, so
+  `--ssh` needs no special handling. The one catch is that a tailnet whose ACLs
+  demand a periodic check answers the first connection with `Tailscale SSH
+  requires an additional check` and a login URL; until someone opens it in a
+  browser, nothing non-interactive can bootstrap. Approve it once and mosh
+  connects normally.
 - **mosh has no scrollback, no port forwarding and no agent forwarding.** It
   does not replace `ssh` for `git`, `scp` and `rsync`. Run tmux on the far side
   (`mosh lab01 -- tmux new -A -s main`) for scrollback and to survive a *server*
