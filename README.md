@@ -266,24 +266,33 @@ Narrow the window with `mosh -p 60000:60005 <host>` and a matching ufw range if
 the thousand-port range is unwelcome; it costs one port per live session.
 
 > **macOS 26 Local Network privacy is the first thing to check when mosh
-> hangs.** Tahoe gates a process's UDP to the *local subnet* behind the Local
-> Network permission, granted to the responsible **app** — the terminal, not
-> the binary. Denied, a Homebrew `mosh-client` gets `sendto: No route to host`
-> on a LAN address while everything else looks perfect. Grant it under
-> System Settings -> Privacy & Security -> Local Network for whichever
-> terminal you launch mosh from (this machine: Orca).
+> hangs, and it is granted per *app*, not per binary.** Tahoe gates a
+> process's UDP to the local subnet behind the Local Network permission,
+> attributed to the responsible app — the terminal you launched mosh from.
+> Denied, `mosh-client` reports `sendto: No route to host` on a LAN address
+> while ssh to that same host works fine.
 >
-> It is easy to misread as a firewall problem, because Apple's own
-> `/usr/bin/nc` is a platform binary and is exempt — so a `nc -u` probe to the
-> same host and port succeeds while mosh fails. Tell the two apart without
-> touching ufw at all:
+> Confirmed here on 2026-09-06: `mosh lab01` succeeded from iTerm2 and failed
+> from Orca at the same moment, same host, same ufw rules. **Trying a second
+> terminal is the fastest possible diagnosis** — if one works and another does
+> not, it is this and nothing else. Grant it under System Settings ->
+> Privacy & Security -> Local Network, and relaunch the app; a grant does not
+> apply to an already-running process.
 >
-> ```sh
-> # off-LAN and tailnet UDP work, local-subnet UDP does not => it is TCC,
-> # not the firewall
-> python3 -c "import socket; socket.socket(socket.AF_INET, socket.SOCK_DGRAM).sendto(b'p', ('8.8.8.8', 53))"
-> python3 -c "import socket; socket.socket(socket.AF_INET, socket.SOCK_DGRAM).sendto(b'p', ('192.168.4.26', 60001))"
-> ```
+> What makes it read as a firewall fault: Apple's `/usr/bin/nc` is exempt, so
+> a `nc -u` probe to the exact host and port mosh cannot reach will succeed.
+> Two blind alleys that cost real time — a `!` (reject) flag on the
+> `192.168.4/22` route in `netstat -rn` is normal and not the cause, and
+> `mosh-server` leaves its socket `UNCONN` by design, so `ss` showing no
+> connected peer does *not* mean packets are being dropped.
+
+> **This box is multi-homed, and mosh inherits whichever NIC ssh landed on.**
+> `enp87s0` is 192.168.4.26 (wired) and `wlp86s0` is 192.168.4.42 (Wi-Fi, and
+> ~100ms against the wire's ~6ms). `mosh-server` is started with `-s`, so it
+> binds the address the ssh connection arrived on, and `bartling-lab01.local`
+> advertises both. A session that lands on `.42` works but feels worse for no
+> obvious reason. Pin the wired address in `~/.ssh/config` (`HostName
+> 192.168.4.26`) if that matters.
 
 Two things to know before relying on it:
 
