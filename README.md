@@ -193,6 +193,50 @@ by `freelens`.
 > `-p 127.0.0.1:8080:80@loadbalancer`) is still the better habit — belt and
 > braces, and it does not depend on the chain having been applied.
 
+### Docker (opt-in)
+
+```sh
+~/bin/install-docker.sh              # add --verify for a hello-world smoke test
+sudo ~/bin/docker-user-firewall.sh   # then contain it — see below
+```
+
+Run it as yourself; it calls `sudo` where it needs root. Running the whole thing
+under `sudo` also works — `SUDO_USER` is what decides who joins the `docker`
+group, so the right account is added either way. Re-running on a provisioned box
+short-circuits before the sudo gate and changes nothing.
+
+Engine, CLI, containerd, buildx and compose come from Docker's own apt
+repository rather than Ubuntu's `docker.io`, which is an older Engine and ships
+neither `docker buildx` nor `docker compose` as plugins. The convenience script
+at `get.docker.com` is declined for the usual reason: it pipes a remote shell
+script into root.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/etc/apt/keyrings/docker.asc` (armored, straight from `download.docker.com/linux/ubuntu/gpg`) |
+| apt source | `/etc/apt/sources.list.d/docker.sources`, deb822, `Signed-By` the key above |
+| packages | `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin` |
+| services | `docker.service`, `containerd.service`, both `enable --now` |
+
+Like Tailscale and unlike Chrome, Docker publishes a suite per Ubuntu codename,
+so a brand-new release can land before Docker has packaged it. The script probes
+`dists/<codename>/Release` and falls back to `noble` rather than writing a
+sources list apt would then fail on. Architecture comes from
+`dpkg --print-architecture`; Docker builds both amd64 and arm64.
+
+> **Docker bypasses ufw, and installing it is the moment that opens up.** Docker
+> inserts its own `FORWARD` rules ahead of ufw's, so any published container port
+> reaches the LAN whether or not ufw agrees. Apply the containment *before* you
+> publish anything: `sudo ~/bin/docker-user-firewall.sh`, then prove it from an
+> off-box client with `~/bin/ufw-docker-test.sh`. The installer's summary repeats
+> this; it is the one step that is easy to skip and expensive to skip.
+
+> **The `docker` group is root-equivalent.** The daemon socket will bind any host
+> path into a container, so membership is effectively passwordless root. That is
+> the accepted trade for not typing `sudo` in front of every command — worth
+> knowing rather than discovering. The group does not apply to the shell you ran
+> the installer from: log out and back in, or `newgrp docker`.
+
 ### Google Chrome (opt-in)
 
 ```sh
@@ -519,7 +563,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |
-| [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand under sudo, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` |
+| [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` (opt-in Docker Engine install from Docker's signed apt repository) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 
