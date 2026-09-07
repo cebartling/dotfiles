@@ -565,6 +565,11 @@ main() {
 # Only install when run directly. scripts/Ubuntu/doctor.sh sources this file to
 # reuse the package arrays below as its single source of truth, and must not
 # kick off an install by doing so.
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+# ${BASH_SOURCE[0]:-} rather than ${BASH_SOURCE[0]}: this file sets -u, and
+# BASH_SOURCE does not exist in a non-bash shell, so sourcing it from zsh —
+# which is the login shell on these boxes — aborted here instead of just
+# defining the functions. Unset means "not sourced from bash", which is not
+# the direct-execution case, so the guard correctly declines to install.
+if [[ "${BASH_SOURCE[0]:-}" == "$0" ]]; then
   main "$@"
 fi
