@@ -209,9 +209,31 @@ is GitHub's superfamily, separately maintained.
 | Cask | Description | Source |
 |---|---|---|
 | `claude` | Anthropic's Claude desktop app | [claude.com](https://claude.com/) (proprietary) |
-| `claude-code` | Anthropic's Claude Code agentic CLI/IDE integrations | [github.com/anthropics/claude-code](https://github.com/anthropics/claude-code) |
 | `chatgpt` | OpenAI ChatGPT desktop app | [openai.com/chatgpt/desktop](https://openai.com/chatgpt/desktop/) (proprietary) |
 | `copilot-cli` | Brings GitHub Copilot coding agent to the terminal | [github.com/github/copilot-cli](https://github.com/github/copilot-cli) |
+
+> **`claude-code` is deliberately absent from this table, and from every
+> Brewfile.** The cask exists, but Homebrew is the wrong channel for it. Claude
+> Code ships several releases a week and updates itself in place; the cask
+> pins a version and lags — at the time of writing the cask was on `2.1.236`
+> while the release channel was on `2.1.263`, **27 patch releases behind**.
+>
+> Homebrew also adds nothing in exchange. The cask downloads the *same* binary
+> from `downloads.claude.ai/claude-code-releases/<version>/darwin-arm64/claude`
+> that the native installer does, then puts it in `$HOMEBREW_PREFIX/bin` instead
+> of `~/.local/bin`.
+>
+> On **both** platforms Claude Code therefore comes from Anthropic's own
+> installer at `claude.ai/install.sh`, landing as `~/.local/bin/claude` →
+> `~/.local/share/claude/versions/<version>`. It updates with `claude update`,
+> never `brew upgrade`. Linux has a wrapper for it
+> ([below](#claude-code-opt-in-no-package-manager)); macOS runs the upstream
+> script directly.
+>
+> Do not install the cask alongside it. Its `zap` stanza trashes
+> `~/.local/bin/claude`, `~/.local/share/claude` and `~/.claude.json*` — so
+> `brew uninstall --zap claude-code` would remove a native installation that
+> Homebrew never created.
 
 #### Editors / IDEs
 
@@ -352,6 +374,30 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
+
+### Claude Code (opt-in, no package manager)
+
+`scripts/Ubuntu/install_claude_code.sh` — not wired into bootstrap, and the only
+installer here that needs **no sudo at all**. Everything lands under `$HOME`:
+`~/.local/bin/claude` → `~/.local/share/claude/versions/<version>`, which
+`zshrc` already has on `$path`.
+
+It wraps Anthropic's installer at `claude.ai/install.sh` rather than
+reimplementing it — that script verifies its download against a SHA256 manifest
+and distinguishes musl from glibc and x64 from arm64. The wrapper exists for two
+things upstream does not do: it keeps the installer away from the tracked
+`zshrc` (see [above](#installers-that-would-write-into-the-tracked-zshrc)) by
+putting `~/.local/bin` on `$PATH` first and then checksumming that file, and it
+checks `MemAvailable` up front because the install needs roughly 512MB and
+upstream only reports that after the OOM killer has already fired.
+
+This is the same channel macOS uses — see the note under
+[AI / coding agents](#ai--coding-agents) for why neither platform takes it from
+Homebrew. Updates come from `claude update`.
+
+Note that the *configuration* is a separate, manual install:
+`ai-tools/claude-code/install.sh` symlinks skills, hooks and settings into
+`~/.claude`. The CLI and its config are installed independently.
 
 ### Tailscale (opt-in, a third-party apt repository)
 
