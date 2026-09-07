@@ -23,6 +23,15 @@ warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 
 SKIPPED=()
 
+# Every binary that should exist once this script has run. Shared with
+# scripts/Ubuntu/doctor.sh — keep additions here, not in either consumer.
+VERIFY_TOOLS=(
+  zsh starship eza bat fd rg fzf zoxide delta direnv atuin
+  lazygit gh acli jq yq just glow hyperfine tokei procs dust
+  tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk
+  bun pnpm rustup cargo linear-cli pyenv weston
+)
+
 # ---------- apt ----------
 
 # Base: shell, plugins, build toolchain, fetchers.
@@ -514,9 +523,7 @@ print_summary() {
   # only a genuine failure is reported.
   local PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:$PATH"
   local missing=()
-  for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
-           lazygit gh acli jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo linear-cli pyenv weston; do
+  for t in "${VERIFY_TOOLS[@]}"; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -555,4 +562,9 @@ main() {
   print_summary
 }
 
-main "$@"
+# Only install when run directly. scripts/Ubuntu/doctor.sh sources this file to
+# reuse the package arrays below as its single source of truth, and must not
+# kick off an install by doing so.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

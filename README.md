@@ -537,7 +537,21 @@ The bootstrap will pick up any newly added packages and re-run the linker
 (a no-op if everything is already linked correctly). Re-run
 `ai-tools/claude-code/install.sh` too if the Claude Code config changed.
 
-To verify the sync worked:
+To verify the sync worked, run the doctor for your platform. Each reports
+drift without fixing it, and exits nonzero if it finds any:
+
+```sh
+~/.dotfiles/scripts/macOS/doctor.zsh    # macOS
+~/.dotfiles/scripts/Ubuntu/doctor.sh    # Linux
+```
+
+Both check symlinks and shell startup time. Where they differ is the package
+check: macOS delegates to `brew bundle check` against each Brewfile, while
+Linux has no equivalent, so `doctor.sh` sources the package arrays out of
+`scripts/Ubuntu/install_tools.sh` and runs `dpkg -s` over them. That file
+stays the single place a new Linux package is declared.
+
+Or by hand:
 
 ```sh
 readlink ~/.zshrc                       # → ~/.dotfiles/zshrc
@@ -605,6 +619,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
+| `scripts/Ubuntu/doctor.sh` | Reports drift between a Linux box and the repo (symlinks, apt/snap packages, binaries, startup time) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
