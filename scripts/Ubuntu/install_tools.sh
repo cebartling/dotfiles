@@ -306,6 +306,68 @@ install_rtk() {
   rm -rf "$tmp"
 }
 
+install_acli() {
+  if command -v acli >/dev/null 2>&1; then
+    say "acli (Atlassian CLI) already installed"
+    return 0
+  fi
+  # Homebrew reaches this through the atlassian-labs/acli tap on macOS. There
+  # is no apt package and no GitHub repo to query — Atlassian publishes the
+  # binary straight from acli.atlassian.com under a stable /latest/ path, so
+  # there is no release JSON to grep for a URL here.
+  #
+  # The same path also offers a .deb, but the payload is one binary and
+  # ~/.local/bin needs no root. Take the bare ELF and skip dpkg entirely.
+  say "Installing acli (Atlassian CLI) from acli.atlassian.com"
+  local arch url tmp
+  case "$(uname -m)" in
+    x86_64)  arch="amd64" ;;
+    aarch64) arch="arm64" ;;
+    *) warn "unsupported arch $(uname -m) for acli"; SKIPPED+=("acli"); return 0 ;;
+  esac
+  url="https://acli.atlassian.com/linux/latest/acli_linux_${arch}/acli"
+  tmp="$(mktemp -d)"
+  # A bad path here returns an XML error document with a 200-ish shape rather
+  # than a hard 404, so -f alone will not catch it. Check for the ELF magic
+  # before installing anything.
+  if curl -fsSL -o "$tmp/acli" "$url" \
+     && [[ "$(head -c 4 "$tmp/acli" | od -An -tx1 | tr -d ' \n')" == "7f454c46" ]]; then
+    mkdir -p "$HOME/.local/bin"
+    install -m 0755 "$tmp/acli" "$HOME/.local/bin/acli"
+    say "acli installed; run 'acli jira auth login' to authenticate"
+  else
+    warn "acli download failed or did not return a Linux binary"
+    SKIPPED+=("acli")
+  fi
+  rm -rf "$tmp"
+}
+
+install_linear_cli() {
+  # Must run after install_rustup. cargo is not on this process's PATH when
+  # rustup was installed moments ago, so resolve it out of ~/.cargo/bin
+  # directly rather than trusting `command -v cargo`.
+  local cargo_bin="$HOME/.cargo/bin/cargo"
+  if [[ -x "$HOME/.cargo/bin/linear-cli" ]] || command -v linear-cli >/dev/null 2>&1; then
+    say "linear-cli already installed"
+    return 0
+  fi
+  if [[ ! -x "$cargo_bin" ]]; then
+    warn "cargo not found at $cargo_bin; skipping linear-cli"
+    SKIPPED+=("linear-cli")
+    return 0
+  fi
+  # The Brewfile installs this the same way (cargo "linear-cli"), so both
+  # platforms build the identical crates.io crate. There are no prebuilt
+  # binaries upstream, which is why this compiles rather than downloads.
+  say "Installing linear-cli (cargo install — this compiles from source)"
+  if "$cargo_bin" install linear-cli; then
+    say "linear-cli installed to ~/.cargo/bin"
+  else
+    warn "cargo install linear-cli failed"
+    SKIPPED+=("linear-cli")
+  fi
+}
+
 install_bun() {
   if command -v bun >/dev/null 2>&1; then
     say "bun already installed"
@@ -453,8 +515,8 @@ print_summary() {
   local PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:$PATH"
   local missing=()
   for t in zsh starship eza bat fd rg fzf zoxide delta direnv atuin \
-           lazygit gh jq yq just glow hyperfine tokei procs dust \
-           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo pyenv weston; do
+           lazygit gh acli jq yq just glow hyperfine tokei procs dust \
+           tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk bun pnpm rustup cargo linear-cli pyenv weston; do
     if command -v "$t" >/dev/null 2>&1; then
       printf '  \033[32mok\033[0m      %s\n' "$t"
     else
@@ -484,9 +546,11 @@ main() {
   install_ast_grep
   install_beads
   install_rtk
+  install_acli
   install_bun
   install_pnpm
   install_rustup
+  install_linear_cli
   install_pyenv
   print_summary
 }

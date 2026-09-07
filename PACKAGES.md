@@ -370,10 +370,23 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `ast-grep` | `ast-grep/ast-grep` GitHub release zip |
 | `bd` (beads) | `steveyegge/beads` GitHub release tarball |
 | `rtk` | `rtk-ai/rtk` GitHub release `.deb`, unpacked |
+| `acli` | `acli.atlassian.com/linux/latest/acli_linux_<arch>/acli` — a stable path, not a release feed, so there is no JSON to query |
 | `bun` | `oven-sh/bun` GitHub release zip (plus a `bunx` link) |
 | `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
+
+Note `acli` is the one entry here whose URL cannot 404: a bad path returns an
+XML error body, so the installer checks for the ELF magic before installing.
+
+### From cargo (into `~/.cargo/bin`)
+
+| Tool | Source |
+|---|---|
+| `linear-cli` | `cargo install linear-cli` — the same crates.io crate the Brewfile installs, built from source because upstream ships no binaries |
+
+This runs after `rustup` and resolves `cargo` from `~/.cargo/bin` directly,
+since a freshly installed toolchain is not yet on the installer's own `$PATH`.
 
 ### Claude Code (opt-in, no package manager)
 
