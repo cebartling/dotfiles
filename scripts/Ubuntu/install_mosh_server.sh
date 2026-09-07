@@ -101,10 +101,23 @@ report_sshd_auth() {
   eff="$(sudo sshd -T 2>/dev/null | awk '/^passwordauthentication /{print $2}')" || true
   case "$eff" in
     yes)
-      warn "sshd accepts password authentication. On a LAN-exposed box, keys only is better:"
-      warn "  echo 'PasswordAuthentication no' | sudo tee /etc/ssh/sshd_config.d/50-no-passwords.conf"
-      warn "  sudo systemctl restart ssh"
-      NOTES+=("sshd still accepts passwords")
+      warn "sshd accepts password authentication. On a LAN-exposed box, keys only is better."
+      # Order matters, and getting it wrong locks you out of the LAN. Tailscale
+      # SSH authenticates against tailnet ACLs and never reads authorized_keys,
+      # so the tailnet keeps working and hides the mistake until the day the
+      # tailnet is the thing that is down.
+      if [[ -s "$HOME/.ssh/authorized_keys" ]]; then
+        warn "  echo 'PasswordAuthentication no' | sudo tee /etc/ssh/sshd_config.d/50-no-passwords.conf"
+        warn "  sudo systemctl restart ssh"
+        NOTES+=("sshd still accepts passwords")
+      else
+        warn "  ...but ~/.ssh/authorized_keys is empty, so disabling passwords now would leave"
+        warn "  the LAN path with no way in at all. Install a key FIRST, from the client:"
+        warn "      ssh-copy-id -i ~/.ssh/id_ed25519.pub $USER@$(hostname).local"
+        warn "  verify 'ssh -o PasswordAuthentication=no $USER@$(hostname).local true' succeeds,"
+        warn "  and only then disable password auth."
+        NOTES+=("sshd accepts passwords AND authorized_keys is empty — install a key before hardening")
+      fi
       ;;
     no)  say "sshd is key-only (PasswordAuthentication no)" ;;
     *)   warn "could not read sshd's effective PasswordAuthentication setting" ;;
@@ -129,7 +142,13 @@ ensure_sshd() {
     sudo systemctl enable --now ssh
   fi
 
-  if ss -tln 2>/dev/null | grep -qE '(^|\s)[0-9.:*\[\]]+:22\s'; then
+  # Match on ss's Local Address:Port column rather than the whole line. The
+  # first version of this pattern tried to spell out the address characters as
+  # [0-9.:*\[\]] and reported a healthy sshd as down: inside a POSIX bracket
+  # expression a backslash is a literal, not an escape, so that class ends at
+  # the first ']' and leaves a stray ']' in the pattern — which then demanded a
+  # ']' immediately before ':22'. Never escape brackets inside a bracket class.
+  if ss -tln 2>/dev/null | awk '{print $4}' | grep -qE ':22$'; then
     say "sshd is listening on port 22"
   else
     warn "nothing is listening on port 22 after enabling ssh; the LAN mosh path will not bootstrap"
