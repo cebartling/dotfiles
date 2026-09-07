@@ -284,18 +284,64 @@ in the [`Brewfile`](Brewfile); Ubuntu has it from apt.
 permission the tailnet path does not.
 
 `mosh-server` binds one UDP port in **60000–61000**, and ufw must let it in or
-the client hangs at `Connecting...` forever. Both paths need a rule:
+the client hangs at `Connecting...` forever. Both paths need a rule, and both
+also need TCP 22 — mosh is a *client* of sshd, not a replacement for it, so it
+shells in to run `mosh-server new` before any UDP flows.
+
+[`scripts/Ubuntu/install_mosh_server.sh`](scripts/Ubuntu/install_mosh_server.sh)
+does all of it, and is idempotent — re-run it after the box changes networks:
 
 ```sh
-# LAN — this network is a /22 (192.168.4.0-192.168.7.255), not the /24 the
-# address alone suggests. Confirm with `ip -4 addr` before pasting.
+~/.dotfiles/scripts/Ubuntu/install_mosh_server.sh
+
+MOSH_PORTS=60000:60005 ~/.dotfiles/scripts/Ubuntu/install_mosh_server.sh  # narrower window
+ENABLE_LAN=0           ~/.dotfiles/scripts/Ubuntu/install_mosh_server.sh  # tailnet only
+```
+
+It **detects the connected subnet rather than hardcoding one**, via
+`ip -4 route show proto kernel scope link` — the kernel's own CIDR for each
+directly attached network. That matters more than it looks: this LAN is a
+`/22` (192.168.4.0–192.168.7.255) while every address on it *looks* like a
+`/24`, so a hand-written rule is wrong in a way that fails only for hosts in
+the upper three quarters of the range.
+
+The rules it ends up applying, for reference:
+
+```sh
+# LAN — CIDR detected, not assumed
+sudo ufw allow from 192.168.4.0/22 to any port 22 proto tcp \
+  comment 'ssh (LAN)'
 sudo ufw allow from 192.168.4.0/22 to any port 60000:61000 proto udp \
   comment 'mosh (LAN)'
 
-# tailnet
+# tailnet — interface-scoped, since what matters is which device it arrived on
+sudo ufw allow in on tailscale0 to any port 22 proto tcp \
+  comment 'ssh (tailnet)'
 sudo ufw allow in on tailscale0 to any port 60000:61000 proto udp \
   comment 'mosh (tailnet)'
 ```
+
+> **A tailnet-only box has no sshd, and mosh still works over the tailnet.**
+> Tailscale SSH is served by `tailscaled`, not by `openssh-server`, so mosh
+> bootstraps fine with no sshd installed at all — that is the state
+> `bartling-replay01` was found in on 2026-09-06. But Tailscale SSH answers
+> *only* on the tailnet; nothing on the LAN listens on 22. So the LAN path
+> requires installing `openssh-server`, which is why the script does that and
+> why `ENABLE_LAN=0` exists for boxes that should stay tailnet-only.
+>
+> Installing it widens the attack surface, and Ubuntu's default permits
+> password auth. The script reports `sshd -T`'s effective setting rather than
+> changing it; keys-only is one drop-in away:
+>
+> ```sh
+> echo 'PasswordAuthentication no' | sudo tee /etc/ssh/sshd_config.d/50-no-passwords.conf
+> sudo systemctl restart ssh
+> ```
+
+> **Order matters when ufw is inactive.** `ufw enable` drops every connection
+> no rule permits — including the SSH session you are probably running in. The
+> script adds every allow *first* and enables the firewall last, so turning it
+> on can never be the thing that locks you out.
 
 > **`tailscale0` in `TRUSTED_IFS` does not cover this.** That list is the
 > `DOCKER-USER`/`FORWARD` chain, which is about published *container* ports.
@@ -472,6 +518,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
+| `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |
 | [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand under sudo, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
