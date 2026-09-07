@@ -151,6 +151,55 @@ else
   drift=$((drift + 1))
 fi
 
+# ---------- firewall ----------
+hdr "Firewall (ufw)"
+
+# The rules this setup expects, as "<To>|<From>" pairs matching ufw's own two
+# columns. Taken from bartling-lab01, which is the reference the other boxes
+# are kept level with. Add a line here when a rule is added deliberately —
+# an unexplained rule on a box is drift, and so is a missing one.
+UFW_EXPECTED=(
+  "22/tcp|192.168.4.0/22"
+  "53/udp|192.168.4.0/22"
+  "53/tcp|192.168.4.0/22"
+  "3389|192.168.4.0/22"
+  "60000:61000/udp|192.168.4.0/22"
+  "60000:61000/udp on tailscale0|Anywhere"
+)
+
+if ! command -v ufw >/dev/null 2>&1; then
+  fail "ufw is not installed"
+  drift=$((drift + 1))
+elif [[ "$(systemctl is-active ufw 2>/dev/null)" != "active" ]]; then
+  fail "ufw is installed but not active"
+  drift=$((drift + 1))
+else
+  ok "ufw active"
+  # Reading the ruleset needs root. -n so this never prompts: a doctor that
+  # blocks on a password prompt is a doctor nobody runs. Not being able to
+  # look is a warning, not drift — it says nothing about the box's state.
+  if ufw_status="$(sudo -n ufw status 2>/dev/null)" && [[ -n "$ufw_status" ]]; then
+    # Collapse ufw's column padding so the fields can be matched literally.
+    ufw_norm="$(printf '%s\n' "$ufw_status" | tr -s ' ')"
+    ufw_missing=()
+    for rule in "${UFW_EXPECTED[@]}"; do
+      rule_to="${rule%%|*}"
+      rule_from="${rule##*|}"
+      printf '%s\n' "$ufw_norm" | grep -qF "$rule_to ALLOW IN $rule_from" \
+        || ufw_missing+=("$rule_to from $rule_from")
+    done
+    if (( ${#ufw_missing[@]} == 0 )); then
+      ok "all ${#UFW_EXPECTED[@]} expected rules present"
+    else
+      fail "missing ufw rules:"
+      printf '    %s\n' "${ufw_missing[@]}"
+      drift=$((drift + 1))
+    fi
+  else
+    warn "ufw rules not checked (needs root: sudo ufw status numbered)"
+  fi
+fi
+
 # ---------- shell startup ----------
 hdr "Shell startup"
 
