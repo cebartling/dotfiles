@@ -353,11 +353,12 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
 
-### Tailscale (opt-in, the one third-party apt repository)
+### Tailscale (opt-in, a third-party apt repository)
 
 `scripts/Ubuntu/install_tailscale.sh` — not wired into bootstrap, mirroring
-`Brewfile.tailscale` on macOS. This is the only place in the repo that adds an
-apt source, because Tailscale is not a single static binary: `tailscaled` is a
+`Brewfile.tailscale` on macOS. This is one of only two places in the repo that
+add an apt source (Google Chrome is the other), because Tailscale is not a
+single static binary: `tailscaled` is a
 privileged daemon that opens a TUN device and needs a systemd unit, so root is
 unavoidable, and once it is, the signed vendor repo beats a hand-rolled unit and
 keeps a network-exposed daemon on the unattended-upgrade path. Ubuntu's own
@@ -452,12 +453,39 @@ to confirm a headless display actually came up.
 None of this deprecates `xvfb` — see the note in the README. Alternatives that
 would also have worked: `cage`, `sway`, `labwc`, `mutter --headless`.
 
+### Google Chrome (opt-in, a third-party apt repository)
+
+`scripts/Ubuntu/install_chrome.sh` — not wired into bootstrap; a GUI browser is
+a desktop decision. Ubuntu packages no Chrome at all, and its `chromium` is a
+snap wrapper around a different browser, so this is the second and last place in
+the repo that adds an apt source.
+
+The signed repo is preferred over the standalone `.deb` because
+`apt-get install ./google-chrome-stable.deb` verifies no signature, and an apt
+source keeps a network-facing browser on the unattended-upgrade path. Google
+publishes one `stable main` suite for every Ubuntu release, so there is no
+codename to resolve the way Tailscale needs. **amd64 only** — there is no arm64
+Chrome for Linux, and the script stops with that message rather than letting apt
+fail obscurely.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/usr/share/keyrings/google-chrome.gpg` |
+| apt source | `/etc/apt/sources.list.d/google-chrome.list` (`signed-by`) |
+| `google-chrome-stable` | `/opt/google/chrome`, symlinked into `/usr/bin` |
+
+The package's `postinst` re-adds its own `trusted.gpg.d`-keyed sources list, so
+the script reconciles after installing and sets `repo_add_once="false"` in
+`/etc/default/google-chrome` to stop it recurring on upgrade.
+
 ### Not available on Linux
 
 `mole` · `cliclick` · `whisperkit-cli` · every `cask` entry · every `vscode`
 entry. The `Brewfile.cloud` toolchain has no Linux installer yet;
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
-and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not.
+and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
+Chrome has no `cask` entry on either side; on Ubuntu it comes from
+`scripts/Ubuntu/install_chrome.sh`.
 
 ### Finding a Linux build for a Brewfile formula
 

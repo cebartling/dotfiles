@@ -193,6 +193,40 @@ by `freelens`.
 > `-p 127.0.0.1:8080:80@loadbalancer`) is still the better habit — belt and
 > braces, and it does not depend on the chain having been applied.
 
+### Google Chrome (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_chrome.sh
+```
+
+Not wired into bootstrap — a GUI browser is a desktop decision, and a headless
+box should not drag one in. Ubuntu packages no Chrome at all, and its `chromium`
+is a snap wrapper around a different browser, so this comes from Google's own
+apt repository.
+
+Unlike Tailscale there is no codename to resolve: Google publishes a single
+`stable main` suite that serves every Ubuntu release, so a brand-new 26.04 works
+on day one. **amd64 only** — Google ships no arm64 Chrome for Linux, and the
+script says so and stops rather than letting apt fail obscurely.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/usr/share/keyrings/google-chrome.gpg` (dearmored from `dl.google.com/linux/linux_signing_key.pub`) |
+| apt source | `/etc/apt/sources.list.d/google-chrome.list`, `signed-by` the keyring above |
+| `google-chrome-stable` | `/opt/google/chrome`, symlinked into `/usr/bin` |
+
+The signed repo is preferred over the standalone `.deb` on purpose:
+`apt-get install ./google-chrome-stable.deb` verifies no signature at all, and
+an apt source keeps a network-facing browser on the unattended-upgrade path.
+
+> **The package fights you for its own sources list.** Chrome's `postinst` wants
+> to write `google-chrome.list` keyed off `/etc/apt/trusted.gpg.d`, the
+> deprecated global-trust location. The knob that stops it lives in
+> `/etc/default/google-chrome`, which is a conffile the package itself ships —
+> pre-creating it makes dpkg stop on a conffile conflict — so the script
+> reconciles *after* installing: it rewrites the source with `signed-by` and sets
+> `repo_add_once="false"` so upgrades leave it alone.
+
 ### Tailscale (opt-in)
 
 ```sh
@@ -203,8 +237,8 @@ Not wired into bootstrap, mirroring `Brewfile.tailscale` and
 `scripts/macOS/install_tailscale_app.zsh` on macOS — joining a tailnet is a
 per-machine decision.
 
-This is the **one exception** to the no-third-party-apt-repository rule above,
-and it is deliberate. Everything in the k8s toolchain is a static Go binary that
+This is one of the two exceptions to the no-third-party-apt-repository rule
+above (the other is [Google Chrome](#google-chrome-opt-in)), and it is deliberate. Everything in the k8s toolchain is a static Go binary that
 drops into `~/.local/bin` with no root; Tailscale is not. The CLI is only half of
 it — `tailscaled` is a privileged daemon that opens a TUN device and needs a
 systemd unit, so root is unavoidable. Once it is, the signed vendor repo beats a
@@ -436,7 +470,8 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
-| `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; the only script that adds an apt repository) |
+| `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
+| `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
 | [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand under sudo, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
