@@ -476,7 +476,13 @@ install_pnpm() {
 }
 
 install_rustup() {
-  if command -v rustup >/dev/null 2>&1; then
+  # Check the install path, not just $PATH. ~/.cargo/bin is put on $path by
+  # zshrc alone — unlike ~/.local/bin, which Debian's ~/.profile also adds —
+  # so `command -v rustup` misses under any non-zsh shell and this re-ran the
+  # whole rustup installer on a box that already had it. Harmless (the
+  # toolchain came back "unchanged") but a ~300MB no-op. Same reason
+  # install_linear_cli resolves cargo by path.
+  if [[ -x "$HOME/.cargo/bin/rustup" ]] || command -v rustup >/dev/null 2>&1; then
     say "rustup already installed"
     return 0
   fi
