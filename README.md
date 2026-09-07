@@ -65,11 +65,14 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 
-Then install the Claude Code config, which bootstrap deliberately does not
-touch (see [ai-tools/claude-code/](ai-tools/claude-code/README.md)):
+Then Claude Code, which bootstrap deliberately does not touch. The CLI and its
+configuration are two separate installs — the first puts the binary on `$PATH`,
+the second symlinks the skills, hooks and settings that configure it (see
+[ai-tools/claude-code/](ai-tools/claude-code/README.md)):
 
 ```sh
-bash ~/.dotfiles/ai-tools/claude-code/install.sh
+~/.dotfiles/scripts/Ubuntu/install_claude_code.sh   # the CLI
+bash ~/.dotfiles/ai-tools/claude-code/install.sh    # its configuration
 ```
 
 ### Switching to zsh
@@ -312,6 +315,49 @@ advertises nothing.
 > `TRUSTED_IFS`, so your own devices reach published container ports over the
 > tailnet while the LAN stays contained. Access control there is the tailnet
 > ACLs, not iptables. Drop `tailscale0` from that list to contain it like the LAN.
+
+### Claude Code (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_claude_code.sh            # stable
+~/.dotfiles/scripts/Ubuntu/install_claude_code.sh latest     # or a version
+~/.dotfiles/scripts/Ubuntu/install_claude_code.sh --force    # reinstall
+```
+
+The only installer here that needs **no sudo at all** — Claude Code lands
+entirely under `$HOME`, as `~/.local/bin/claude` symlinked into
+`~/.local/share/claude/versions/<version>`. `~/.local/bin` is already on `$path`
+from `zshrc`, so nothing needs adding.
+
+It wraps Anthropic's own installer at `claude.ai/install.sh` rather than
+reimplementing it: that script resolves the current version, verifies the
+download against a SHA256 manifest, and distinguishes musl from glibc and x64
+from arm64. Duplicating that platform detection would mean keeping it correct
+forever. The script is fetched to a file and checked before it runs rather than
+piped into `bash` — the same reflex as `install_chrome.sh` validating that
+Google's signing key really is a PGP block.
+
+Two things the upstream installer does not do, which is the reason for a wrapper:
+
+> **`~/.zshrc` is a symlink into this repo, so an installer appending a PATH
+> line is editing tracked source.** It only has reason to do that when
+> `~/.local/bin` is missing from `$PATH`, so the wrapper exports it first and
+> then checksums the tracked `zshrc` before and after. If it changed, the script
+> prints the actual `git diff` and the command to discard it rather than leaving
+> you to find it in a later commit. This is the same problem nvm, uv, rustup and
+> oh-my-zsh each posed (`CLAUDE.md` keeps the list and their opt-outs), applied
+> to a tool that has not offended yet.
+
+> **The install needs roughly 512MB free**, and the upstream script only
+> diagnoses that *after* the kernel OOM killer has already taken it out (exit
+> `137`). The wrapper reads `MemAvailable` from `/proc/meminfo` up front and
+> warns before spending the download.
+
+Updates do not come from apt, and are not this repo's business:
+
+```sh
+claude update
+```
 
 ### mosh (roaming SSH)
 
@@ -562,6 +608,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
+| `scripts/Ubuntu/install_claude_code.sh` | Opt-in Claude Code CLI install (not run by bootstrap; no sudo, wraps Anthropic's native installer and guards the tracked `zshrc`) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |
 | [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` (opt-in Docker Engine install from Docker's signed apt repository) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
