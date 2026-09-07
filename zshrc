@@ -197,4 +197,15 @@ unset _zsh_plugin _zsh_plugin_dir
 # here on first run. Don't keep it: $HOME/.docker/completions is already on
 # fpath above and the single `compinit -C` (line 98) picks it up. A second
 # compinit just re-runs compaudit/compdump on every shell.
-[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+if [ -f "$HOME/.zshrc.local" ]; then
+  source "$HOME/.zshrc.local"
+fi
+
+# Startup must end with a zero status. `zsh -i -c exit` runs a bare `exit`,
+# which propagates whatever $? the last command left, so a trailing guard that
+# simply doesn't match — the `&&` this file used to end on, with no
+# ~/.zshrc.local present — makes every interactive shell exit 1. That breaks
+# anything gating on startup succeeding: hyperfine refuses to benchmark a
+# command that exits nonzero, so the startup-time check in
+# scripts/Ubuntu/doctor.sh silently measured nothing. Keep this last.
+:
