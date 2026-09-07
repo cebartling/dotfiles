@@ -22,6 +22,9 @@ unset _ed
 export VISUAL="$EDITOR"
 export LANG=en_US.UTF-8
 
+# Suppress Claude Code's periodic in-terminal feedback survey prompt.
+export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
+
 # ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew,
 #       and linuxbrew — no-op on a Linux box installed from apt) -----
 for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew \
