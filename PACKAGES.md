@@ -399,15 +399,36 @@ Note that the *configuration* is a separate, manual install:
 `ai-tools/claude-code/install.sh` symlinks skills, hooks and settings into
 `~/.claude`. The CLI and its config are installed independently.
 
+### Third-party apt sources
+
+Three, all opt-in, none touched by bootstrap. Each is here because the thing it
+installs is **not** a single static binary that could drop into `~/.local/bin`
+without root — the bar everything under
+[From upstream releases](#from-upstream-releases-into-localbin-no-sudo) clears.
+
+| Source | Installs | Why root is unavoidable |
+|---|---|---|
+| `pkgs.tailscale.com` | `tailscale` | `tailscaled` opens a TUN device and needs a systemd unit |
+| `dl.google.com/linux/chrome` | `google-chrome-stable` | a browser package, into `/opt` and `/usr/bin` |
+| `download.docker.com/linux/ubuntu` | `docker-ce` and friends | a privileged daemon plus systemd units |
+
+Once root is in play for any of them, a signed vendor repository beats a
+hand-rolled unit or a side-loaded `.deb`: it verifies signatures and keeps a
+network-exposed service on the unattended-upgrade path.
+
+Count the rows above rather than trusting prose elsewhere — an earlier pass
+asserted the total in three separate places and all three went stale the moment
+Docker was added (`dotfiles-95o`).
+
 ### Tailscale (opt-in, a third-party apt repository)
 
 `scripts/Ubuntu/install_tailscale.sh` — not wired into bootstrap, mirroring
-`Brewfile.tailscale` on macOS. This is one of only two places in the repo that
-add an apt source (Google Chrome is the other), because Tailscale is not a
-single static binary: `tailscaled` is a
-privileged daemon that opens a TUN device and needs a systemd unit, so root is
-unavoidable, and once it is, the signed vendor repo beats a hand-rolled unit and
-keeps a network-exposed daemon on the unattended-upgrade path. Ubuntu's own
+`Brewfile.tailscale` on macOS. One of the
+[third-party apt sources](#third-party-apt-sources) above, because Tailscale is
+not a single static binary: `tailscaled` is a privileged daemon that opens a TUN
+device and needs a systemd unit, so root is unavoidable, and once it is, the
+signed vendor repo beats a hand-rolled unit and keeps a network-exposed daemon
+on the unattended-upgrade path. Ubuntu's own
 `tailscale` in universe lags upstream by a release cycle.
 
 | Item | Where it lands |
@@ -503,8 +524,8 @@ would also have worked: `cage`, `sway`, `labwc`, `mutter --headless`.
 
 `scripts/Ubuntu/install_chrome.sh` — not wired into bootstrap; a GUI browser is
 a desktop decision. Ubuntu packages no Chrome at all, and its `chromium` is a
-snap wrapper around a different browser, so this is the second and last place in
-the repo that adds an apt source.
+snap wrapper around a different browser, so this is one of the
+[third-party apt sources](#third-party-apt-sources) above.
 
 The signed repo is preferred over the standalone `.deb` because
 `apt-get install ./google-chrome-stable.deb` verifies no signature, and an apt
@@ -523,6 +544,39 @@ fail obscurely.
 The package's `postinst` re-adds its own `trusted.gpg.d`-keyed sources list, so
 the script reconciles after installing and sets `repo_add_once="false"` in
 `/etc/default/google-chrome` to stop it recurring on upgrade.
+
+### Docker (opt-in, a third-party apt repository)
+
+`scripts/Ubuntu/bin/install-docker.sh` — not wired into bootstrap, and the third
+of the [third-party apt sources](#third-party-apt-sources) above. It keeps its
+historical home in `scripts/Ubuntu/bin/` (symlinked to `~/bin`) rather than
+moving alongside the other installers, because that path is wired into `link.sh`
+and quoted in the provisioning journal.
+
+Engine, CLI, containerd, buildx and compose come from Docker's own repository
+rather than Ubuntu's `docker.io`, which is an older Engine and ships neither
+`docker buildx` nor `docker compose` as plugins. The convenience script at
+`get.docker.com` is declined for the usual reason: it pipes a remote shell
+script into root.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/etc/apt/keyrings/docker.asc` (armored) |
+| apt source | `/etc/apt/sources.list.d/docker.sources` (deb822, `Signed-By`) |
+| packages | `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin` |
+| services | `docker.service`, `containerd.service` |
+
+Like Tailscale and unlike Chrome, Docker publishes a suite per Ubuntu codename,
+so the script probes `dists/<codename>/Release` and falls back to `noble` rather
+than writing a sources list apt would fail on. Architecture comes from
+`dpkg --print-architecture` — Docker builds amd64 and arm64 alike.
+
+> **Docker bypasses ufw, and installing it is the moment that opens up.** Its
+> `FORWARD` rules sit ahead of ufw's, so a published container port reaches the
+> LAN whether or not ufw agrees. Run `sudo ~/bin/docker-user-firewall.sh` before
+> publishing anything, and prove it from an off-box client with
+> `~/bin/ufw-docker-test.sh`. The `docker` group is also root-equivalent — the
+> daemon socket will bind any host path into a container.
 
 ### Not available on Linux
 

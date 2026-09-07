@@ -99,7 +99,7 @@ gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
 |---|---|
 | **apt** | zsh, zsh-autosuggestions, zsh-syntax-highlighting, starship, eza, bat, fd-find, ripgrep, fzf, zoxide, git-delta, du-dust, procs, tree, tmux, jq, yq, direnv, atuin, lazygit, glow, hyperfine, just, tokei, pre-commit, gitleaks, httpie, xh, gh, pipx, python3-poetry, weston, wayland-utils |
 | **snap** | vale, difftastic |
-| **apt (`pkgs.tailscale.com`)** | tailscale — opt-in, the only third-party apt source here (see below) |
+| **apt (third-party)** | tailscale, google-chrome-stable, docker-ce — each opt-in, each from its own signed vendor repository (see below) |
 | **upstream release** | [uv](https://astral.sh/uv), watchexec, ast-grep, [bd (beads)](https://github.com/steveyegge/beads), [rtk](https://github.com/rtk-ai/rtk), [bun](https://github.com/oven-sh/bun), [pnpm](https://github.com/pnpm/pnpm), [rustup](https://rustup.rs), [pyenv](https://github.com/pyenv/pyenv) |
 
 Anything installed from an upstream release lands in `~/.local/bin`, which the
