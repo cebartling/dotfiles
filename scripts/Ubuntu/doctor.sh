@@ -21,11 +21,6 @@ DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 C_RED=$'\033[31m'; C_GRN=$'\033[32m'; C_YEL=$'\033[33m'
 C_CYN=$'\033[36m'; C_RST=$'\033[0m'
 
-ok()   { printf '%s✓%s %s\n' "$C_GRN" "$C_RST" "$*"; }
-warn() { printf '%s⚠%s %s\n' "$C_YEL" "$C_RST" "$*"; }
-fail() { printf '%s✗%s %s\n' "$C_RED" "$C_RST" "$*"; }
-hdr()  { printf '\n%s==> %s%s\n' "$C_CYN" "$*" "$C_RST"; }
-
 drift=0
 
 # Pull in APT_* and VERIFY_TOOLS. install_tools.sh guards its main() behind a
@@ -37,9 +32,20 @@ if [[ -r "$DOTFILES/scripts/Ubuntu/install_tools.sh" ]]; then
   set +e
   set +o pipefail
 else
-  fail "cannot read $DOTFILES/scripts/Ubuntu/install_tools.sh — is \$DOTFILES right?"
+  # fail() isn't defined yet — see below.
+  printf '%scannot read %s/scripts/Ubuntu/install_tools.sh — is $DOTFILES right?%s\n' \
+    "$C_RED" "$DOTFILES" "$C_RST" >&2
   exit 1
 fi
+
+# Defined AFTER the source deliberately: install_tools.sh declares its own
+# say() and warn(), and sourcing it overwrites any warn() defined earlier —
+# which sent half this script's output to stderr in the installer's format
+# rather than to stdout in the doctor's.
+ok()   { printf '%s✓%s %s\n' "$C_GRN" "$C_RST" "$*"; }
+warn() { printf '%s⚠%s %s\n' "$C_YEL" "$C_RST" "$*"; }
+fail() { printf '%s✗%s %s\n' "$C_RED" "$C_RST" "$*"; }
+hdr()  { printf '\n%s==> %s%s\n' "$C_CYN" "$*" "$C_RST"; }
 
 # ---------- symlinks ----------
 hdr "Symlinks"
@@ -82,10 +88,22 @@ hdr "apt packages"
 # The Playwright and pyenv-build lists are build/runtime dependencies rather
 # than tools, but a missing one breaks the thing it supports in a way that is
 # hard to trace later, so they are checked too.
+# `dpkg -s` alone is wrong here: some names in these lists are *virtual*,
+# satisfied by a real package that Provides them rather than by a package of
+# that name. On 26.04 libncursesw5-dev is exactly this — apt installs it
+# happily (libncurses-dev provides it) while `dpkg -s libncursesw5-dev` fails,
+# which reported a correctly provisioned box as drifted.
+#
+# So build the satisfied set once: every installed package name, plus every
+# virtual name those packages Provide.
+installed_pkgs="$(dpkg-query -W -f='${Status}|${Package}|${Provides}\n' 2>/dev/null \
+  | grep '^install ok installed|' | cut -d'|' -f2,3 \
+  | tr '|,' '\n\n' | sed 's/ *(.*//' | tr -d ' ' | grep -v '^$' | sort -u)"
+
 apt_missing=()
 for pkg in "${APT_BASE[@]}" "${APT_MODERN[@]}" "${APT_DEV[@]}" \
            "${APT_PLAYWRIGHT[@]}" "${APT_WAYLAND[@]}" "${APT_PYENV_BUILD[@]}"; do
-  if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+  if ! printf '%s\n' "$installed_pkgs" | grep -qx "$pkg"; then
     apt_missing+=("$pkg")
   fi
 done
