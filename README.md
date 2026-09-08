@@ -122,7 +122,7 @@ names in `~/.local/bin`, so `aliases/core.sh` needs no Linux special-casing.
   if nothing else owns the name.
 
 Not available on Linux and intentionally skipped: `mole`, `cliclick`,
-`whisperkit-cli`, and every `cask` / `vscode` entry in the Brewfiles. The
+`whisperkit-cli`, and every `cask` entry in the Brewfiles. The
 optional k8s and cloud toolchains have no Linux installer yet.
 
 ### Headless Wayland (`wlheadless-run`)

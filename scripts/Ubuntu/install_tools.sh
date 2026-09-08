@@ -11,8 +11,8 @@
 #   ~/.dotfiles/scripts/Ubuntu/install_tools.sh
 #
 # Deliberately NOT installed on Linux (no Linux distribution exists, or the
-# package is macOS-only): mole, cliclick, whisperkit-cli, and every `cask` /
-# `vscode` entry in the Brewfile.
+# package is macOS-only): mole, cliclick, whisperkit-cli, and every `cask`
+# entry in the Brewfile.
 
 set -euo pipefail
 

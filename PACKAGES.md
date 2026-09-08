@@ -324,13 +324,8 @@ Optional Kubernetes toolchain. Installed separately via
 
 ## Other tracked items
 
-The Brewfile also tracks two non-Homebrew toolchains via `brew bundle`:
+The Brewfile also tracks one non-Homebrew toolchain via `brew bundle`:
 
-- **VS Code extensions** (~70 entries under `vscode "..."` lines).
-  Installed by `brew bundle` using the `code` CLI. See the Brewfile for
-  the canonical list — they're not individually documented here because
-  the names are self-descriptive (e.g. `dbaeumer.vscode-eslint`,
-  `ms-python.python`).
 - **Cargo binaries** (`cargo-leptos`, `cargo-make`, `leptosfmt`,
   `linear-cli`, `sqlx-cli`, `trunk`). Installed via `cargo install`
   triggered by `brew bundle`. The Rust toolchain itself must be present
@@ -593,8 +588,8 @@ than writing a sources list apt would fail on. Architecture comes from
 
 ### Not available on Linux
 
-`mole` · `cliclick` · `whisperkit-cli` · every `cask` entry · every `vscode`
-entry. The `Brewfile.cloud` toolchain has no Linux installer yet;
+`mole` · `cliclick` · `whisperkit-cli` · every `cask` entry. The
+`Brewfile.cloud` toolchain has no Linux installer yet;
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
 Chrome has no `cask` entry on either side; on Ubuntu it comes from
