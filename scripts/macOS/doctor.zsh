@@ -17,7 +17,8 @@ warn()  { echo $fg[yellow]"⚠"$reset_color" $*"; }
 fail()  { echo $fg[red]"✗"$reset_color" $*"; }
 hdr()   { echo; echo $fg[cyan]"==> $*"$reset_color; }
 
-drift=0
+drift=0            # required: main Brewfile + symlinks. Non-zero exit.
+optional_drift=0   # optional toolchains. Reported, but never fails the run.
 
 # ---------- symlinks ----------
 hdr "Symlinks"
@@ -60,7 +61,9 @@ if [[ -f "$DOTFILES/Brewfile.k8s" ]]; then
     warn "Brewfile.k8s drift (run scripts/macOS/install_k8s_tools.zsh to fix):"
     brew bundle check --file="$DOTFILES/Brewfile.k8s" --verbose 2>&1 \
       | grep -E '^→' | sed 's/^/    /'
-    # k8s drift is not counted as overall drift since it's optional
+    # Optional: counted separately so it never fails the run, but the
+    # summary can still say it happened instead of claiming all is well.
+    optional_drift=$((optional_drift + 1))
   fi
 fi
 
@@ -72,7 +75,9 @@ if [[ -f "$DOTFILES/Brewfile.aitools" ]]; then
     warn "Brewfile.aitools drift (run scripts/macOS/install_ai_tools.zsh to fix):"
     brew bundle check --file="$DOTFILES/Brewfile.aitools" --verbose 2>&1 \
       | grep -E '^→' | sed 's/^/    /'
-    # ai drift is not counted as overall drift since it's optional
+    # Optional: counted separately so it never fails the run, but the
+    # summary can still say it happened instead of claiming all is well.
+    optional_drift=$((optional_drift + 1))
   fi
 fi
 
@@ -84,7 +89,9 @@ if [[ -f "$DOTFILES/Brewfile.apple" ]]; then
     warn "Brewfile.apple drift (run scripts/macOS/install_apple_tools.zsh to fix):"
     brew bundle check --file="$DOTFILES/Brewfile.apple" --verbose 2>&1 \
       | grep -E '^→' | sed 's/^/    /'
-    # apple drift is not counted as overall drift since it's optional
+    # Optional: counted separately so it never fails the run, but the
+    # summary can still say it happened instead of claiming all is well.
+    optional_drift=$((optional_drift + 1))
   fi
 fi
 
@@ -112,7 +119,12 @@ fi
 # ---------- summary ----------
 echo
 if (( drift == 0 )); then
-  ok "No drift detected. This Mac is in sync with the repo."
+  if (( optional_drift == 0 )); then
+    ok "No drift detected. This Mac is in sync with the repo."
+  else
+    ok "Core config in sync (Brewfile and symlinks)."
+    warn "$optional_drift optional toolchain(s) have drift — see above for the installer to run."
+  fi
   exit 0
 else
   fail "$drift drift item(s) found. See above for details."
