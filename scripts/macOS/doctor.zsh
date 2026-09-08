@@ -93,7 +93,10 @@ hdr "Shell startup"
 local total=0 i runs=3
 for i in {1..$runs}; do
   local start_ns=$(/usr/bin/python3 -c 'import time; print(int(time.time_ns()))')
-  zsh -i -c exit
+  # -u CLAUDECODE: zshrc loads nvm eagerly when CLAUDECODE is set, which roughly
+  # doubles startup. Inheriting it from an agent session would measure that
+  # branch and warn about a budget the real interactive shell never exceeds.
+  env -u CLAUDECODE zsh -i -c exit
   local end_ns=$(/usr/bin/python3 -c 'import time; print(int(time.time_ns()))')
   local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
   echo "  run $i: ${elapsed_ms}ms"
