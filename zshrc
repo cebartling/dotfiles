@@ -192,6 +192,13 @@ unset _zsh_plugin _zsh_plugin_dir
 [[ -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/libpq/bin" ]] && \
   path=("${HOMEBREW_PREFIX:-/opt/homebrew}/opt/libpq/bin" $path)
 
+# ffmpeg-full is keg-only (it is an alternate version of the ffmpeg formula),
+# so its ffmpeg/ffprobe/ffplay are not symlinked into the prefix. Homebrew's
+# caveat says to append an export to ~/.zshrc, which is this file — PATH is
+# owned here instead.
+[[ -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/ffmpeg-full/bin" ]] && \
+  path=("${HOMEBREW_PREFIX:-/opt/homebrew}/opt/ffmpeg-full/bin" $path)
+
 # ----- Per-machine overrides (untracked, optional) -----
 # Docker Desktop's installer appends its own `fpath=(... ); compinit` block
 # here on first run. Don't keep it: $HOME/.docker/completions is already on

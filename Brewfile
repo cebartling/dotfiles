@@ -120,7 +120,9 @@ brew "podman-compose"
 # (/Users/e9004590/homebrew) because the p11-kit dep times out in
 # meson tests. Install ad-hoc when pdftotext/pdftoppm/pdfinfo are needed.
 brew "imagemagick"          # convert/resize images (token cost reduction)
-brew "ffmpeg"               # audio/video conversion & processing
+brew "ffmpeg-full"          # audio/video conversion & processing; the full
+                            # build (extra codecs/filters + ffplay). keg-only,
+                            # so zshrc prepends its bin to $path.
 
 # ===== Data =====
 brew "duckdb"
