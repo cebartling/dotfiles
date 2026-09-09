@@ -5,3 +5,8 @@
 ZSH_THEME=""
 
 plugins=(git git-extras git-flow)
+
+# Never prompt to update oh-my-zsh on shell startup. `disabled` also skips the
+# background check entirely, which keeps startup inside its ~150ms budget.
+# Update deliberately with `omz update`.
+zstyle ':omz:update' mode disabled
