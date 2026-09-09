@@ -116,10 +116,14 @@ for i in {1..$runs}; do
   total=$((total + elapsed_ms))
 done
 local avg=$((total / runs))
-if (( avg < 250 )); then
+# 180ms: the documented budget is ~150ms and this measures ~155ms on a
+# healthy machine, so this leaves room for a slow run without letting a
+# real regression through. The old 250ms ceiling was set when the timing
+# itself added ~60ms of overhead — with that gone it no longer bites.
+if (( avg < 180 )); then
   ok "average startup: ${avg}ms"
 else
-  warn "average startup: ${avg}ms (expected <250ms)"
+  warn "average startup: ${avg}ms (expected <180ms)"
 fi
 
 # ---------- summary ----------
