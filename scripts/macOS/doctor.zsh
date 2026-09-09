@@ -97,15 +97,21 @@ fi
 
 # ---------- shell startup time ----------
 hdr "Shell startup"
-local total=0 i runs=3
+# EPOCHREALTIME is a shell parameter, so reading it costs nothing. The
+# previous version shelled out to /usr/bin/python3 twice per run and paid
+# ~60ms of interpreter startup *inside* the interval it was timing, which
+# inflated every reported number well above what the shell actually takes.
+zmodload zsh/datetime
+
+local -i total=0 i runs=3
 for i in {1..$runs}; do
-  local start_ns=$(/usr/bin/python3 -c 'import time; print(int(time.time_ns()))')
+  local start=$EPOCHREALTIME
   # -u CLAUDECODE: zshrc loads nvm eagerly when CLAUDECODE is set, which roughly
   # doubles startup. Inheriting it from an agent session would measure that
   # branch and warn about a budget the real interactive shell never exceeds.
   env -u CLAUDECODE zsh -i -c exit
-  local end_ns=$(/usr/bin/python3 -c 'import time; print(int(time.time_ns()))')
-  local elapsed_ms=$(( (end_ns - start_ns) / 1000000 ))
+  local end=$EPOCHREALTIME
+  local -i elapsed_ms=$(( (end - start) * 1000 ))
   echo "  run $i: ${elapsed_ms}ms"
   total=$((total + elapsed_ms))
 done
