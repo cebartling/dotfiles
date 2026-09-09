@@ -11,6 +11,11 @@ alias ll='eza -lahF --group-directories-first --color=auto --icons'
 # pull brought in changes, so anything chained after it would never run.
 # Automatic update checks are off (see oh-my-zsh/core.sh), so this is the
 # only thing that keeps oh-my-zsh current.
+#
+# Do not trust this alias's exit code. On the days omz actually pulls, the
+# exec'd shell inherits the chain and reports its own status, so a truncated
+# run still exits 0. Verified A/B: with a pull pending, a command chained
+# after `omz update` never ran, yet the chain still exited 0.
 if [[ "$OSTYPE" == darwin* ]]; then
   alias daily-update="brew update && brew upgrade && brew cleanup && claude update && omz update"
 else
