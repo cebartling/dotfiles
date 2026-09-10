@@ -47,7 +47,11 @@ hdr "Brewfile"
 if brew bundle check --file="$DOTFILES/Brewfile" >/dev/null 2>&1; then
   ok "Brewfile satisfied"
 else
-  warn "Brewfile drift — missing items below:"
+  # `brew bundle check` emits the same "needs to be installed or updated"
+  # line whether a package is absent or merely outdated, so this header must
+  # not claim "missing" — most of the time everything listed is installed and
+  # just behind. Confirm with `brew list <pkg>` before reaching for bootstrap.
+  warn "Brewfile not satisfied — items below are absent or outdated:"
   brew bundle check --file="$DOTFILES/Brewfile" --verbose 2>&1 \
     | grep -E '^→' | sed 's/^/    /'
   drift=$((drift + 1))
@@ -138,6 +142,7 @@ if (( drift == 0 )); then
   exit 0
 else
   fail "$drift drift item(s) found. See above for details."
-  echo "  Fix with:  ~/.dotfiles/bootstrap.sh"
+  echo "  Outdated packages:  daily-update"
+  echo "  Absent packages:    ~/.dotfiles/bootstrap.sh"
   exit 1
 fi
