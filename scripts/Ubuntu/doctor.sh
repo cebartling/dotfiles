@@ -223,14 +223,23 @@ if command -v hyperfine >/dev/null 2>&1; then
 else
   # hyperfine is in APT_DEV, so this is the degraded path; 5 runs of `time`
   # is noisier but still catches a startup that has regressed badly.
-  total=0
+  # Accumulate nanoseconds and convert once. Dividing inside the loop
+  # truncated each run to a whole millisecond before summing, biasing the
+  # average low by up to 1ms. Small, but the ok/warn line sits at exactly
+  # 150ms, so it is the boundary case that the rounding lands on.
+  #
+  # `date +%s%N` forks twice per run where bash 5's $EPOCHREALTIME would not,
+  # but EPOCHREALTIME renders with the locale's decimal separator (verified:
+  # LC_ALL=de_DE gives `1789044876,115902`), which silently breaks the
+  # arithmetic below. Two forks are the cheaper problem.
+  total_ns=0
   for _ in 1 2 3 4 5; do
     start=$(date +%s%N)
     env -u CLAUDECODE zsh -i -c exit >/dev/null 2>&1
     end=$(date +%s%N)
-    total=$(( total + (end - start) / 1000000 ))
+    total_ns=$(( total_ns + (end - start) ))
   done
-  avg_ms=$(( total / 5 ))
+  avg_ms=$(( total_ns / 5 / 1000000 ))
   warn "hyperfine not installed — falling back to a coarser timing"
 fi
 
