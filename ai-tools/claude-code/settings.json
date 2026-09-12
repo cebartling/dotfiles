@@ -1,5 +1,4 @@
 {
-  "preferredNotifChannel": "iterm2",
   "permissions": {
     "allow": [
       "Bash(linear-cli *)",
@@ -250,6 +249,7 @@
   "autoMemoryDirectory": "~/.claude/memory/",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark",
+  "preferredNotifChannel": "iterm2",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
