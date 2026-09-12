@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Nautilus script: right-click -> Scripts -> Open with Zed.
+#
+# Opens the selected files/folders in Zed, or the current folder when nothing
+# is selected (right-click on the empty background). Linked into
+# ~/.local/share/nautilus/scripts by scripts/Ubuntu/link.sh.
+#
+# A top-level menu item would need the python3-nautilus extension (root to
+# install); a script needs nothing. Nautilus starts scripts with the current
+# folder as the working directory and passes the selection one path per line.
+
+set -euo pipefail
+
+ZED="$HOME/.local/bin/zed"
+
+paths=()
+while IFS= read -r p; do
+  [[ -n "$p" ]] && paths+=("$p")
+done <<< "${NAUTILUS_SCRIPT_SELECTED_FILE_PATHS:-}"
+
+(( ${#paths[@]} )) || paths=("$PWD")
+
+exec "$ZED" "${paths[@]}"

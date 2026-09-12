@@ -62,6 +62,14 @@ for s in docker-user-firewall.sh install-docker.sh ufw-docker-test.sh; do
   link "$DOTFILES/scripts/Ubuntu/bin/$s" "$HOME/bin/$s"
 done
 
+# Files (Nautilus) right-click -> Scripts entries.
+if command -v nautilus >/dev/null 2>&1; then
+  link "$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed" \
+       "$HOME/.local/share/nautilus/scripts/Open with Zed"
+else
+  echo "${C_YEL}skip${C_RST}   nautilus scripts (nautilus not installed)"
+fi
+
 if command -v ghostty >/dev/null 2>&1; then
   link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 else
