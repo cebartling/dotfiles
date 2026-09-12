@@ -263,6 +263,25 @@ script says so and stops rather than letting apt fail obscurely.
 | apt source | `/etc/apt/sources.list.d/google-chrome.list`, `signed-by` the keyring above |
 | `google-chrome-stable` | `/opt/google/chrome`, symlinked into `/usr/bin` |
 
+### System Node.js from NodeSource (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_nodejs.sh
+```
+
+Not wired into bootstrap, which already installs node through nvm. This adds a
+*system* node at `/usr/bin/node` for the contexts that never load nvm — sudo,
+systemd units, cron. In an interactive shell nvm's node still wins on `$PATH`.
+It runs NodeSource's `setup_24.x`, then `apt-get install nodejs`; the repo step
+is skipped when the `node_24.x` source is already present.
+
+| Item | Where it lands |
+|---|---|
+| repository key | `/usr/share/keyrings/nodesource.gpg` |
+| apt source | `/etc/apt/sources.list.d/nodesource.sources` (`node_24.x`, suite `nodistro`) |
+| apt pin | `/etc/apt/preferences.d/nodejs`, priority 600 over Ubuntu's own `nodejs` |
+| `nodejs` | `/usr/bin/node`, `/usr/bin/npm`, `/usr/bin/npx` |
+
 The signed repo is preferred over the standalone `.deb` on purpose:
 `apt-get install ./google-chrome-stable.deb` verifies no signature at all, and
 an apt source keeps a network-facing browser on the unattended-upgrade path.
@@ -623,6 +642,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/doctor.sh` | Reports drift between a Linux box and the repo (symlinks, apt/snap packages, binaries, startup time) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
+| `scripts/Ubuntu/install_nodejs.sh` | Opt-in system Node.js 24 install (not run by bootstrap; adds NodeSource's apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
 | `scripts/Ubuntu/install_claude_code.sh` | Opt-in Claude Code CLI install (not run by bootstrap; no sudo, wraps Anthropic's native installer and guards the tracked `zshrc`) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |

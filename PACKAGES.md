@@ -409,7 +409,7 @@ Note that the *configuration* is a separate, manual install:
 
 ### Third-party apt sources
 
-Three, all opt-in, none touched by bootstrap. Each is here because the thing it
+All opt-in, none touched by bootstrap. Each is here because the thing it
 installs is **not** a single static binary that could drop into `~/.local/bin`
 without root — the bar everything under
 [From upstream releases](#from-upstream-releases-into-localbin-no-sudo) clears.
@@ -419,6 +419,7 @@ without root — the bar everything under
 | `pkgs.tailscale.com` | `tailscale` | `tailscaled` opens a TUN device and needs a systemd unit |
 | `dl.google.com/linux/chrome` | `google-chrome-stable` | a browser package, into `/opt` and `/usr/bin` |
 | `download.docker.com/linux/ubuntu` | `docker-ce` and friends | a privileged daemon plus systemd units |
+| `deb.nodesource.com` | `nodejs` | a *system* node at `/usr/bin/node`, for sudo, systemd and cron — contexts that never load nvm |
 
 Once root is in play for any of them, a signed vendor repository beats a
 hand-rolled unit or a side-loaded `.deb`: it verifies signatures and keeps a
