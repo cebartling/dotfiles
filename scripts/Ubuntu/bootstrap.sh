@@ -101,6 +101,19 @@ ensure_nvm() {
     "$(curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh)"
 }
 
+ensure_node() {
+  # Any nvm-managed node counts — don't churn a box that already has one.
+  # The first `nvm install` also sets the `default` alias the zshrc loader uses.
+  export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+  if compgen -G "$NVM_DIR/versions/node/v*" >/dev/null; then
+    say "node already installed via nvm ($(ls "$NVM_DIR/versions/node" | paste -sd' '))"
+    return 0
+  fi
+  say "Installing the latest LTS node via nvm"
+  # nvm.sh is not safe under `set -u`; relax it in a subshell.
+  ( set +u; . "$NVM_DIR/nvm.sh"; nvm install --lts )
+}
+
 run_install_fonts() {
   "$DOTFILES/scripts/Ubuntu/install_fonts.sh" || warn "font install failed; continuing"
 }
@@ -131,7 +144,6 @@ Next steps:
   5. First-time logins:
        gh auth login
        sdk version            # initializes sdkman on first call
-       nvm install --lts      # installs an LTS node on first call
   6. Optional: per-machine overrides:
        cp ~/.dotfiles/.zshrc.local.example ~/.zshrc.local
        $EDITOR ~/.zshrc.local
@@ -150,6 +162,7 @@ main() {
   ensure_oh_my_zsh
   ensure_sdkman
   ensure_nvm
+  ensure_node
   run_install_fonts
   discard_generated_zshrc
   run_link

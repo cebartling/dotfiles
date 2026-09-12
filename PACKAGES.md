@@ -452,7 +452,8 @@ is a manual step because it opens a browser login: `sudo tailscale up --ssh
 ### Installed by bootstrap, not by the package manager
 
 `oh-my-zsh` (unattended installer) · `sdkman` · `nvm` (installed proper, since
-there is no Homebrew formula to lean on) · JetBrainsMono Nerd Font
+there is no Homebrew formula to lean on) · node LTS (via `nvm install --lts`) ·
+JetBrainsMono Nerd Font
 
 ### Renamed binaries
 

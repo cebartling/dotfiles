@@ -57,7 +57,8 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
 3. Install sdkman if missing
 4. Install nvm into `$NVM_DIR` — there is no Homebrew nvm formula to lean on,
    so nvm proper is installed with `PROFILE=/dev/null` to keep its installer
-   out of `~/.zshrc`
+   out of `~/.zshrc`, then install the latest LTS node with it (skipped if nvm
+   already manages any node version)
 5. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
    Font, which `eza --icons` and the starship prompt both need
 6. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc` and
