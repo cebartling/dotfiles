@@ -107,14 +107,18 @@ for _nvm_prefix in "${HOMEBREW_PREFIX}/opt/nvm" "$NVM_DIR"; do
 done
 unset _nvm_prefix _nvm_comp_candidate
 
+# nvm.sh must be sourced under `emulate zsh -c`: the interactive shell has
+# extendedglob on, which breaks nvm's alias resolution (`default` -> N/A, so
+# node never lands on $PATH). Sticky emulation makes every nvm function run
+# with zsh-default options, without touching the options of this shell.
 if [[ -n "$_nvm_sh" ]]; then
   if [[ -n "$CLAUDECODE" ]]; then
-    \. "$_nvm_sh"
+    emulate zsh -c '\. "$_nvm_sh"'
     [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
   else
     _nvm_load() {
       unset -f nvm node npm npx _nvm_load
-      \. "$_nvm_sh"
+      emulate zsh -c '\. "$_nvm_sh"'
       [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
     }
     nvm()  { _nvm_load; nvm  "$@"; }
