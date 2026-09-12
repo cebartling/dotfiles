@@ -409,7 +409,7 @@ Note that the *configuration* is a separate, manual install:
 
 ### Third-party apt sources
 
-All opt-in, none touched by bootstrap. Each is here because the thing it
+All opt-in except NodeSource, which bootstrap runs. Each is here because the thing it
 installs is **not** a single static binary that could drop into `~/.local/bin`
 without root — the bar everything under
 [From upstream releases](#from-upstream-releases-into-localbin-no-sudo) clears.
@@ -454,6 +454,7 @@ is a manual step because it opens a browser login: `sudo tailscale up --ssh
 
 `oh-my-zsh` (unattended installer) · `sdkman` · `nvm` (installed proper, since
 there is no Homebrew formula to lean on) · node LTS (via `nvm install --lts`) ·
+system `nodejs` 24 (NodeSource apt repository, via `install_nodejs.sh`) ·
 JetBrainsMono Nerd Font
 
 ### Renamed binaries

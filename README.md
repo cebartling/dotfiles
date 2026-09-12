@@ -53,15 +53,18 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
 
 1. [`install_tools.sh`](scripts/Ubuntu/install_tools.sh) — the CLI toolchain
    (see [Where Linux packages come from](#where-linux-packages-come-from))
-2. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
-3. Install sdkman if missing
-4. Install nvm into `$NVM_DIR` — there is no Homebrew nvm formula to lean on,
+2. [`install_nodejs.sh`](scripts/Ubuntu/install_nodejs.sh) — a system node
+   from NodeSource (see [System Node.js from NodeSource](#system-nodejs-from-nodesource));
+   a failure here warns and continues
+3. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
+4. Install sdkman if missing
+5. Install nvm into `$NVM_DIR` — there is no Homebrew nvm formula to lean on,
    so nvm proper is installed with `PROFILE=/dev/null` to keep its installer
    out of `~/.zshrc`, then install the latest LTS node with it (skipped if nvm
    already manages any node version)
-5. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
+6. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
    Font, which `eza --icons` and the starship prompt both need
-6. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc` and
+7. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc` and
    `~/.config/starship.toml`. The cmux links are macOS-only and skipped;
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
@@ -263,13 +266,13 @@ script says so and stops rather than letting apt fail obscurely.
 | apt source | `/etc/apt/sources.list.d/google-chrome.list`, `signed-by` the keyring above |
 | `google-chrome-stable` | `/opt/google/chrome`, symlinked into `/usr/bin` |
 
-### System Node.js from NodeSource (opt-in)
+### System Node.js from NodeSource
 
 ```sh
 ~/.dotfiles/scripts/Ubuntu/install_nodejs.sh
 ```
 
-Not wired into bootstrap, which already installs node through nvm. This adds a
+Run by bootstrap, alongside the nvm-managed node it also installs. This adds a
 *system* node at `/usr/bin/node` for the contexts that never load nvm — sudo,
 systemd units, cron. In an interactive shell nvm's node still wins on `$PATH`.
 It runs NodeSource's `setup_24.x`, then `apt-get install nodejs`; the repo step
@@ -642,7 +645,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/doctor.sh` | Reports drift between a Linux box and the repo (symlinks, apt/snap packages, binaries, startup time) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
-| `scripts/Ubuntu/install_nodejs.sh` | Opt-in system Node.js 24 install (not run by bootstrap; adds NodeSource's apt repository) |
+| `scripts/Ubuntu/install_nodejs.sh` | System Node.js 24 install (run by bootstrap; adds NodeSource's apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
 | `scripts/Ubuntu/install_claude_code.sh` | Opt-in Claude Code CLI install (not run by bootstrap; no sudo, wraps Anthropic's native installer and guards the tracked `zshrc`) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |

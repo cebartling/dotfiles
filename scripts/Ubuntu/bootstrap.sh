@@ -49,6 +49,15 @@ run_install_tools() {
   "$DOTFILES/scripts/Ubuntu/install_tools.sh"
 }
 
+run_install_nodejs() {
+  say "Installing system Node.js from NodeSource (sudo password may be required)"
+  # install_nodejs.sh refuses to prompt for sudo, and install_tools.sh can
+  # outlast the cached sudo timestamp — refresh it here, where a human is present.
+  sudo -v
+  "$DOTFILES/scripts/Ubuntu/install_nodejs.sh" \
+    || warn "system node install failed; nvm's node is unaffected, continuing"
+}
+
 ensure_oh_my_zsh() {
   if [[ -d "$HOME/.oh-my-zsh" ]]; then
     say "oh-my-zsh already installed"
@@ -159,6 +168,7 @@ main() {
   [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]] && HAD_ZSHRC=1
   ensure_dotfiles_repo
   run_install_tools
+  run_install_nodejs
   ensure_oh_my_zsh
   ensure_sdkman
   ensure_nvm

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # install_nodejs.sh — system Node.js on Ubuntu, from NodeSource.
 #
-# Opt-in and NOT wired into bootstrap.sh, like install_chrome.sh and
-# install_tailscale.sh — it adds a third-party apt repository and needs sudo.
+# Run by bootstrap.sh; also safe to run on its own. Needs sudo (third-party
+# apt repository, package install).
 #
 #   ~/.dotfiles/scripts/Ubuntu/install_nodejs.sh
 #
