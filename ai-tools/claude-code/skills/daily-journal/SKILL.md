@@ -182,7 +182,7 @@ today's date for the section header in step 5 and the time for the timestamp in 
 
 ```bash
 today=$(date +%Y-%m-%d)
-logged_at=$(date '+%H:%M %Z')   # e.g. 14:32 CDT — see **Timestamp** under step 7
+logged_at=$(date '+%-I:%M %p %Z')   # e.g. 2:32 PM CDT — see **Timestamp** under step 7
 ```
 
 Look at what the client already has, newest last:
@@ -318,7 +318,7 @@ confirmed in step 3).
 from step 2:
 
 ```
-*Logged {HH:MM} {TZ}*
+*Logged {h:MM} {AM|PM} {TZ}*
 ```
 
 It is one line per *update*, not per topic: it sits directly above the new content, and several
@@ -341,7 +341,7 @@ Entries written before this rule have no timestamp; leave them as they are.
 
   ## {Month} {Day}, {Year}
 
-  *Logged {HH:MM} {TZ}*
+  *Logged {h:MM} {AM|PM} {TZ}*
 
   {new content}
   ```
@@ -352,11 +352,11 @@ Entries written before this rule have no timestamp; leave them as they are.
 
   ## {Month} {Day}, {Year}
 
-  *Logged {HH:MM} {TZ}*
+  *Logged {h:MM} {AM|PM} {TZ}*
 
   {new content}
   ```
-- *Existing today section* — insert a `*Logged {HH:MM} {TZ}*` line followed by the new
+- *Existing today section* — insert a `*Logged {h:MM} {AM|PM} {TZ}*` line followed by the new
   `### Topic` subsection(s) (or bullets) immediately before the *next* `## ` header that follows
   today's, or at the true end of the file if today's section is currently the last one.
 
@@ -373,13 +373,13 @@ Entries written before this rule have no timestamp; leave them as they are.
     - {topic}
   ---
 
-  *Logged {HH:MM} {TZ}*
+  *Logged {h:MM} {AM|PM} {TZ}*
 
   ## {Topic}
 
   {new content}
   ```
-- *Existing content* — append a `*Logged {HH:MM} {TZ}*` line followed by the new `## Topic`
+- *Existing content* — append a `*Logged {h:MM} {AM|PM} {TZ}*` line followed by the new `## Topic`
   section(s) at the true end of the file, leaving any existing frontmatter untouched and adding
   none if there is none.
 
