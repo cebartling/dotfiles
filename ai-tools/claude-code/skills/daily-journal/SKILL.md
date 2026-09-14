@@ -177,10 +177,12 @@ Either signal alone is enough — the remote org and the sandbox directory often
 ### 2. Determine the client's convention and compute the target path
 
 *Skip the path computation in explicit mode — the target file is already known. You still need
-today's date for the section header in step 5, so compute `today` regardless.*
+today's date for the section header in step 5 and the time for the timestamp in step 7, so compute
+`today` and `logged_at` regardless.*
 
 ```bash
 today=$(date +%Y-%m-%d)
+logged_at=$(date '+%H:%M %Z')   # e.g. 14:32 CDT — see **Timestamp** under step 7
 ```
 
 Look at what the client already has, newest last:
@@ -312,6 +314,19 @@ back. Follow the branch for the shape determined in step 5 — **never write a `
 Create the parent directories first if they don't exist (in explicit mode this was already
 confirmed in step 3).
 
+**Timestamp.** Every update opens with one line recording when it was logged, using `logged_at`
+from step 2:
+
+```
+*Logged {HH:MM} {TZ}*
+```
+
+It is one line per *update*, not per topic: it sits directly above the new content, and several
+topics added in one update share it. A second update the same day gets its own line with the new
+time, which is how same-day updates stay distinguishable. The time goes on its own line, never
+inside a `##`/`###` header, so header text (and the Obsidian anchors built from it) stays clean.
+Entries written before this rule have no timestamp; leave them as they are.
+
 **Multi-day file:**
 
 - *Creating the file* — frontmatter (see **Frontmatter**), then today's section:
@@ -326,6 +341,8 @@ confirmed in step 3).
 
   ## {Month} {Day}, {Year}
 
+  *Logged {HH:MM} {TZ}*
+
   {new content}
   ```
 - *Existing file, today not in it yet* — append at the true end, adding **no** frontmatter even if
@@ -335,11 +352,13 @@ confirmed in step 3).
 
   ## {Month} {Day}, {Year}
 
+  *Logged {HH:MM} {TZ}*
+
   {new content}
   ```
-- *Existing today section* — insert the new `### Topic` subsection(s) (or bullets) immediately
-  before the *next* `## ` header that follows today's, or at the true end of the file if today's
-  section is currently the last one.
+- *Existing today section* — insert a `*Logged {HH:MM} {TZ}*` line followed by the new
+  `### Topic` subsection(s) (or bullets) immediately before the *next* `## ` header that follows
+  today's, or at the true end of the file if today's section is currently the last one.
 
 **Single-day note:**
 
@@ -354,12 +373,15 @@ confirmed in step 3).
     - {topic}
   ---
 
+  *Logged {HH:MM} {TZ}*
+
   ## {Topic}
 
   {new content}
   ```
-- *Existing content* — append the new `## Topic` section(s) at the true end of the file, leaving
-  any existing frontmatter untouched and adding none if there is none.
+- *Existing content* — append a `*Logged {HH:MM} {TZ}*` line followed by the new `## Topic`
+  section(s) at the true end of the file, leaving any existing frontmatter untouched and adding
+  none if there is none.
 
 In every branch, everything before the insertion point — including anything the user wrote
 themselves, and any frontmatter already present — must come out byte-for-byte identical to what was
