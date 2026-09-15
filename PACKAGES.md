@@ -447,6 +447,15 @@ on the unattended-upgrade path. Ubuntu's own
 | `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
 | tailscaled operator | `tailscale set --operator=$USER`, so the tray client needs no sudo |
 | tray client (`tailscale systray`) | `scripts/Ubuntu/desktop/tailscale-systray.desktop`, linked by `link.sh` into `~/.config/autostart/` and `~/.local/share/applications/` |
+| HTTPS cert renewal | `scripts/Ubuntu/tailscale-cert-renew` (→ `~/.local/bin`) and `scripts/Ubuntu/systemd/tailscale-cert-renew.{service,timer}` (→ `~/.config/systemd/user/`), linked by `link.sh`; enable once with `systemctl --user enable --now tailscale-cert-renew.timer` |
+
+The renewal timer runs daily as this user, since the operator may request
+certificates without sudo. It re-runs `tailscale cert --min-validity 720h`, so a
+new Let's Encrypt certificate is issued only in the last 30 days of the old one.
+It writes to `~/.local/share/tailscale/certs/`, and exits cleanly on a tailnet
+without HTTPS certificates enabled. It needs linger (`loginctl enable-linger`)
+to fire while nobody is logged in, and nothing reloads a service that uses the
+certificate yet.
 
 The tray client is the Linux counterpart to the `tailscale-app` cask. It is built
 into the `tailscale` CLI, so there is no extra package; GNOME shows it through the

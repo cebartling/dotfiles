@@ -1,0 +1,18 @@
+# Daily check for tailscale-cert-renew.service. Most runs change nothing: a new
+# certificate is issued only inside its last 30 days.
+#
+#   systemctl --user enable --now tailscale-cert-renew.timer
+#
+# Needs linger (`loginctl enable-linger $USER`) to fire while nobody is logged in.
+
+[Unit]
+Description=Daily Tailscale HTTPS certificate renewal check
+
+[Timer]
+OnCalendar=daily
+# Spread the ACME traffic, and catch up on a run missed while the box was off.
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

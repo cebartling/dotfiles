@@ -78,8 +78,14 @@ if command -v tailscale >/dev/null 2>&1; then
        "$HOME/.config/autostart/tailscale-systray.desktop"
   link "$DOTFILES/scripts/Ubuntu/desktop/tailscale-systray.desktop" \
        "$HOME/.local/share/applications/tailscale-systray.desktop"
+  # HTTPS certificate renewal: the script, and a daily systemd user timer that
+  # runs it. Enabling the timer is a one-time manual step (see PACKAGES.md).
+  link "$DOTFILES/scripts/Ubuntu/tailscale-cert-renew" "$HOME/.local/bin/tailscale-cert-renew"
+  for u in tailscale-cert-renew.service tailscale-cert-renew.timer; do
+    link "$DOTFILES/scripts/Ubuntu/systemd/$u" "$HOME/.config/systemd/user/$u"
+  done
 else
-  echo "${C_YEL}skip${C_RST}   tailscale systray (tailscale not installed)"
+  echo "${C_YEL}skip${C_RST}   tailscale systray and cert renewal (tailscale not installed)"
 fi
 
 # Headless Obsidian Sync: a systemd user template, one instance per vault.

@@ -1,0 +1,15 @@
+# Renew this machine's Tailscale HTTPS certificate if it expires within 30 days.
+# Started by tailscale-cert-renew.timer; run by hand with
+#
+#   systemctl --user start tailscale-cert-renew.service
+#
+# Linked into ~/.config/systemd/user/ by scripts/Ubuntu/link.sh, which also
+# links the script into ~/.local/bin.
+
+[Unit]
+Description=Renew the Tailscale HTTPS certificate
+Documentation=https://tailscale.com/docs/how-to/set-up-https-certificates
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/tailscale-cert-renew

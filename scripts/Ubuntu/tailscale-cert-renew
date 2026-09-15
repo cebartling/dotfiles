@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# tailscale-cert-renew — keep this machine's Tailscale HTTPS certificate fresh.
+#
+# `tailscale cert` writes the certificate and key once and never touches them
+# again, so they go stale after Let's Encrypt's 90 days. This re-runs it with
+# --min-validity: tailscaled issues a new certificate only when the current one
+# expires sooner than that, and otherwise hands back the one it has.
+#
+#   tailscale-cert-renew
+#
+# Run daily by tailscale-cert-renew.timer (scripts/Ubuntu/systemd/), as this
+# user rather than root: the tailscaled operator (install_tailscale.sh sets it)
+# may request certificates without sudo.
+#
+# The machine name comes from `tailscale status`, so nothing is hard-coded. A
+# tailnet without HTTPS certificates enabled is not an error — there is simply
+# nothing to renew — so the timer is harmless on such a machine.
+#
+# Anything serving the certificate must reload it after a renewal; nothing here
+# does that yet, because nothing on this machine uses it yet.
+
+set -euo pipefail
+
+CERT_DIR="${TS_CERT_DIR:-$HOME/.local/share/tailscale/certs}"
+MIN_VALIDITY="${TS_CERT_MIN_VALIDITY:-720h}"
+
+say()  { printf '\033[36m==>\033[0m %s\n' "$*"; }
+die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
+
+command -v tailscale >/dev/null 2>&1 || die "tailscale is not installed"
+command -v jq >/dev/null 2>&1 || die "jq is not installed"
+
+status="$(tailscale status --json)" || die "tailscale status failed; is tailscaled running and logged in?"
+name="$(jq -r '.Self.DNSName // "" | rtrimstr(".")' <<<"$status")"
+[[ -n "$name" ]] || die "could not read this machine's DNS name from tailscale status"
+
+if ! jq -e --arg n "$name" '(.CertDomains // []) | index($n)' <<<"$status" >/dev/null; then
+  say "HTTPS certificates are not enabled for $name; nothing to renew"
+  exit 0
+fi
+
+crt="$CERT_DIR/$name.crt"
+key="$CERT_DIR/$name.key"
+mkdir -p "$CERT_DIR"
+chmod 700 "$CERT_DIR"
+
+fingerprint() { [[ -s "$crt" ]] && openssl x509 -in "$crt" -noout -fingerprint -sha256 2>/dev/null || true; }
+
+before="$(fingerprint)"
+tailscale cert --min-validity "$MIN_VALIDITY" --cert-file "$crt" --key-file "$key" "$name" \
+  || die "tailscale cert failed for $name (see: journalctl -u tailscaled | grep 'cert(')"
+after="$(fingerprint)"
+
+expires="$(openssl x509 -in "$crt" -noout -enddate | cut -d= -f2)"
+if [[ "$before" == "$after" ]]; then
+  say "certificate for $name unchanged; expires $expires"
+else
+  say "certificate for $name renewed; expires $expires"
+fi
