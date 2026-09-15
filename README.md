@@ -333,6 +333,18 @@ sudo tailscale up --ssh --accept-routes
 `--accept-routes` consumes subnet routes other nodes advertise. This box
 advertises nothing.
 
+### Obsidian Sync, headless (opt-in)
+
+```sh
+~/.dotfiles/scripts/Ubuntu/install_obsidian_headless.sh
+```
+
+Keeps Obsidian vaults syncing on a box you mostly reach over SSH. It needs an
+Obsidian Sync subscription and the system node from `install_nodejs.sh`. It
+installs the official `ob` client and a systemd user unit, one instance per
+vault. Details are in
+[PACKAGES.md](PACKAGES.md#obsidian-sync-headless-opt-in).
+
 > **The tailnet is trusted by the Docker firewall, on purpose.**
 > `scripts/Ubuntu/bin/docker-user-firewall.sh` lists `tailscale0` in
 > `TRUSTED_IFS`, so your own devices reach published container ports over the

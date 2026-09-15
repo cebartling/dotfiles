@@ -82,6 +82,16 @@ else
   echo "${C_YEL}skip${C_RST}   tailscale systray (tailscale not installed)"
 fi
 
+# Headless Obsidian Sync: a systemd user template, one instance per vault.
+# Linked whenever systemd is present — a template does nothing until an instance
+# is enabled — so link.sh need not run after install_obsidian_headless.sh.
+if command -v systemctl >/dev/null 2>&1; then
+  link "$DOTFILES/scripts/Ubuntu/systemd/obsidian-sync@.service" \
+       "$HOME/.config/systemd/user/obsidian-sync@.service"
+else
+  echo "${C_YEL}skip${C_RST}   obsidian-sync unit (no systemd)"
+fi
+
 if command -v ghostty >/dev/null 2>&1; then
   link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 else

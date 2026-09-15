@@ -609,6 +609,33 @@ The official snap was the first choice. It was dropped because a Snap Store
 outage blocked installs; the `.deb` has no store in the path. The trade-off is
 updates: Obsidian updates itself in-app, but apt never sees a new `.deb`.
 
+### Obsidian Sync, headless (opt-in)
+
+`scripts/Ubuntu/install_obsidian_headless.sh` is not wired into bootstrap,
+because it needs an Obsidian Sync subscription. It keeps vaults syncing on a box
+reached over SSH, where the desktop app is never open.
+
+| Item | Where it lands |
+|---|---|
+| `ob` (npm `obsidian-headless`, from `obsidianmd`) | `~/.local/lib/node_modules/obsidian-headless`, `ob` in `~/.local/bin` |
+| `obsidian-sync@.service` | `scripts/Ubuntu/systemd/`, linked by `link.sh` into `~/.config/systemd/user/` |
+| linger | `loginctl enable-linger $USER` (needs sudo), so sync survives logout |
+
+It installs with the **system** node (`install_nodejs.sh`, `/usr/bin/node`),
+not nvm's: the unit runs `/usr/bin/node`, and the native `better-sqlite3`
+module is built for whichever node ran the install. `ob` typed in a shell runs
+under nvm's node, which works while both are on the same major version (24).
+
+The unit is a template: one instance per vault, named by the vault's escaped
+path. `ob login` and `ob sync-setup` prompt for passwords, so the script prints
+them as next steps:
+
+```sh
+ob login
+ob sync-setup --vault "My Vault" --path ~/vaults/my-vault
+systemctl --user enable --now "obsidian-sync@$(systemd-escape --path ~/vaults/my-vault).service"
+```
+
 ### Not available on Linux
 
 `mole` · `cliclick` · `whisperkit-cli` · every `cask` entry. The

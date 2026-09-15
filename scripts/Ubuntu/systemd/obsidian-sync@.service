@@ -1,0 +1,23 @@
+# Headless Obsidian Sync for one vault. A template: the instance is the vault's
+# escaped path, so each vault gets its own unit.
+#
+#   systemctl --user enable --now "obsidian-sync@$(systemd-escape --path ~/vaults/my-vault).service"
+#
+# Installed by scripts/Ubuntu/install_obsidian_headless.sh, linked into
+# ~/.config/systemd/user/ by scripts/Ubuntu/link.sh. The vault must already be
+# set up with `ob sync-setup`.
+
+[Unit]
+Description=Obsidian Sync (headless) for %f
+Documentation=https://help.obsidian.md/headless
+
+[Service]
+# The system node from install_nodejs.sh, not nvm's: a unit never loads nvm, and
+# better-sqlite3 was built against this node by the installer.
+ExecStart=/usr/bin/node %h/.local/lib/node_modules/obsidian-headless/cli.js sync --continuous --path %f
+# Sync fails outright while the network is down; retry rather than give up.
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target
