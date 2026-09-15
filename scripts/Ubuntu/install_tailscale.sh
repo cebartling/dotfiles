@@ -116,18 +116,22 @@ enable_daemon() {
     || warn "tailscaled is installed but not running — 'systemctl status tailscaled' will say why. 'tailscale up' will not work until it does."
 }
 
+# The human behind the script. Under `sudo ./install_tailscale.sh`, $USER is
+# root, and an operator of root helps nobody.
+OPERATOR="${SUDO_USER:-$USER}"
+
 # tailscaled omits OperatorUser from its prefs when it is unset.
 operator_is_me() {
-  tailscale debug prefs 2>/dev/null | grep -q "\"OperatorUser\": \"$USER\""
+  tailscale debug prefs 2>/dev/null | grep -q "\"OperatorUser\": \"$OPERATOR\""
 }
 
 # The operator may drive tailscaled without root — the tray client (linked by
 # link.sh) needs it to connect, disconnect and pick exit nodes.
 set_operator() {
   command -v tailscale >/dev/null 2>&1 || return 0
-  operator_is_me && { say "tailscaled operator already $USER"; return 0; }
-  say "Setting the tailscaled operator to $USER"
-  sudo tailscale set --operator="$USER" || { warn "could not set the tailscaled operator"; SKIPPED+=("operator"); }
+  operator_is_me && { say "tailscaled operator already $OPERATOR"; return 0; }
+  say "Setting the tailscaled operator to $OPERATOR"
+  sudo tailscale set --operator="$OPERATOR" || { warn "could not set the tailscaled operator"; SKIPPED+=("operator"); }
 }
 
 # Every step below needs root, so a re-run on a finished box should short-circuit
@@ -152,8 +156,8 @@ print_summary() {
   printf '  unit    tailscaled (%s, %s)\n' \
     "$(systemctl is-enabled tailscaled 2>/dev/null | head -1)" \
     "$(systemctl is-active tailscaled 2>/dev/null | head -1)"
-  if operator_is_me; then printf '  \033[32mok\033[0m      operator %s\n' "$USER"
-  else printf '  \033[31mmissing\033[0m operator %s\n' "$USER"; fi
+  if operator_is_me; then printf '  \033[32mok\033[0m      operator %s\n' "$OPERATOR"
+  else printf '  \033[31mmissing\033[0m operator %s\n' "$OPERATOR"; fi
   (( ${#SKIPPED[@]} )) && { echo; warn "skipped: ${SKIPPED[*]}"; }
   echo
   if command -v tailscale >/dev/null 2>&1 && tailscale status >/dev/null 2>&1; then
