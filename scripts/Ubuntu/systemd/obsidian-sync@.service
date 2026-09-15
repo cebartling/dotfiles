@@ -18,6 +18,11 @@ ExecStart=/usr/bin/node %h/.local/lib/node_modules/obsidian-headless/cli.js sync
 # Sync fails outright while the network is down; retry rather than give up.
 Restart=on-failure
 RestartSec=30
+# Except where retrying cannot help. In ob's `sync` path, 3 is "No sync
+# configuration found" (vault never set up) and 2 is "No account logged in" or
+# "Encryption key not found" — each needs `ob login` or `ob sync-setup`, not a
+# restart. Network and other runtime errors exit 1 and still restart.
+RestartPreventExitStatus=2 3
 
 [Install]
 WantedBy=default.target
