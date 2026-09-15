@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tailscale
+Comment=Tailscale system tray client
+Exec=tailscale systray
+Icon=network-vpn
+Terminal=false
+Categories=Network;
+X-GNOME-Autostart-enabled=true

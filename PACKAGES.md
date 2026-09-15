@@ -445,6 +445,12 @@ on the unattended-upgrade path. Ubuntu's own
 | repository key | `/usr/share/keyrings/tailscale-archive-keyring.gpg` |
 | apt source | `/etc/apt/sources.list.d/tailscale.list` (suite = this box's `lsb_release -cs`) |
 | `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
+| tailscaled operator | `tailscale set --operator=$USER`, so the tray client needs no sudo |
+| tray client (`tailscale systray`) | `scripts/Ubuntu/desktop/tailscale-systray.desktop`, linked by `link.sh` into `~/.config/autostart/` and `~/.local/share/applications/` |
+
+The tray client is the Linux counterpart to the `tailscale-app` cask. It is built
+into the `tailscale` CLI, so there is no extra package; GNOME shows it through the
+stock `ubuntu-appindicators` extension.
 
 The script stops after `systemctl enable --now tailscaled`. Joining the tailnet
 is a manual step because it opens a browser login: `sudo tailscale up --ssh

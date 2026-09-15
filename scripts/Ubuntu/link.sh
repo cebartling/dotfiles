@@ -70,6 +70,18 @@ else
   echo "${C_YEL}skip${C_RST}   nautilus scripts (nautilus not installed)"
 fi
 
+# Tailscale tray client: one .desktop, linked twice — autostart at login, and the
+# app grid so it can be relaunched after Quit. Needs the tailscaled operator set
+# to this user (install_tailscale.sh does that) to connect without sudo.
+if command -v tailscale >/dev/null 2>&1; then
+  link "$DOTFILES/scripts/Ubuntu/desktop/tailscale-systray.desktop" \
+       "$HOME/.config/autostart/tailscale-systray.desktop"
+  link "$DOTFILES/scripts/Ubuntu/desktop/tailscale-systray.desktop" \
+       "$HOME/.local/share/applications/tailscale-systray.desktop"
+else
+  echo "${C_YEL}skip${C_RST}   tailscale systray (tailscale not installed)"
+fi
+
 if command -v ghostty >/dev/null 2>&1; then
   link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 else
