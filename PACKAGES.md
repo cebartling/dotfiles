@@ -354,7 +354,7 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 
 ### From snap
 
-`vale` · `difftastic`
+`vale` · `difftastic` · `obsidian` (classic confinement, published by Obsidian)
 
 ### From upstream releases (into `~/.local/bin`, no sudo)
 
@@ -602,7 +602,8 @@ than writing a sources list apt would fail on. Architecture comes from
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
 Chrome has no `cask` entry on either side; on Ubuntu it comes from
-`scripts/Ubuntu/install_chrome.sh`.
+`scripts/Ubuntu/install_chrome.sh`. The `obsidian` cask is the exception: on
+Ubuntu it comes from the official snap (see "From snap").
 
 ### Finding a Linux build for a Brewfile formula
 

@@ -152,8 +152,8 @@ install_shims() {
 
 install_snap() {
   if ! command -v snap >/dev/null 2>&1; then
-    warn "snap not available; skipping vale and difftastic"
-    SKIPPED+=("vale (no snap)" "difftastic (no snap)")
+    warn "snap not available; skipping vale, difftastic and obsidian"
+    SKIPPED+=("vale (no snap)" "difftastic (no snap)" "obsidian (no snap)")
     return 0
   fi
   for pkg in vale difftastic; do
@@ -162,6 +162,16 @@ install_snap() {
     else
       say "Installing snap $pkg"
       sudo snap install "$pkg" || { warn "snap install $pkg failed"; SKIPPED+=("$pkg"); }
+    fi
+  done
+  # Classic confinement: these snaps refuse to install without --classic.
+  # obsidian is published by Obsidian itself (obsidianmd), not a repack.
+  for pkg in obsidian; do
+    if snap list "$pkg" >/dev/null 2>&1; then
+      say "snap $pkg already installed"
+    else
+      say "Installing snap $pkg (classic)"
+      sudo snap install "$pkg" --classic || { warn "snap install $pkg failed"; SKIPPED+=("$pkg"); }
     fi
   done
 }
