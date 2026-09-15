@@ -12,7 +12,7 @@
 #
 # Deliberately NOT installed on Linux (no Linux distribution exists, or the
 # package is macOS-only): mole, cliclick, whisperkit-cli, and every `cask`
-# entry in the Brewfile.
+# entry in the Brewfile except obsidian, which comes from its vendor .deb.
 
 set -euo pipefail
 
@@ -152,8 +152,8 @@ install_shims() {
 
 install_snap() {
   if ! command -v snap >/dev/null 2>&1; then
-    warn "snap not available; skipping vale, difftastic and obsidian"
-    SKIPPED+=("vale (no snap)" "difftastic (no snap)" "obsidian (no snap)")
+    warn "snap not available; skipping vale and difftastic"
+    SKIPPED+=("vale (no snap)" "difftastic (no snap)")
     return 0
   fi
   for pkg in vale difftastic; do
@@ -162,16 +162,6 @@ install_snap() {
     else
       say "Installing snap $pkg"
       sudo snap install "$pkg" || { warn "snap install $pkg failed"; SKIPPED+=("$pkg"); }
-    fi
-  done
-  # Classic confinement: these snaps refuse to install without --classic.
-  # obsidian is published by Obsidian itself (obsidianmd), not a repack.
-  for pkg in obsidian; do
-    if snap list "$pkg" >/dev/null 2>&1; then
-      say "snap $pkg already installed"
-    else
-      say "Installing snap $pkg (classic)"
-      sudo snap install "$pkg" --classic || { warn "snap install $pkg failed"; SKIPPED+=("$pkg"); }
     fi
   done
 }
@@ -528,6 +518,57 @@ install_pyenv() {
 
 # ---------- summary ----------
 
+# ---------- GUI apps (vendor .deb, needs sudo) ----------
+
+install_obsidian() {
+  if dpkg -s obsidian >/dev/null 2>&1; then
+    say "obsidian already installed ($(dpkg-query -W -f='${Version}' obsidian))"
+    return 0
+  fi
+  local arch
+  arch="$(dpkg --print-architecture)"
+  if [[ "$arch" != amd64 ]]; then
+    warn "obsidian publishes an amd64 .deb only; skipping on $arch"
+    SKIPPED+=("obsidian (no $arch .deb)")
+    return 0
+  fi
+  # Not releases/latest: a release can ship without desktop builds (v1.13.8
+  # carried only the Android .apk), so take the newest release that has a
+  # .deb. Obsidian publishes no checksum file; GitHub's per-asset sha256
+  # digest stands in for one.
+  local asset url digest tmp
+  asset="$(curl -fsSL 'https://api.github.com/repos/obsidianmd/obsidian-releases/releases?per_page=10' \
+        | jq -r '[.[].assets[] | select(.name | endswith("_amd64.deb"))][0]
+                 | "\(.browser_download_url) \(.digest // "")"')" || true
+  url="${asset%% *}"
+  digest="${asset#* }"; digest="${digest#sha256:}"
+  if [[ -z "$url" || "$url" == null ]]; then
+    warn "could not resolve an obsidian .deb download URL"; SKIPPED+=(obsidian); return 0
+  fi
+  if [[ -z "$digest" ]]; then
+    warn "no sha256 digest published for ${url##*/}; not installing unverified"; SKIPPED+=(obsidian); return 0
+  fi
+  # Check for usable sudo first — no point pulling ~116MB to fail at the last step.
+  if ! sudo -n true 2>/dev/null; then
+    warn "obsidian needs sudo to install its .deb, and sudo is not available non-interactively here."
+    warn "Run this script from a real terminal to include it."
+    SKIPPED+=("obsidian (no sudo)")
+    return 0
+  fi
+  say "Installing obsidian (${url##*/}, ~116MB; needs sudo)"
+  tmp="$(mktemp -d)"
+  if curl -fsSL -o "$tmp/obsidian.deb" "$url"; then
+    if echo "$digest  $tmp/obsidian.deb" | sha256sum -c --quiet -; then
+      sudo apt-get install -y "$tmp/obsidian.deb" || { warn "obsidian install failed"; SKIPPED+=(obsidian); }
+    else
+      warn "checksum mismatch for ${url##*/}; not installing"; SKIPPED+=(obsidian)
+    fi
+  else
+    warn "obsidian download failed"; SKIPPED+=(obsidian)
+  fi
+  rm -rf "$tmp"
+}
+
 print_summary() {
   echo
   say "Verifying installed tools"
@@ -575,6 +616,7 @@ main() {
   install_rustup
   install_linear_cli
   install_pyenv
+  install_obsidian
   print_summary
 }
 

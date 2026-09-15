@@ -354,7 +354,7 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 
 ### From snap
 
-`vale` · `difftastic` · `obsidian` (classic confinement, published by Obsidian)
+`vale` · `difftastic`
 
 ### From upstream releases (into `~/.local/bin`, no sudo)
 
@@ -595,6 +595,20 @@ than writing a sources list apt would fail on. Architecture comes from
 > `~/bin/ufw-docker-test.sh`. The `docker` group is also root-equivalent — the
 > daemon socket will bind any host path into a container.
 
+### Obsidian (a vendor `.deb`, needs sudo)
+
+`install_obsidian` in `scripts/Ubuntu/install_tools.sh` installs the `.deb` that
+Obsidian attaches to its `obsidianmd/obsidian-releases` GitHub releases, into
+`/opt/Obsidian` (symlinked into `/usr/bin`, with a desktop entry). The installer
+takes the newest release that actually carries a `.deb`, not
+`releases/latest` (some releases ship only the Android `.apk`), and verifies it
+against GitHub's per-asset sha256 digest, since Obsidian publishes no checksum
+file. **amd64 only.** It is skipped without non-interactive sudo, like freelens.
+
+The official snap was the first choice. It was dropped because a Snap Store
+outage blocked installs; the `.deb` has no store in the path. The trade-off is
+updates: Obsidian updates itself in-app, but apt never sees a new `.deb`.
+
 ### Not available on Linux
 
 `mole` · `cliclick` · `whisperkit-cli` · every `cask` entry. The
@@ -602,8 +616,8 @@ than writing a sources list apt would fail on. Architecture comes from
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
 Chrome has no `cask` entry on either side; on Ubuntu it comes from
-`scripts/Ubuntu/install_chrome.sh`. The `obsidian` cask is the exception: on
-Ubuntu it comes from the official snap (see "From snap").
+`scripts/Ubuntu/install_chrome.sh`. The `obsidian` cask is the exception: see
+[Obsidian](#obsidian-a-vendor-deb-needs-sudo) above.
 
 ### Finding a Linux build for a Brewfile formula
 
