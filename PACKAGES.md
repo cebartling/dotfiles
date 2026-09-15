@@ -447,15 +447,18 @@ on the unattended-upgrade path. Ubuntu's own
 | `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
 | tailscaled operator | `tailscale set --operator=$USER`, so the tray client needs no sudo |
 | tray client (`tailscale systray`) | `scripts/Ubuntu/desktop/tailscale-systray.desktop`, linked by `link.sh` into `~/.config/autostart/` and `~/.local/share/applications/` |
-| HTTPS cert renewal | `scripts/Ubuntu/tailscale-cert-renew` (→ `~/.local/bin`) and `scripts/Ubuntu/systemd/tailscale-cert-renew.{service,timer}` (→ `~/.config/systemd/user/`), linked by `link.sh`; enable once with `systemctl --user enable --now tailscale-cert-renew.timer` |
+| HTTPS cert renewal | `scripts/Ubuntu/tailscale-cert-renew` (→ `~/.local/bin`) and `scripts/Ubuntu/systemd/tailscale-cert-renew.{service,timer}` (→ `~/.config/systemd/user/`), linked by `link.sh`; the timer is enabled by `install_tailscale.sh` |
+| linger | `loginctl enable-linger $USER`, set by `install_tailscale.sh` so the timer fires while nobody is logged in |
 
 The renewal timer runs daily as this user, since the operator may request
 certificates without sudo. It re-runs `tailscale cert --min-validity 720h`, so a
 new Let's Encrypt certificate is issued only in the last 30 days of the old one.
 It writes to `~/.local/share/tailscale/certs/`, and exits cleanly on a tailnet
-without HTTPS certificates enabled. It needs linger (`loginctl enable-linger`)
-to fire while nobody is logged in, and nothing reloads a service that uses the
-certificate yet.
+without HTTPS certificates enabled. `install_tailscale.sh` enables it, running
+as the invoking user even under `sudo`. It re-runs `link.sh` first, because
+bootstrap links before Tailscale exists and so skips these entries. That step
+needs no sudo, so it runs even when the rest of the script is skipped. Nothing
+reloads a service that uses the certificate yet.
 
 The tray client is the Linux counterpart to the `tailscale-app` cask. It is built
 into the `tailscale` CLI, so there is no extra package; GNOME shows it through the
@@ -636,13 +639,15 @@ module is built for whichever node ran the install. `ob` typed in a shell runs
 under nvm's node, which works while both are on the same major version (24).
 
 The unit is a template: one instance per vault, named by the vault's escaped
-path. `ob login` and `ob sync-setup` prompt for passwords, so the script prints
-them as next steps:
+path. The script enables an instance for every vault that `ob sync-list-local`
+reports as set up. `ob login` and `ob sync-setup` prompt for passwords, so the
+script prints them as next steps; re-running it afterwards enables the new
+vault's unit:
 
 ```sh
 ob login
 ob sync-setup --vault "My Vault" --path ~/vaults/my-vault
-systemctl --user enable --now "obsidian-sync@$(systemd-escape --path ~/vaults/my-vault).service"
+~/.dotfiles/scripts/Ubuntu/install_obsidian_headless.sh
 ```
 
 ### Not available on Linux

@@ -322,8 +322,10 @@ which is the wrong trade here.
 | apt source | `/etc/apt/sources.list.d/tailscale.list`, suite = this box's `lsb_release -cs`, falling back to `plucky` if Tailscale has not packaged the release yet |
 | `tailscale`, `tailscaled` | `/usr/bin`, from `pkgs.tailscale.com/stable/ubuntu` |
 
-The script installs the package and runs `systemctl enable --now tailscaled`,
-then stops. Joining the tailnet opens a browser login, so it stays manual:
+The script installs the package, runs `systemctl enable --now tailscaled`,
+enables linger, and links and enables the HTTPS certificate renewal timer
+(`tailscale-cert-renew.timer`) as you, even under `sudo`. Joining the tailnet
+opens a browser login, so it stays manual:
 
 ```sh
 sudo tailscale up --ssh --accept-routes

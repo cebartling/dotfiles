@@ -17,7 +17,8 @@
 # linked by link.sh: one instance per vault, named by its escaped path.
 #
 # Login and vault setup prompt for passwords, so they are printed as next steps
-# rather than run.
+# rather than run. Every vault `ob` already has configured gets its sync unit
+# enabled, so re-running this script after `ob sync-setup` finishes the job.
 
 set -euo pipefail
 
@@ -84,6 +85,28 @@ reload_units() {
   systemctl --user daemon-reload
 }
 
+# One obsidian-sync@ instance per vault that `ob sync-setup` has configured here.
+# A vault that is not set up would only fail (exit 3), so it is never enabled.
+enable_vault_units() {
+  [[ -e "$UNIT_LINK" && -n "$(installed_version)" ]] || return 0
+  command -v jq >/dev/null 2>&1 || { warn "jq is not installed; not enabling vault sync units"; SKIPPED+=("vault units (no jq)"); return 0; }
+  local paths p u
+  paths="$("$NODE" "$PKG_DIR/cli.js" sync-list-local --json 2>/dev/null | jq -r '.vaults[]?.path')" || true
+  if [[ -z "$paths" ]]; then
+    say "no vaults set up with ob yet; nothing to enable"
+    return 0
+  fi
+  while IFS= read -r p; do
+    u="obsidian-sync@$(systemd-escape --path "$p").service"
+    if [[ "$(systemctl --user is-enabled "$u" 2>/dev/null | head -1)" == enabled ]]; then
+      say "$u already enabled"
+    else
+      say "Enabling $u"
+      systemctl --user enable --now "$u" || { warn "could not enable $u"; SKIPPED+=("$u"); }
+    fi
+  done <<<"$paths"
+}
+
 linger_on() {
   [[ "$(loginctl show-user "$USER" -p Linger --value 2>/dev/null)" == yes ]]
 }
@@ -116,12 +139,12 @@ print_summary() {
   (( ${#SKIPPED[@]} )) && { echo; warn "skipped: ${SKIPPED[*]}"; }
   echo
   linger_on || { say "Next: keep the sync running after logout"; echo "    sudo loginctl enable-linger $USER"; }
-  say "Next: log in, set up a vault, then enable its sync unit (repeat per vault)"
+  say "Next: log in and set up a vault, then re-run this script to enable its sync unit"
   cat <<'EOF'
     ob login
     ob sync-list-remote
     ob sync-setup --vault "My Vault" --path ~/vaults/my-vault
-    systemctl --user enable --now "obsidian-sync@$(systemd-escape --path ~/vaults/my-vault).service"
+    ~/.dotfiles/scripts/Ubuntu/install_obsidian_headless.sh
     journalctl --user -u 'obsidian-sync@*' -f
 EOF
 }
@@ -130,6 +153,7 @@ main() {
   require_system_node
   install_ob && check_native
   reload_units
+  enable_vault_units
   enable_linger
   print_summary
 }

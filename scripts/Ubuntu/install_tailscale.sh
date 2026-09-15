@@ -21,8 +21,11 @@
 # release cycle, which is the wrong trade for a daemon that speaks to the public
 # internet.
 #
-# The script stops after enabling tailscaled. `tailscale up` needs an interactive
-# browser login, so it is printed as a next step rather than run unattended.
+# After enabling tailscaled it also enables linger and, as the invoking user,
+# links and enables the HTTPS cert renewal timer (tailscale-cert-renew.timer) —
+# the timer step needs no sudo, so it runs even when the rest is skipped.
+# `tailscale up` needs an interactive browser login, so it is printed as a next
+# step rather than run unattended.
 
 set -euo pipefail
 
@@ -134,6 +137,57 @@ set_operator() {
   sudo tailscale set --operator="$OPERATOR" || { warn "could not set the tailscaled operator"; SKIPPED+=("operator"); }
 }
 
+DOTFILES="${DOTFILES:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
+TIMER=tailscale-cert-renew.timer
+
+# Run a command as the operator, inside their systemd user session. Under
+# `sudo ./install_tailscale.sh` this process is root, and `systemctl --user`
+# as root would manage root's units, not the operator's.
+as_operator() {
+  if [[ $EUID -eq 0 && "$OPERATOR" != root ]]; then
+    sudo -u "$OPERATOR" -H env DOTFILES="$DOTFILES" \
+      XDG_RUNTIME_DIR="/run/user/$(id -u "$OPERATOR")" "$@"
+  else
+    "$@"
+  fi
+}
+
+linger_on() {
+  [[ "$(loginctl show-user "$OPERATOR" -p Linger --value 2>/dev/null)" == yes ]]
+}
+
+# Without linger, systemd stops the operator's user services and timers when
+# their last session closes, so the renewal timer would only fire while logged in.
+enable_linger() {
+  linger_on && { say "linger already enabled for $OPERATOR"; return 0; }
+  say "Enabling linger for $OPERATOR"
+  sudo loginctl enable-linger "$OPERATOR" || { warn "could not enable linger"; SKIPPED+=("linger"); }
+}
+
+timer_enabled() {
+  [[ "$(as_operator systemctl --user is-enabled "$TIMER" 2>/dev/null | head -1)" == enabled ]]
+}
+
+# bootstrap runs link.sh before tailscale exists, and link.sh skips the Tailscale
+# entries then — so on a fresh box the renewal script and units are not linked
+# yet. Re-run it (idempotent) before enabling.
+enable_cert_timer() {
+  command -v tailscale >/dev/null 2>&1 || return 0
+  if [[ "$OPERATOR" == root ]]; then
+    warn "not enabling $TIMER for root; run this script as your user, or via sudo from it"
+    SKIPPED+=("$TIMER (root)")
+    return 0
+  fi
+  timer_enabled && { say "$TIMER already enabled for $OPERATOR"; return 0; }
+  say "Linking and enabling $TIMER for $OPERATOR"
+  as_operator "$DOTFILES/scripts/Ubuntu/link.sh" >/dev/null \
+    || { warn "link.sh failed; $TIMER not enabled"; SKIPPED+=("$TIMER (link)"); return 0; }
+  if ! { as_operator systemctl --user daemon-reload && as_operator systemctl --user enable --now "$TIMER"; }; then
+    warn "could not enable $TIMER — is $OPERATOR's systemd user session running? Then: systemctl --user enable --now $TIMER"
+    SKIPPED+=("$TIMER")
+  fi
+}
+
 # Every step below needs root, so a re-run on a finished box should short-circuit
 # before the sudo gate rather than warn about a password it does not need.
 nothing_to_do() {
@@ -141,7 +195,9 @@ nothing_to_do() {
     && [[ -s "$KEYRING" && -s "$SOURCES" ]] \
     && [[ "$(systemctl is-enabled tailscaled 2>/dev/null | head -1)" == "enabled" ]] \
     && systemctl is-active --quiet tailscaled \
-    && operator_is_me
+    && operator_is_me \
+    && linger_on \
+    && timer_enabled
 }
 
 print_summary() {
@@ -158,6 +214,10 @@ print_summary() {
     "$(systemctl is-active tailscaled 2>/dev/null | head -1)"
   if operator_is_me; then printf '  \033[32mok\033[0m      operator %s\n' "$OPERATOR"
   else printf '  \033[31mmissing\033[0m operator %s\n' "$OPERATOR"; fi
+  if linger_on; then printf '  \033[32mok\033[0m      linger %s\n' "$OPERATOR"
+  else printf '  \033[31mmissing\033[0m linger %s\n' "$OPERATOR"; fi
+  if timer_enabled; then printf '  \033[32mok\033[0m      %s (%s)\n' "$TIMER" "$OPERATOR"
+  else printf '  \033[31mmissing\033[0m %s (%s)\n' "$TIMER" "$OPERATOR"; fi
   (( ${#SKIPPED[@]} )) && { echo; warn "skipped: ${SKIPPED[*]}"; }
   echo
   if command -v tailscale >/dev/null 2>&1 && tailscale status >/dev/null 2>&1; then
@@ -176,11 +236,12 @@ main() {
     print_summary
     return 0
   fi
-  require_sudo || { print_summary; return 0; }
-  add_repo     || { print_summary; return 0; }
-  install_tailscale || { print_summary; return 0; }
-  enable_daemon
-  set_operator
+  if require_sudo && add_repo && install_tailscale; then
+    enable_daemon
+    set_operator
+    enable_linger
+  fi
+  enable_cert_timer
   print_summary
 }
 
