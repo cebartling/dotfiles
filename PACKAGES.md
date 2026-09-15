@@ -650,6 +650,18 @@ ob sync-setup --vault "My Vault" --path ~/vaults/my-vault
 ~/.dotfiles/scripts/Ubuntu/install_obsidian_headless.sh
 ```
 
+> **`systemctl --user disable` deletes the link, not just the enablement.** The
+> repo's user units (`obsidian-sync@.service`, `tailscale-cert-renew.service`,
+> `tailscale-cert-renew.timer`) reach `~/.config/systemd/user/` as symlinks into
+> this repo. systemd treats those as *linked* units, so disabling one removes
+> the symlink itself (`Removed '…/tailscale-cert-renew.timer'`), and the unit
+> then reports as `not-found`. For an `obsidian-sync@` instance it removes only
+> that instance's link, created when it was enabled; the template link stays. A
+> running service keeps running. Re-run
+> `link.sh`, or the installer that enables the unit, to restore it; both are
+> idempotent. To pause a unit without losing the link, use
+> `systemctl --user stop` instead.
+
 ### Not available on Linux
 
 `mole` · `cliclick` · `whisperkit-cli` · every `cask` entry. The
