@@ -22,6 +22,15 @@ say()  { printf '\033[36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
+require_not_root() {
+  (( EUID == 0 )) || return 0
+  die "do not run this as root. It installs into \$HOME, and under sudo that is
+       ${HOME} — the repo clone, ~/.nvm, ~/.sdkman, ~/.oh-my-zsh and every
+       symlink would land there (or be left root-owned in your own home).
+       Re-run it as your normal user: ${SUDO_USER:+sudo -u $SUDO_USER }$0
+       The apt/snap steps call sudo themselves when they need it."
+}
+
 require_linux() {
   [[ "$(uname -s)" == "Linux" ]] || die "this bootstrap is for Linux; on macOS run $DOTFILES/bootstrap.sh"
   if [[ -r /etc/os-release ]]; then
@@ -162,6 +171,7 @@ EOF
 
 # ---------- main ----------
 main() {
+  require_not_root
   require_linux
   # Snapshot before any installer runs — see discard_generated_zshrc.
   HAD_ZSHRC=0
