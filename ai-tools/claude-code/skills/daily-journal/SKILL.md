@@ -314,18 +314,20 @@ back. Follow the branch for the shape determined in step 5 — **never write a `
 Create the parent directories first if they don't exist (in explicit mode this was already
 confirmed in step 3).
 
-**Timestamp.** Every update opens with one line recording when it was logged, using `logged_at`
-from step 2:
+**Timestamp.** Every update opens with an Obsidian `info` callout titled `Time tracking`
+recording when it was logged, using `logged_at` from step 2:
 
 ```
-*Logged {h:MM} {AM|PM} {TZ}*
+> [!info] Time tracking
+> Logged {h:MM} {AM|PM} {TZ}
 ```
 
-It is one line per *update*, not per topic: it sits directly above the new content, and several
-topics added in one update share it. A second update the same day gets its own line with the new
-time, which is how same-day updates stay distinguishable. The time goes on its own line, never
+It is one callout per *update*, not per topic: it sits directly above the new content, and several
+topics added in one update share it. A second update the same day gets its own callout with the new
+time, which is how same-day updates stay distinguishable. The callout stands on its own, never
 inside a `##`/`###` header, so header text (and the Obsidian anchors built from it) stays clean.
-Entries written before this rule have no timestamp; leave them as they are.
+Entries written before this rule have no timestamp, and older ones use a plain `*Logged …*` line;
+leave them as they are.
 
 **Multi-day file:**
 
@@ -341,7 +343,8 @@ Entries written before this rule have no timestamp; leave them as they are.
 
   ## {Month} {Day}, {Year}
 
-  *Logged {h:MM} {AM|PM} {TZ}*
+  > [!info] Time tracking
+  > Logged {h:MM} {AM|PM} {TZ}
 
   {new content}
   ```
@@ -352,11 +355,12 @@ Entries written before this rule have no timestamp; leave them as they are.
 
   ## {Month} {Day}, {Year}
 
-  *Logged {h:MM} {AM|PM} {TZ}*
+  > [!info] Time tracking
+  > Logged {h:MM} {AM|PM} {TZ}
 
   {new content}
   ```
-- *Existing today section* — insert a `*Logged {h:MM} {AM|PM} {TZ}*` line followed by the new
+- *Existing today section* — insert a `Time tracking` callout followed by the new
   `### Topic` subsection(s) (or bullets) immediately before the *next* `## ` header that follows
   today's, or at the true end of the file if today's section is currently the last one.
 
@@ -373,13 +377,14 @@ Entries written before this rule have no timestamp; leave them as they are.
     - {topic}
   ---
 
-  *Logged {h:MM} {AM|PM} {TZ}*
+  > [!info] Time tracking
+  > Logged {h:MM} {AM|PM} {TZ}
 
   ## {Topic}
 
   {new content}
   ```
-- *Existing content* — append a `*Logged {h:MM} {AM|PM} {TZ}*` line followed by the new `## Topic`
+- *Existing content* — append a `Time tracking` callout followed by the new `## Topic`
   section(s) at the true end of the file, leaving any existing frontmatter untouched and adding
   none if there is none.
 
