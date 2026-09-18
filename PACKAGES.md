@@ -346,7 +346,8 @@ the Linux counterpart. Ubuntu 24.04+ carries most of the CLI list in apt.
 `du-dust` · `procs` · `tree` · `tmux` · `jq` · `yq` · `direnv` · `atuin` ·
 `lazygit` · `glow` · `hyperfine` · `just` · `tokei` · `pre-commit` ·
 `gitleaks` · `httpie` · `mosh` · `xh` · `gh` · `pipx` · `python3-poetry` · `weston` ·
-`wayland-utils` · plus base
+`wayland-utils` · `nmap` · `miller` · `pgcli` · `pandoc` · `imagemagick` ·
+`ffmpeg` · `fastfetch` · plus base
 packages (`build-essential`, `git`, `git-lfs`, `curl`, `wget`, `unzip`,
 `openssl`, `fontconfig`, `net-tools`, `ufw`)
 
@@ -370,6 +371,27 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
+| `fx` · `doggo` · `grpcurl` · `duckdb` · `cheat` · `cargo-binstall` · `trivy` · `caddy` | Latest GitHub release of each, through one helper, `install_release` in `install_tools.sh`. It handles a bare binary, `.gz`, tarball or zip and checks for an ELF before installing. `duckdb` is the glibc build, `cargo-binstall` the slim one |
+
+`caddy` is the release binary, **not** Ubuntu's `caddy` package: that one is
+years older and enables a `caddy.service` listening on `:80`. Here it is the CLI
+only; run a server deliberately.
+
+### From `uv tool` (into `~/.local/bin`, no sudo)
+
+`semgrep` · `hf` (from `huggingface_hub`) — each in its own uv-managed
+environment. `uv tool install` writes no shell profile.
+
+### From pnpm, global (into `$PNPM_HOME/bin`, no sudo)
+
+`tsc` (`typescript`) · `typescript-language-server` · `ccusage` ·
+`playwright-cli` (`@playwright/cli`). pnpm's global store rather than `npm -g`:
+the system npm needs root, and nvm's is per node version, so a node upgrade
+would silently drop them. pnpm 11+ puts global bins in `$PNPM_HOME/bin` and
+refuses `add -g` unless that is on `PATH` — zshrc has it; `pnpm setup`, pnpm's
+own fix, would edit `~/.zshrc` and is never run. These need a node, so on a
+fresh box `install_tools.sh` skips them and `bootstrap.sh` runs
+`install_tools.sh --node-clis` once nvm's node exists.
 
 Note `acli` is the one entry here whose URL cannot 404: a bad path returns an
 XML error body, so the installer checks for the ELF magic before installing.
@@ -409,7 +431,7 @@ Note that the *configuration* is a separate, manual install:
 
 ### Third-party apt sources
 
-All opt-in except NodeSource, which bootstrap runs. Each is here because the thing it
+All opt-in except NodeSource and 1Password, which bootstrap runs. Each is here because the thing it
 installs is **not** a single static binary that could drop into `~/.local/bin`
 without root — the bar everything under
 [From upstream releases](#from-upstream-releases-into-localbin-no-sudo) clears.
@@ -420,6 +442,7 @@ without root — the bar everything under
 | `dl.google.com/linux/chrome` | `google-chrome-stable` | a browser package, into `/opt` and `/usr/bin` |
 | `download.docker.com/linux/ubuntu` | `docker-ce` and friends | a privileged daemon plus systemd units |
 | `deb.nodesource.com` | `nodejs` | a *system* node at `/usr/bin/node`, for sudo, systemd and cron — contexts that never load nvm |
+| `downloads.1password.com/linux/debian` | `1password-cli` (`op`), and the `1password` desktop app on amd64 | a desktop app package into `/opt` and `/usr/bin`, and the only Linux channel 1Password documents for it; `op` comes from the same repository. Written as the deb822 `1password.sources` with the key at `/usr/share/keyrings/1password-archive-keyring.gpg` — exactly the file the app package's postinst manages (on install it comments out any `1password.list` and writes that `.sources` itself), so there is one source and nothing left over |
 
 Once root is in play for any of them, a signed vendor repository beats a
 hand-rolled unit or a side-loaded `.deb`: it verifies signatures and keeps a
@@ -664,7 +687,13 @@ ob sync-setup --vault "My Vault" --path ~/vaults/my-vault
 
 ### Not available on Linux
 
-`mole` · `cliclick` · `whisperkit-cli` · every `cask` entry. The
+`mole` · `cliclick` · `whisperkit-cli` · every `cask` entry except those with a
+Linux route above (Zed via `install_zed.sh`, 1Password via its apt repository).
+
+**Deliberately not installed on Linux** (PIN-243): `ollama` — its installer
+needs root, creates a system user and enables a service; not wanted on these
+boxes. The `Brewfile.k8s`/`Brewfile.cloud` gaps (`k9s`, `eksctl`, `kubeshark`,
+`kubectl-ai`, the cloud CLIs) are tracked separately in beads `dotfiles-m4i`. The
 `Brewfile.cloud` toolchain has no Linux installer yet;
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google

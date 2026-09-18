@@ -52,7 +52,8 @@ typeset -U path                              # automatic dedupe
 path=(
   "$HOME/bin"
   "$HOME/.local/bin"
-  "$PNPM_HOME"
+  "$PNPM_HOME/bin"   # pnpm 11+ global bins (`pnpm add -g`)
+  "$PNPM_HOME"       # older pnpm, and the standalone pnpm's own home
   $path
 )
 # rustup's toolchain shims. rustup-init is run with --no-modify-path (it would

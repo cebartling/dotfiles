@@ -122,6 +122,13 @@ ensure_java() {
     || warn "default JDK install failed; continuing (retry: sdk install java)"
 }
 
+# install_tools.sh ran before any node existed and skipped its pnpm-installed
+# CLIs; now nvm's node is in, run just that step.
+ensure_node_clis() {
+  "$DOTFILES/scripts/Ubuntu/install_tools.sh" --node-clis \
+    || warn "node CLIs failed; continuing (retry: install_tools.sh --node-clis)"
+}
+
 ensure_nvm() {
   # On macOS nvm comes from the Brewfile formula and lives under
   # $HOMEBREW_PREFIX/opt/nvm. There's no such package on Ubuntu, so install
@@ -227,6 +234,7 @@ main() {
   ensure_java
   ensure_nvm
   ensure_node
+  ensure_node_clis
   run_install_fonts
   discard_generated_zshrc
   run_link

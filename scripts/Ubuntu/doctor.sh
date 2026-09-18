@@ -200,7 +200,7 @@ hdr "Tools on \$PATH"
 # installed and works in an interactive shell even when this non-login bash
 # inherited a PATH from before it was put there. pyenv is never on $path —
 # zshrc exposes it as a lazy function — so resolve it at its install root.
-PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:$PATH"
+PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:${PNPM_HOME:-$HOME/.local/share/pnpm}/bin:$PATH"
 bin_missing=()
 for t in "${VERIFY_TOOLS[@]}"; do
   command -v "$t" >/dev/null 2>&1 || bin_missing+=("$t")

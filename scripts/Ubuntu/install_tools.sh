@@ -54,6 +54,21 @@ VERIFY_TOOLS=(
   lazygit gh acli jq yq just glow hyperfine tokei procs dust
   tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk
   bun pnpm rustup cargo linear-cli pyenv weston
+  nmap mlr pgcli pandoc magick ffmpeg fastfetch
+  fx doggo grpcurl duckdb cheat cargo-binstall trivy caddy
+  semgrep hf tsc typescript-language-server ccusage playwright-cli op
+)
+# 1Password publishes its desktop app for amd64 only; arm64 gets just `op`.
+if [[ "$(uname -m)" == x86_64 ]]; then VERIFY_TOOLS+=(1password); fi
+
+# npm-published CLIs, as "<command>:<package>". Installed with `pnpm add -g`
+# into $PNPM_HOME/bin (on $path via zshrc), which — unlike `npm -g` under nvm —
+# survives a node version switch, and unlike the system npm needs no root.
+NODE_CLIS=(
+  tsc:typescript
+  typescript-language-server:typescript-language-server
+  ccusage:ccusage
+  playwright-cli:@playwright/cli
 )
 
 # ---------- apt ----------
@@ -110,6 +125,14 @@ APT_DEV=(
   gh
   pipx
   python3-poetry
+  # PIN-243: Brewfile tools Ubuntu packages at a current version.
+  nmap
+  miller
+  pgcli
+  pandoc
+  imagemagick
+  ffmpeg
+  fastfetch
 )
 
 # Playwright browser dependencies — the bundled Chromium/Firefox/WebKit
@@ -544,6 +567,181 @@ install_pyenv() {
   fi
 }
 
+# ---------- GitHub release binaries (generic) ----------
+
+# install_release <cmd> <owner/repo> <amd64-asset-regex> <arm64-asset-regex>
+#
+# For tools whose release is one binary: bare, .gz, .tar.gz/.tgz or .zip. The
+# regex must match the whole asset file name (ERE); it is anchored to the end
+# of the download URL so a .sha256 or .sig next to it cannot match. The binary
+# named <cmd> is found anywhere in the archive, checked to be an ELF (a
+# rate-limit page or an HTML error must never be installed), and dropped into
+# ~/.local/bin. The hand-written installers above predate this and each have a
+# quirk (a .deb, an alias, a launcher tree) this deliberately does not model.
+install_release() {
+  local cmd="$1" repo="$2" pat url asset tmp bin
+  if command -v "$cmd" >/dev/null 2>&1 || [[ -x "$HOME/.local/bin/$cmd" ]]; then
+    say "$cmd already installed"
+    return 0
+  fi
+  case "$(uname -m)" in
+    x86_64)  pat="$3" ;;
+    aarch64) pat="$4" ;;
+    *) warn "unsupported arch $(uname -m) for $cmd"; SKIPPED+=("$cmd"); return 0 ;;
+  esac
+  url="$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest" \
+        | grep -oE "\"https://[^\"]*/${pat}\"" | tr -d '"' | head -1)" || true
+  if [[ -z "$url" ]]; then
+    warn "could not resolve a $cmd download URL from $repo"
+    SKIPPED+=("$cmd")
+    return 0
+  fi
+  say "Installing $cmd (GitHub release: ${url##*/})"
+  asset="${url##*/}"
+  tmp="$(mktemp -d)"
+  mkdir -p "$tmp/x"
+  if curl -fsSL -o "$tmp/$asset" "$url"; then
+    case "$asset" in
+      *.tar.gz|*.tgz) tar -xzf "$tmp/$asset" -C "$tmp/x" ;;
+      *.zip)          unzip -qo "$tmp/$asset" -d "$tmp/x" ;;
+      *.gz)           gunzip -c "$tmp/$asset" > "$tmp/x/$cmd" ;;
+      *)              cp "$tmp/$asset" "$tmp/x/$cmd" ;;
+    esac
+    bin="$(find "$tmp/x" -type f -name "$cmd" | head -1)"
+  fi
+  if [[ -n "${bin:-}" && "$(head -c 4 "$bin" | od -An -tx1 | tr -d ' \n')" == "7f454c46" ]]; then
+    mkdir -p "$HOME/.local/bin"
+    install -m 0755 "$bin" "$HOME/.local/bin/$cmd"
+  else
+    warn "$cmd download/extract failed, or no Linux binary named '$cmd' in ${asset}"
+    SKIPPED+=("$cmd")
+  fi
+  rm -rf "$tmp"
+}
+
+# PIN-243. Asset names checked against each project's latest release for both
+# architectures; duckdb takes the glibc build, cargo-binstall the slim one.
+install_release_tools() {
+  install_release fx             antonmedv/fx          'fx_linux_amd64'                                 'fx_linux_arm64'
+  install_release doggo          mr-karan/doggo        'doggo-linux-x86_64\.tar\.gz'                     'doggo-linux-aarch64\.tar\.gz'
+  install_release grpcurl        fullstorydev/grpcurl  'grpcurl_[0-9.]+_linux_x86_64\.tar\.gz'           'grpcurl_[0-9.]+_linux_arm64\.tar\.gz'
+  install_release duckdb         duckdb/duckdb         'duckdb_cli-linux-amd64\.gz'                      'duckdb_cli-linux-arm64\.gz'
+  install_release cheat          cheat/cheat           'cheat-linux-amd64\.gz'                           'cheat-linux-arm64\.gz'
+  install_release cargo-binstall cargo-bins/cargo-binstall 'cargo-binstall-x86_64-unknown-linux-gnu\.tgz' 'cargo-binstall-aarch64-unknown-linux-gnu\.tgz'
+  install_release trivy          aquasecurity/trivy    'trivy_[0-9.]+_Linux-64bit\.tar\.gz'              'trivy_[0-9.]+_Linux-ARM64\.tar\.gz'
+  # The release binary, not Ubuntu's caddy package: that one is years older and
+  # enables a caddy.service listening on :80. This is the CLI only.
+  install_release caddy          caddyserver/caddy     'caddy_[0-9.]+_linux_amd64\.tar\.gz'              'caddy_[0-9.]+_linux_arm64\.tar\.gz'
+}
+
+# ---------- uv tools ----------
+
+# Python CLIs, each in its own uv-managed environment, bins in ~/.local/bin.
+# `uv tool install` writes no shell profile (`uv tool update-shell` would; it is
+# never run). uv by absolute path: this process's PATH predates install_uv.
+install_uv_tools() {
+  local uv pair cmd spec
+  uv="$(command -v uv 2>/dev/null || echo "$HOME/.local/bin/uv")"
+  if [[ ! -x "$uv" ]]; then
+    SKIPPED+=("semgrep hf (no uv)")
+    return 0
+  fi
+  for pair in semgrep:semgrep hf:huggingface_hub; do
+    cmd="${pair%%:*}"; spec="${pair#*:}"
+    if command -v "$cmd" >/dev/null 2>&1 || [[ -x "$HOME/.local/bin/$cmd" ]]; then
+      say "$cmd already installed"
+      continue
+    fi
+    say "Installing $cmd (uv tool install $spec)"
+    "$uv" tool install "$spec" || { warn "uv tool install $spec failed"; SKIPPED+=("$cmd"); }
+  done
+}
+
+# ---------- node CLIs (pnpm global) ----------
+
+# Needs a node: the packages may run install scripts. On a fresh bootstrap
+# this script runs before any node exists, so it skips here and bootstrap.sh
+# calls `install_tools.sh --node-clis` again once nvm's node is in.
+install_node_clis() {
+  export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"   # as zshrc
+  # pnpm 11+ puts global bins in $PNPM_HOME/bin and refuses `add -g` unless
+  # that is on PATH (its fix, `pnpm setup`, would edit ~/.zshrc — this repo).
+  PATH="$PNPM_HOME/bin:$PNPM_HOME:$HOME/.local/bin:$PATH"
+  local pair cmd node_bin missing=()
+  if ! command -v pnpm >/dev/null 2>&1; then
+    SKIPPED+=("node CLIs (no pnpm)")
+    return 0
+  fi
+  if ! command -v node >/dev/null 2>&1; then
+    node_bin="$(compgen -G "$HOME/.nvm/versions/node/v*/bin/node" | sort -V | tail -1 || true)"
+    [[ -z "$node_bin" && -x /usr/bin/node ]] && node_bin=/usr/bin/node
+    if [[ -z "$node_bin" ]]; then
+      SKIPPED+=("node CLIs (no node yet; bootstrap re-runs this with --node-clis)")
+      return 0
+    fi
+    PATH="$(dirname "$node_bin"):$PATH"
+  fi
+  for pair in "${NODE_CLIS[@]}"; do
+    cmd="${pair%%:*}"
+    if [[ -x "$PNPM_HOME/bin/$cmd" ]] || command -v "$cmd" >/dev/null 2>&1; then
+      say "$cmd already installed"
+    else
+      missing+=("${pair#*:}")
+    fi
+  done
+  (( ${#missing[@]} )) || return 0
+  say "Installing ${missing[*]} (pnpm add -g, into \$PNPM_HOME)"
+  mkdir -p "$PNPM_HOME"
+  pnpm add -g "${missing[@]}" || { warn "pnpm add -g failed"; SKIPPED+=("node CLIs"); }
+}
+
+# ---------- 1Password (vendor apt repository, needs sudo) ----------
+
+# The CLI everywhere, the desktop app on amd64 (1Password publishes no arm64
+# app package). The source is written as the deb822 1password.sources, with
+# the keyring at /usr/share/keyrings/1password-archive-keyring.gpg, because
+# that is exactly what the `1password` package's postinst manages: on install
+# it comments out a 1password.list (observed on lab02, 2026-09-18) and writes
+# this .sources itself. Writing the same file means one source from the start
+# and nothing left behind. An older box with the .list is still recognised.
+install_1password() {
+  local arch key src tmp p pkgs=(1password-cli) missing=()
+  arch="$(dpkg --print-architecture)"
+  key=/usr/share/keyrings/1password-archive-keyring.gpg
+  src=/etc/apt/sources.list.d/1password.sources
+  if [[ "$arch" == amd64 ]]; then pkgs+=(1password); else SKIPPED+=("1password app (no $arch package)"); fi
+  for p in "${pkgs[@]}"; do dpkg -s "$p" >/dev/null 2>&1 || missing+=("$p"); done
+  if (( ${#missing[@]} == 0 )); then
+    say "1password already installed (${pkgs[*]})"
+    return 0
+  fi
+  if (( ! HAVE_SUDO )); then SKIPPED+=("${missing[@]/%/ (no sudo)}"); return 0; fi
+  if [[ ! -s "$key" ]] || [[ ! -s "$src" && ! -s /etc/apt/sources.list.d/1password.list ]]; then
+    say "Adding 1Password's apt repository"
+    tmp="$(mktemp -d)"
+    if ! curl -fsSL -o "$tmp/1password.asc" https://downloads.1password.com/linux/keys/1password.asc \
+       || ! grep -q 'BEGIN PGP PUBLIC KEY BLOCK' "$tmp/1password.asc"; then
+      warn "could not fetch 1Password's signing key (or it was not a PGP key); not adding the repository"
+      SKIPPED+=("${missing[@]}")
+      rm -rf "$tmp"
+      return 0
+    fi
+    sudo gpg --dearmor --yes --output "$key" "$tmp/1password.asc"
+    rm -rf "$tmp"
+    sudo tee "$src" >/dev/null <<SRC
+Types: deb
+URIs: https://downloads.1password.com/linux/debian/$arch
+Suites: stable
+Components: main
+Architectures: $arch
+Signed-By: $key
+SRC
+    sudo apt-get update -qq
+  fi
+  say "Installing ${missing[*]}"
+  sudo apt-get install -y "${missing[@]}" || { warn "1password install failed"; SKIPPED+=("${missing[@]}"); }
+}
+
 # ---------- summary ----------
 
 # ---------- GUI apps (vendor .deb, needs sudo) ----------
@@ -604,7 +802,7 @@ print_summary() {
   # pyenv is never on $path at all: zshrc exposes it as a lazy-loading function
   # wrapping $PYENV_ROOT/bin/pyenv. Resolve against the install locations so
   # only a genuine failure is reported.
-  local PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:$PATH"
+  local PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PYENV_ROOT:-$HOME/.pyenv}/bin:${PNPM_HOME:-$HOME/.local/share/pnpm}/bin:$PATH"
   local missing=()
   for t in "${VERIFY_TOOLS[@]}"; do
     if command -v "$t" >/dev/null 2>&1; then
@@ -623,16 +821,28 @@ print_summary() {
     echo
     warn "not installed: ${missing[*]}"
   fi
+  if [[ -x /usr/bin/1password ]]; then
+    echo
+    say "To let 'op' unlock through the desktop app: 1Password -> Settings -> Developer -> Integrate with 1Password CLI"
+  fi
   echo
   say "Finished installing tools on Ubuntu."
 }
 
 main() {
+  # bootstrap.sh calls this once nvm's node exists; the full run before it
+  # found no node and skipped the node CLIs. Nothing else, no sudo needed.
+  if [[ "${1:-}" == --node-clis ]]; then
+    install_node_clis
+    (( ${#SKIPPED[@]} )) && warn "skipped: ${SKIPPED[*]}"
+    return 0
+  fi
   ensure_sudo
   install_apt
   install_shims
   install_snap
   install_uv
+  install_uv_tools
   install_watchexec
   install_ast_grep
   install_beads
@@ -640,10 +850,13 @@ main() {
   install_acli
   install_bun
   install_pnpm
+  install_node_clis
   install_rustup
   install_linear_cli
   install_pyenv
+  install_release_tools
   install_obsidian
+  install_1password
   print_summary
 }
 
