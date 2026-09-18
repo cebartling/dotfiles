@@ -28,6 +28,7 @@ those blocks, proves the run order satisfies them, and runs what you pick.
 | `install_docker.sh` | opt-in | required | `systemctl` | wants `link.sh` |
 | `install_k8s_tools.sh` | opt-in | optional | x86_64 | wants `install_tools.sh`, `link.sh`, `install_docker.sh` |
 | `install_claude_code.sh` | opt-in | none | — | wants `install_tools.sh` |
+| `install_zed.sh` | opt-in | none | — | wants `link.sh` |
 | `install_obsidian_headless.sh` | opt-in | optional | `systemctl` | **requires** `install_nodejs.sh` |
 | `install_mosh_server.sh` | **dangerous** | required | `ufw` | wants `install_tailscale.sh` |
 

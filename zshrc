@@ -14,7 +14,13 @@ export DOTFILES="$HOME/.dotfiles"
 export ZSH="$HOME/.oh-my-zsh"
 # First editor that's actually installed wins, so $EDITOR is never a
 # command that doesn't exist (a Linux box generally has no `code`).
+# The `--wait` ones are GUI editors: on Linux they only count with a local
+# display, or `git commit` over SSH/mosh would try to open a window nowhere.
 for _ed in 'code --wait' 'cursor --wait' 'zed --wait' nvim vim nano vi; do
+  if [[ $_ed == *--wait && $OSTYPE == linux* ]] \
+     && [[ -n $SSH_CONNECTION || -z $WAYLAND_DISPLAY$DISPLAY ]]; then
+    continue
+  fi
   (( $+commands[${_ed%% *}] )) && { export EDITOR="$_ed"; break }
 done
 unset _ed

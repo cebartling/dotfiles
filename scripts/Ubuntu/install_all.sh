@@ -44,6 +44,7 @@ ORDER=(
   install_docker.sh
   install_k8s_tools.sh
   install_claude_code.sh
+  install_zed.sh
   install_obsidian_headless.sh
   install_mosh_server.sh
 )

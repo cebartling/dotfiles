@@ -76,12 +76,22 @@ for s in docker-user-firewall.sh ufw-docker-test.sh; do
   link "$DOTFILES/scripts/Ubuntu/bin/$s" "$HOME/bin/$s"
 done
 
-# Files (Nautilus) right-click -> Scripts entries.
-if command -v nautilus >/dev/null 2>&1; then
-  link "$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed" \
-       "$HOME/.local/share/nautilus/scripts/Open with Zed"
-else
+# Files (Nautilus) right-click -> Scripts entries. "Open with Zed" execs
+# ~/.local/bin/zed, so it is only linked when that exists (install_zed.sh) — and
+# a link this script made earlier is removed when it does not, since a menu
+# entry that does nothing is worse than none. Only our own link is removed.
+zed_script="$HOME/.local/share/nautilus/scripts/Open with Zed"
+zed_src="$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed"
+if ! command -v nautilus >/dev/null 2>&1; then
   echo "${C_YEL}skip${C_RST}   nautilus scripts (nautilus not installed)"
+elif [[ -x "$HOME/.local/bin/zed" ]]; then
+  link "$zed_src" "$zed_script"
+else
+  if [[ -L "$zed_script" && "$(readlink "$zed_script")" == "$zed_src" ]]; then
+    rm "$zed_script"
+    echo "${C_YEL}unlink${C_RST} $zed_script (zed not installed)"
+  fi
+  echo "${C_YEL}skip${C_RST}   nautilus scripts (zed not installed)"
 fi
 
 # Tailscale tray client: one .desktop, linked twice — autostart at login, and the

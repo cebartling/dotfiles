@@ -112,11 +112,18 @@ else
   warn "ghostty config not checked (ghostty not installed)"
 fi
 # The rest mirror link.sh's conditional branches, under the same conditions.
-if command -v nautilus >/dev/null 2>&1; then
-  check_symlink "$HOME/.local/share/nautilus/scripts/Open with Zed" \
-                "$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed"
-else
+zed_script="$HOME/.local/share/nautilus/scripts/Open with Zed"
+zed_src="$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed"
+if ! command -v nautilus >/dev/null 2>&1; then
   warn "nautilus script not checked (nautilus not installed)"
+elif [[ -x "$HOME/.local/bin/zed" ]]; then
+  check_symlink "$zed_script" "$zed_src"
+elif [[ -L "$zed_script" && "$(readlink "$zed_script")" == "$zed_src" ]]; then
+  # link.sh removes this when zed is absent; still here means it has not run.
+  fail "$zed_script is linked but zed is not installed (fix: scripts/Ubuntu/link.sh)"
+  drift=$((drift + 1))
+else
+  warn "nautilus script not checked (zed not installed)"
 fi
 if command -v tailscale >/dev/null 2>&1; then
   for d in "$HOME/.config/autostart" "$HOME/.local/share/applications"; do

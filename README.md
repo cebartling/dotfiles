@@ -554,7 +554,7 @@ so a `git pull` on the other machine is a behavioural no-op:
 
 | Concern | How it is guarded |
 |---|---|
-| `$EDITOR` | first of `code`/`cursor`/`zed`/`nvim`/`vim`/`nano` that is installed |
+| `$EDITOR` | first of `code`/`cursor`/`zed`/`nvim`/`vim`/`nano` that is installed. On Linux the GUI editors (`code`/`cursor`/`zed`) only count with a local display — over SSH or mosh a terminal editor wins |
 | `PNPM_HOME` | `$OSTYPE` — `~/Library/pnpm` on macOS, XDG path elsewhere |
 | zsh plugins | first hit across `$HOMEBREW_PREFIX/share`, `/usr/share`, `/usr/local/share` |
 | nvm | resolves `$HOMEBREW_PREFIX/opt/nvm` then `$NVM_DIR`; **defines no wrappers at all if neither exists** |
@@ -675,6 +675,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
 | `scripts/Ubuntu/install_docker.sh` | Opt-in Docker Engine install (not run by bootstrap; adds Docker's signed apt repository) |
 | `scripts/Ubuntu/install_claude_code.sh` | Opt-in Claude Code CLI install (not run by bootstrap; no sudo, wraps Anthropic's native installer and guards the tracked `zshrc`) |
+| `scripts/Ubuntu/install_zed.sh` | Opt-in Zed editor (not run by bootstrap; no sudo, wraps Zed's installer into `~/.local`, guards the tracked `zshrc`, then re-runs `link.sh` so the Files "Open with Zed" entry appears — it is only linked while Zed is installed) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |
 | [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass) and `ufw-docker-test.sh` (proves it, from an off-box client) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
