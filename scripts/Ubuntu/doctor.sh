@@ -4,6 +4,10 @@
 #   - Symlinks that don't point at $DOTFILES (or are missing)
 #   - apt packages from install_tools.sh's manifests that aren't installed
 #   - snap packages, and every binary install_tools.sh is supposed to leave behind
+#   - ufw state and Docker's ufw-bypass containment (rules need root to read)
+#   - What the opt-in installers set up — Tailscale, Obsidian sync, Claude Code,
+#     Docker, SSH — each checked only when its tool is installed, so a box
+#     that skipped an installer reports it as not checked, not as drift
 #   - Shell startup time
 #
 # Run after `git pull` on a secondary machine to confirm everything is in sync.
@@ -66,6 +70,23 @@ check_symlink() {
   fi
 }
 
+# check_unit <unit> / check_user_unit <unit>: enabled and running. Used only
+# for units an installer enabled, so anything else is drift. systemctl prints
+# its answer and still exits non-zero for a stopped unit — take the text.
+_check_unit() {
+  local scope="$1" unit="$2" en act
+  en="$(systemctl $scope is-enabled "$unit" 2>/dev/null | head -1)"
+  act="$(systemctl $scope is-active "$unit" 2>/dev/null | head -1)"
+  if [[ "$en" == enabled && "$act" == active ]]; then
+    ok "$unit enabled and running"
+  else
+    fail "$unit is ${en:-unknown} and ${act:-unknown} (expected enabled and active)"
+    drift=$((drift + 1))
+  fi
+}
+check_unit()      { _check_unit ""       "$1"; }
+check_user_unit() { _check_unit "--user" "$1"; }
+
 # Mirrors scripts/Ubuntu/link.sh.
 check_symlink "$HOME/.zshrc"                "$DOTFILES/zshrc"
 check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.toml"
@@ -89,6 +110,30 @@ if command -v ghostty >/dev/null 2>&1; then
                 "$DOTFILES/configurations/ghostty/config"
 else
   warn "ghostty config not checked (ghostty not installed)"
+fi
+# The rest mirror link.sh's conditional branches, under the same conditions.
+if command -v nautilus >/dev/null 2>&1; then
+  check_symlink "$HOME/.local/share/nautilus/scripts/Open with Zed" \
+                "$DOTFILES/scripts/Ubuntu/nautilus/Open with Zed"
+else
+  warn "nautilus script not checked (nautilus not installed)"
+fi
+if command -v tailscale >/dev/null 2>&1; then
+  for d in "$HOME/.config/autostart" "$HOME/.local/share/applications"; do
+    check_symlink "$d/tailscale-systray.desktop" \
+                  "$DOTFILES/scripts/Ubuntu/desktop/tailscale-systray.desktop"
+  done
+  check_symlink "$HOME/.local/bin/tailscale-cert-renew" \
+                "$DOTFILES/scripts/Ubuntu/tailscale-cert-renew"
+  for u in tailscale-cert-renew.service tailscale-cert-renew.timer; do
+    check_symlink "$HOME/.config/systemd/user/$u" "$DOTFILES/scripts/Ubuntu/systemd/$u"
+  done
+else
+  warn "tailscale links not checked (tailscale not installed)"
+fi
+if command -v systemctl >/dev/null 2>&1; then
+  check_symlink "$HOME/.config/systemd/user/obsidian-sync@.service" \
+                "$DOTFILES/scripts/Ubuntu/systemd/obsidian-sync@.service"
 fi
 
 # ---------- apt ----------
@@ -214,7 +259,18 @@ fi
 # and its --check says whether it is applied and current. Root-only, so like
 # the ufw rules above: not being able to look is a warning, not drift.
 if command -v docker >/dev/null 2>&1; then
-  hdr "Docker containment"
+  hdr "Docker"
+  check_unit docker.service
+  # install_docker.sh adds the human to the group; without it every docker
+  # command needs sudo. Given a name, `id -nG` reads the group database, not
+  # this shell's credentials — so a membership that only takes effect at the
+  # next login still counts, which is right: that is not drift.
+  if id -nG "$USER" 2>/dev/null | tr ' ' '\n' | grep -qx docker; then
+    ok "$USER is in the docker group"
+  else
+    fail "$USER is not in the docker group (fix: scripts/Ubuntu/install_docker.sh)"
+    drift=$((drift + 1))
+  fi
   fw="$DOTFILES/scripts/Ubuntu/bin/docker-user-firewall.sh"
   if ! sudo -n true 2>/dev/null; then
     warn "not checked (needs root: sudo $fw --check)"
@@ -224,6 +280,84 @@ if command -v docker >/dev/null 2>&1; then
     fail "$verdict (fix: sudo $fw)"
     drift=$((drift + 1))
   fi
+else
+  warn "docker not checked (docker not installed)"
+fi
+
+# ---------- tailscale ----------
+if command -v tailscale >/dev/null 2>&1; then
+  hdr "Tailscale"
+  check_unit tailscaled.service
+  check_user_unit tailscale-cert-renew.timer
+  # Same test as install_tailscale.sh:operator_is_me. The tray client drives
+  # tailscaled without root only when this user is its operator.
+  if tailscale debug prefs 2>/dev/null | grep -q "\"OperatorUser\": \"$USER\""; then
+    ok "tailscaled operator is $USER"
+  else
+    fail "tailscaled operator is not $USER (fix: scripts/Ubuntu/install_tailscale.sh)"
+    drift=$((drift + 1))
+  fi
+else
+  warn "tailscale not checked (tailscale not installed)"
+fi
+
+# ---------- obsidian sync ----------
+if command -v ob >/dev/null 2>&1; then
+  hdr "Obsidian sync"
+  # Enabled instances of the template — the template itself lists as `linked`.
+  vault_units=()
+  while read -r unit state _; do
+    [[ "$state" == enabled && "$unit" != "obsidian-sync@.service" ]] && vault_units+=("$unit")
+  done < <(systemctl --user list-unit-files 'obsidian-sync@*' --no-legend 2>/dev/null)
+  if (( ${#vault_units[@]} == 0 )); then
+    warn "no vault sync units enabled (set one up with ob, then re-run install_obsidian_headless.sh)"
+  else
+    for u in "${vault_units[@]}"; do check_user_unit "$u"; done
+    # Same test as install_obsidian_headless.sh:linger_on. Without linger the
+    # sync stops when the last session closes.
+    if [[ "$(loginctl show-user "$USER" -p Linger --value 2>/dev/null)" == yes ]]; then
+      ok "linger enabled for $USER"
+    else
+      fail "linger is off — sync stops at logout (fix: sudo loginctl enable-linger $USER)"
+      drift=$((drift + 1))
+    fi
+  fi
+else
+  warn "obsidian sync not checked (ob not installed)"
+fi
+
+# ---------- claude code ----------
+# Mirrors ai-tools/claude-code/install.sh, globbing its source directories the
+# same way so a new command, hook or skill is checked without editing this.
+if command -v claude >/dev/null 2>&1; then
+  hdr "Claude Code"
+  cc_src="$DOTFILES/ai-tools/claude-code"
+  for f in CLAUDE.md RTK.md settings.json; do
+    check_symlink "$HOME/.claude/$f" "$cc_src/$f"
+  done
+  for sub in commands hooks skills; do
+    for src in "$cc_src/$sub/"*; do
+      [[ -e "$src" ]] || continue
+      check_symlink "$HOME/.claude/$sub/$(basename "$src")" "$src"
+    done
+  done
+else
+  warn "claude code not checked (claude not installed)"
+fi
+
+# ---------- ssh ----------
+# install_mosh_server.sh enables ssh.socket where the box uses socket
+# activation and ssh.service otherwise, so either one running is correct.
+if command -v mosh-server >/dev/null 2>&1; then
+  hdr "SSH"
+  if systemctl is-active --quiet ssh.socket || systemctl is-active --quiet ssh.service; then
+    ok "sshd reachable ($(systemctl is-active --quiet ssh.socket && echo ssh.socket || echo ssh.service) active)"
+  else
+    fail "neither ssh.socket nor ssh.service is active (fix: scripts/Ubuntu/install_mosh_server.sh)"
+    drift=$((drift + 1))
+  fi
+else
+  warn "ssh not checked (mosh-server not installed)"
 fi
 
 # ---------- shell startup ----------
