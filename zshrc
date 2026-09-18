@@ -150,6 +150,11 @@ fi
 
 # sdkman: load on first use of sdk
 export SDKMAN_DIR="$HOME/.sdkman"
+# ...but the installed candidates must not wait for that: without this, `java`
+# is "command not found" in a fresh shell until something calls `sdk`. A glob,
+# not sdkman-init — no subprocess, same trick as the pyenv shims above.
+path=($SDKMAN_DIR/candidates/*/current/bin(N) $path)
+[[ -d $SDKMAN_DIR/candidates/java/current ]] && export JAVA_HOME=$SDKMAN_DIR/candidates/java/current
 sdk() {
   unset -f sdk
   [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"

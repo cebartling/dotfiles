@@ -57,7 +57,8 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    from NodeSource (see [System Node.js from NodeSource](#system-nodejs-from-nodesource));
    a failure here warns and continues
 3. Install oh-my-zsh unattended (won't touch `~/.zshrc` or your login shell)
-4. Install sdkman if missing
+4. Install sdkman if missing, then its default JDK (Temurin LTS) unless
+   sdkman already manages a java
 5. Install nvm into `$NVM_DIR` — there is no Homebrew nvm formula to lean on,
    so nvm proper is installed with `PROFILE=/dev/null` to keep its installer
    out of `~/.zshrc`, then install the latest LTS node with it (skipped if nvm

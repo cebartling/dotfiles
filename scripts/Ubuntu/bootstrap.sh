@@ -104,6 +104,24 @@ discard_generated_zshrc() {
   rm -f "$HOME/.zshrc"
 }
 
+# The default JDK: sdkman's own recommended java (Temurin LTS), not a version
+# pinned here that would go stale. Any sdkman java counts — like ensure_node,
+# don't churn a box that already has one. User-space, so it runs unattended too.
+ensure_java() {
+  local sdkman_dir="${SDKMAN_DIR:-$HOME/.sdkman}"
+  if compgen -G "$sdkman_dir/candidates/java/[0-9]*" >/dev/null; then
+    say "java already installed via sdkman ($(ls "$sdkman_dir/candidates/java" | grep -v '^current$' | paste -sd' '))"
+    return 0
+  fi
+  [[ -s "$sdkman_dir/bin/sdkman-init.sh" ]] || { warn "sdkman not initialised; skipping the default JDK"; return 0; }
+  say "Installing sdkman's default JDK"
+  # sdkman is not safe under `set -u`; relax it in a subshell. auto_answer so a
+  # "set as default?" prompt can never stall an unattended run.
+  ( set +u; export SDKMAN_DIR="$sdkman_dir"; . "$sdkman_dir/bin/sdkman-init.sh"
+    sdkman_auto_answer=true sdk install java ) \
+    || warn "default JDK install failed; continuing (retry: sdk install java)"
+}
+
 ensure_nvm() {
   # On macOS nvm comes from the Brewfile formula and lives under
   # $HOMEBREW_PREFIX/opt/nvm. There's no such package on Ubuntu, so install
@@ -179,7 +197,7 @@ Next steps:
        gsettings set org.gnome.Ptyxis font-name 'JetBrainsMono Nerd Font 12'
   5. First-time logins:
        gh auth login
-       sdk version            # initializes sdkman on first call
+       java -version          # sdkman's default JDK, already on PATH
   6. Optional: per-machine overrides:
        cp ~/.dotfiles/.zshrc.local.example ~/.zshrc.local
        $EDITOR ~/.zshrc.local
@@ -206,6 +224,7 @@ main() {
   run_install_nodejs
   ensure_oh_my_zsh
   ensure_sdkman
+  ensure_java
   ensure_nvm
   ensure_node
   run_install_fonts

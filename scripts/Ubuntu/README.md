@@ -66,6 +66,7 @@ HAD_ZSHRC snapshot          <- must precede every installer
   install_nodejs.sh
   ensure_oh_my_zsh          <- writes ~/.zshrc
   ensure_sdkman             <- appends to ~/.zshrc
+  ensure_java               <- sdkman's default JDK
   ensure_nvm / ensure_node
   install_fonts.sh
   discard_generated_zshrc   <- MUST follow the profile writers,
@@ -82,6 +83,22 @@ resolves, nothing runs twice, and the fragile part is not disturbed.
 
 Run standalone, `install_all.sh` will run the core scripts itself when something
 selected requires them.
+
+## Runtimes
+
+Deliberate, per language (PIN-244):
+
+- **Java** — bootstrap installs sdkman's default JDK (`sdk install java`, the
+  current Temurin LTS) unless sdkman already manages one. zshrc puts every
+  `~/.sdkman/candidates/*/current/bin` on `$path` and sets `JAVA_HOME` without
+  loading sdkman, so `java` works in a fresh shell. Other versions and
+  candidates (maven, gradle) are per project: `sdk install …`.
+- **Node** — nvm's latest LTS for you, plus a system node at `/usr/bin/node`
+  from `install_nodejs.sh` for things that must not depend on nvm.
+- **Python** — the system `python3` (3.14 on 26.04). Other versions are per
+  project with `uv` or `pyenv`; there is deliberately no pyenv global, because
+  compiling one on every fresh box would duplicate what the system and uv
+  already provide.
 
 ## Unattended runs
 

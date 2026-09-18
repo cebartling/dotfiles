@@ -367,6 +367,22 @@ else
   warn "ssh not checked (mosh-server not installed)"
 fi
 
+# ---------- java ----------
+# bootstrap.sh installs sdkman's default JDK (ensure_java), and zshrc puts
+# candidates/*/current/bin on $path, so `current` is what a shell runs.
+if [[ -d "${SDKMAN_DIR:-$HOME/.sdkman}" ]]; then
+  hdr "Java"
+  jbin="${SDKMAN_DIR:-$HOME/.sdkman}/candidates/java/current/bin/java"
+  if jver="$("$jbin" -version 2>&1 | head -1)" && [[ -n "$jver" ]]; then
+    ok "sdkman java: $jver"
+  else
+    fail "no sdkman default JDK at $jbin (fix: sdk install java, or scripts/Ubuntu/bootstrap.sh)"
+    drift=$((drift + 1))
+  fi
+else
+  warn "java not checked (sdkman not installed)"
+fi
+
 # ---------- github cli ----------
 # A login is not something this repo provisions, and the check goes to the
 # network — an offline box is not a drifted one. So: a warning, never drift.
