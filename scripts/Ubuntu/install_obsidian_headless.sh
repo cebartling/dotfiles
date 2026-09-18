@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # install_obsidian_headless.sh — headless Obsidian Sync on Ubuntu.
 #
-# Opt-in and NOT wired into bootstrap.sh: it needs an Obsidian Sync
+# Opt-in: offered by install_all.sh, never run unconditionally by
+# bootstrap.sh -- it needs an Obsidian Sync
 # subscription, and every vault is a per-machine decision. For boxes reached
 # mostly over SSH, where the desktop app is never open to sync.
 #
@@ -19,6 +20,17 @@
 # Login and vault setup prompt for passwords, so they are printed as next steps
 # rather than run. Every vault `ob` already has configured gets its sync unit
 # enabled, so re-running this script after `ob sync-setup` finishes the job.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: The ob CLI and per-vault Obsidian Sync user units
+# group: opt-in
+# requires: install_nodejs.sh
+# wants: install_tools.sh link.sh
+# needs-cmd: systemctl
+# sudo: optional
+# --- end metadata ---
 
 set -euo pipefail
 

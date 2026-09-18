@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # install_chrome.sh — Google Chrome on Ubuntu.
 #
-# Opt-in and NOT wired into bootstrap.sh, like install_tailscale.sh and
+# Opt-in: offered by install_all.sh, never run unconditionally by
+# bootstrap.sh -- like install_tailscale.sh and
 # install_k8s_tools.sh — a GUI browser is a desktop decision, not something a
 # headless box wants pulled in, and it needs sudo.
 #
@@ -24,6 +25,16 @@
 # pre-creating it would make dpkg stop on a conffile conflict — so this script
 # reconciles *after* the install instead: rewrite the source with signed-by and
 # set repo_add_once=false so the postinst never re-adds it on upgrade.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: Google Chrome from Google's own apt repository
+# group: opt-in
+# needs-cmd: gpg
+# needs-arch: x86_64
+# sudo: required
+# --- end metadata ---
 
 set -euo pipefail
 

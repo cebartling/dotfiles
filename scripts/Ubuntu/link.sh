@@ -7,6 +7,14 @@
 # omitted (macOS app, one of them targets ~/Library/Application Support),
 # and the ghostty config is linked only if ghostty is actually installed.
 
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: Symlink tracked dotfiles into $HOME
+# group: core
+# sudo: none
+# --- end metadata ---
+
 set -euo pipefail
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"

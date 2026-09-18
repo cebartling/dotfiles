@@ -9,6 +9,16 @@
 # Idempotent: skips the download if the family is already registered.
 # Installs per-user (no sudo) into ~/.local/share/fonts.
 
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: JetBrainsMono Nerd Font, per-user, no root
+# group: core
+# wants: install_tools.sh
+# needs-cmd: fc-cache
+# sudo: none
+# --- end metadata ---
+
 set -euo pipefail
 
 FONT_NAME="JetBrainsMono"

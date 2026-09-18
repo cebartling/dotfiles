@@ -15,6 +15,15 @@
 # above Ubuntu's own older nodejs. Re-running it rewrites all three, so skip it
 # when the source for this major is already in place.
 
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: System Node.js from NodeSource at /usr/bin/node
+# group: core
+# wants: install_tools.sh
+# sudo: required
+# --- end metadata ---
+
 set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive

@@ -348,7 +348,7 @@ the Linux counterpart. Ubuntu 24.04+ carries most of the CLI list in apt.
 `gitleaks` · `httpie` · `mosh` · `xh` · `gh` · `pipx` · `python3-poetry` · `weston` ·
 `wayland-utils` · plus base
 packages (`build-essential`, `git`, `git-lfs`, `curl`, `wget`, `unzip`,
-`openssl`, `fontconfig`, `net-tools`)
+`openssl`, `fontconfig`, `net-tools`, `ufw`)
 
 Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 

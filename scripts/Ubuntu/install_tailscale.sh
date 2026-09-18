@@ -2,7 +2,8 @@
 # install_tailscale.sh — Tailscale on Ubuntu.
 #
 # The Linux counterpart to Brewfile.tailscale + scripts/macOS/install_tailscale_app.zsh.
-# Opt-in and NOT wired into bootstrap.sh, exactly like the macOS version — joining
+# Opt-in: offered by install_all.sh, never run unconditionally by bootstrap.sh,
+# exactly like the macOS version -- joining
 # a tailnet is a per-machine decision, and it needs sudo.
 #
 #   ~/.dotfiles/scripts/Ubuntu/install_tailscale.sh
@@ -26,6 +27,16 @@
 # the timer step needs no sudo, so it runs even when the rest is skipped.
 # `tailscale up` needs an interactive browser login, so it is printed as a next
 # step rather than run unattended.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: Tailscale client, systray autostart, and the cert-renewal timer
+# group: opt-in
+# wants: install_tools.sh link.sh
+# needs-cmd: systemctl
+# sudo: required
+# --- end metadata ---
 
 set -euo pipefail
 

@@ -2,7 +2,8 @@
 # install_mosh_server.sh — make this box reachable by mosh, over both the LAN
 # and the tailnet, and open ufw exactly enough to allow it.
 #
-# Opt-in and NOT wired into bootstrap.sh, like install_tailscale.sh — this opens
+# Opt-in: offered by install_all.sh but excluded from --all (it enables ufw),
+# and never run unconditionally by bootstrap.sh -- this opens
 # ports and (on the LAN path) installs a network daemon, which is a per-machine
 # decision. Idempotent: safe to re-run, and re-running is how you pick up a new
 # subnet after the box moves networks.
@@ -31,6 +32,16 @@
 # about the prefix (this LAN looks like a /24 and is a /22). `ip route ... proto
 # kernel scope link` is the kernel's own computed CIDR for each connected
 # subnet, so it is right by construction and costs nothing to re-derive.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: mosh, sshd, and ufw rules for the LAN and the tailnet
+# group: dangerous
+# wants: install_tailscale.sh
+# needs-cmd: ufw
+# sudo: required
+# --- end metadata ---
 
 set -euo pipefail
 

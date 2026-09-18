@@ -14,6 +14,14 @@
 # package is macOS-only): mole, cliclick, whisperkit-cli, and every `cask`
 # entry in the Brewfile except obsidian, which comes from its vendor .deb.
 
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: The CLI toolchain: apt, snap, and upstream binaries into ~/.local/bin
+# group: core
+# sudo: required
+# --- end metadata ---
+
 set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
@@ -48,6 +56,7 @@ APT_BASE=(
   openssl
   fontconfig
   net-tools
+  ufw
 )
 
 # Modern CLI replacements (Brewfile: "Modern CLI replacements").

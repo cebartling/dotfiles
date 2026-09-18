@@ -141,6 +141,21 @@ run_link() {
   "$DOTFILES/scripts/Ubuntu/link.sh"
 }
 
+run_install_all() {
+  # The optional installers (chrome, tailscale, k8s, claude code, headless
+  # obsidian, mosh) live behind install_all.sh, which owns the dependency order
+  # and the prompting. It runs last, after link.sh, because several of them key
+  # off what link.sh has already put in place — and because it is the only
+  # interactive step in this file. With no terminal it prints an advisory and
+  # changes nothing, so a piped or SSH bootstrap stays as unattended as ever.
+  #
+  # The || warn is load-bearing: this script runs under `set -e`, and without it
+  # one failed optional installer would abort before print_next_steps, losing
+  # the chsh and font instructions that are the point of the bootstrap.
+  "$DOTFILES/scripts/Ubuntu/install_all.sh" \
+    || warn "some optional installers failed; see the summary above, continuing"
+}
+
 print_next_steps() {
   cat <<'EOF'
 
@@ -165,6 +180,10 @@ Next steps:
   6. Optional: per-machine overrides:
        cp ~/.dotfiles/.zshrc.local.example ~/.zshrc.local
        $EDITOR ~/.zshrc.local
+  7. Optional extras (Chrome, Tailscale, k8s tooling, Claude Code, headless
+     Obsidian, mosh) — re-run the picker any time:
+       ~/.dotfiles/scripts/Ubuntu/install_all.sh
+       ~/.dotfiles/scripts/Ubuntu/install_all.sh --list
 
 EOF
 }
@@ -176,6 +195,9 @@ main() {
   # Snapshot before any installer runs — see discard_generated_zshrc.
   HAD_ZSHRC=0
   [[ -e "$HOME/.zshrc" || -L "$HOME/.zshrc" ]] && HAD_ZSHRC=1
+  # Tells install_all.sh that the core installers below are this script's job,
+  # so it records them as done rather than running them a second time.
+  export DOTFILES_BOOTSTRAP_ACTIVE=1
   ensure_dotfiles_repo
   run_install_tools
   run_install_nodejs
@@ -186,6 +208,7 @@ main() {
   run_install_fonts
   discard_generated_zshrc
   run_link
+  run_install_all
   print_next_steps
 }
 

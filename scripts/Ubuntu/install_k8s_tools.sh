@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # install_k8s_tools.sh — Kubernetes tooling on Ubuntu.
 #
-# The Linux counterpart to scripts/macOS/install_k8s_tools.zsh. Opt-in and NOT
+# The Linux counterpart to scripts/macOS/install_k8s_tools.zsh. Offered by
+# install_all.sh, NOT
 # wired into bootstrap.sh, exactly like the macOS version — not every machine
 # needs k8s.
 #
@@ -24,6 +25,16 @@
 #   kubectl-ai — still 0.0.x, and upstream moved to GoogleCloudPlatform
 #   openlens   — dead upstream, last release 2023-06-30. Use freelens.
 # Add any of them here if that changes.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: kubectl, helm, stern, k3d and radar into ~/.local/bin
+# group: opt-in
+# wants: install_tools.sh link.sh
+# needs-arch: x86_64
+# sudo: optional
+# --- end metadata ---
 
 set -euo pipefail
 

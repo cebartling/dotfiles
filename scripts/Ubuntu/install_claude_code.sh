@@ -5,7 +5,8 @@
 #   ~/.dotfiles/scripts/Ubuntu/install_claude_code.sh latest     # or a version
 #   ~/.dotfiles/scripts/Ubuntu/install_claude_code.sh --force    # reinstall
 #
-# Opt-in and NOT wired into bootstrap.sh, like install_chrome.sh and
+# Opt-in: offered by install_all.sh, never run unconditionally by
+# bootstrap.sh -- like install_chrome.sh and
 # install_tailscale.sh. Unlike those two it needs no sudo at all: everything
 # lands under $HOME.
 #
@@ -35,6 +36,15 @@
 # It is fetched to a file and checked before it is run, rather than piped
 # straight into bash — the same reflex as install_chrome.sh validating that the
 # Google signing key really is a PGP block before installing it.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: The claude CLI via Anthropic's installer (no root)
+# group: opt-in
+# wants: install_tools.sh
+# sudo: none
+# --- end metadata ---
 
 set -euo pipefail
 

@@ -68,10 +68,16 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    `~/.config/starship.toml`. The cmux links are macOS-only and skipped;
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
+8. [`install_all.sh`](scripts/Ubuntu/install_all.sh) — offers the optional
+   installers (Chrome, Tailscale, k8s tooling, Claude Code, headless Obsidian,
+   mosh), asking about each. It owns the dependency order between them; see
+   [scripts/Ubuntu/README.md](scripts/Ubuntu/README.md). With no terminal it
+   prints an advisory and changes nothing, so a piped or SSH bootstrap stays
+   unattended. Re-runnable on its own at any time.
 
-Then Claude Code, which bootstrap deliberately does not touch. The CLI and its
-configuration are two separate installs — the first puts the binary on `$PATH`,
-the second symlinks the skills, hooks and settings that configure it (see
+Then Claude Code. Step 8 offers the CLI; its *configuration* is a separate
+install that bootstrap never touches. The first puts the binary on `$PATH`, the
+second symlinks the skills, hooks and settings that configure it (see
 [ai-tools/claude-code/](ai-tools/claude-code/README.md)):
 
 ```sh
