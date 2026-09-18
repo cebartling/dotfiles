@@ -367,6 +367,22 @@ else
   warn "ssh not checked (mosh-server not installed)"
 fi
 
+# ---------- github cli ----------
+# A login is not something this repo provisions, and the check goes to the
+# network — an offline box is not a drifted one. So: a warning, never drift.
+# Ask the API rather than `gh auth status`: Ubuntu's gh 2.46 exits 0 from that
+# even when it is reporting the stored token as invalid.
+if command -v gh >/dev/null 2>&1; then
+  hdr "GitHub CLI"
+  if gh_login="$(timeout 10 gh api user --jq .login 2>/dev/null)" && [[ -n "$gh_login" ]]; then
+    ok "gh authenticated as $gh_login"
+  else
+    warn "gh is not authenticated, or GitHub is unreachable (fix: gh auth login -h github.com -p ssh -w)"
+  fi
+else
+  warn "gh not checked (gh not installed)"
+fi
+
 # ---------- shell startup ----------
 hdr "Shell startup"
 
