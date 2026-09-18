@@ -48,6 +48,21 @@ say()  { printf '\033[36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
+# EVERYTHING BELOW IS PER-USER, so sudo does not fail here — it silently does the
+# wrong thing. $HOME becomes /root and $USER becomes root, so the package installs
+# to /root/.local, the unit is looked for in /root/.config, and linger is enabled
+# for root. The only visible symptom is a "not linked yet" warning naming a path
+# under /root that nobody thinks to check. Worse if it then runs: the unit's
+# ExecStart uses %h, so a root instance reads /root/.local and writes into a vault
+# owned by someone else. The single step that genuinely needs privilege escalates
+# on its own (sudo loginctl enable-linger "$USER"), so root is never wanted here.
+if (( EUID == 0 )); then
+  if [[ -n "${SUDO_USER:-}" && "$SUDO_USER" != root ]]; then
+    die "do not run this with sudo; it installs into \$HOME and manages 'systemctl --user' units. Re-run as $SUDO_USER: $0"
+  fi
+  die "do not run this as root; it installs into \$HOME and manages 'systemctl --user' units. Re-run as your own user."
+fi
+
 command -v systemctl >/dev/null 2>&1 || die "the sync daemon needs systemd, and systemctl is not on \$PATH"
 
 require_system_node() {
