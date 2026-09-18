@@ -69,8 +69,8 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 8. [`install_all.sh`](scripts/Ubuntu/install_all.sh) — offers the optional
-   installers (Chrome, Tailscale, k8s tooling, Claude Code, headless Obsidian,
-   mosh), asking about each. It owns the dependency order between them; see
+   installers (Chrome, Tailscale, Docker, k8s tooling, Claude Code, headless
+   Obsidian, mosh), asking about each. It owns the dependency order between them; see
    [scripts/Ubuntu/README.md](scripts/Ubuntu/README.md). With no terminal it
    prints an advisory and changes nothing, so a piped or SSH bootstrap stays
    unattended. Re-runnable on its own at any time.
@@ -209,8 +209,8 @@ by `freelens`.
 ### Docker (opt-in)
 
 ```sh
-~/bin/install-docker.sh              # add --verify for a hello-world smoke test
-sudo ~/bin/docker-user-firewall.sh   # then contain it — see below
+~/.dotfiles/scripts/Ubuntu/install_docker.sh   # add --verify for a hello-world smoke test
+sudo ~/bin/docker-user-firewall.sh               # then contain it — see below
 ```
 
 Run it as yourself; it calls `sudo` where it needs root. Running the whole thing
@@ -667,9 +667,10 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_nodejs.sh` | System Node.js 24 install (run by bootstrap; adds NodeSource's apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
+| `scripts/Ubuntu/install_docker.sh` | Opt-in Docker Engine install (not run by bootstrap; adds Docker's signed apt repository) |
 | `scripts/Ubuntu/install_claude_code.sh` | Opt-in Claude Code CLI install (not run by bootstrap; no sudo, wraps Anthropic's native installer and guards the tracked `zshrc`) |
 | `scripts/Ubuntu/install_mosh_server.sh` | Opt-in mosh reachability: mosh + sshd + ufw rules for LAN and tailnet (not run by bootstrap) |
-| [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass), `ufw-docker-test.sh` (proves it, from an off-box client), `install-docker.sh` (opt-in Docker Engine install from Docker's signed apt repository) |
+| [`scripts/Ubuntu/bin/`](scripts/Ubuntu/bin/) | Host-maintenance scripts run by hand, symlinked into `~/bin` by `link.sh`: `docker-user-firewall.sh` (default-deny `DOCKER-USER` containment for Docker's ufw bypass) and `ufw-docker-test.sh` (proves it, from an off-box client) |
 | [`scripts/Ubuntu/wlheadless-run`](scripts/Ubuntu/wlheadless-run) | Headless-Wayland wrapper — the `xvfb-run` stand-in. The one tracked executable meant for `$PATH`; `link.sh` symlinks it into `~/.local/bin` |
 | [`ai-tools/claude-code/`](ai-tools/claude-code/README.md) | Claude Code config (CLAUDE.md, RTK.md, settings.json, commands, hooks, skills) symlinked into `~/.claude` |
 

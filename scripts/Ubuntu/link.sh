@@ -66,7 +66,7 @@ link "$DOTFILES/scripts/Ubuntu/wlheadless-run" "$HOME/.local/bin/wlheadless-run"
 # Host-maintenance scripts. These keep their historical home in ~/bin (also on
 # $path) rather than moving to ~/.local/bin — they are run by hand, usually
 # under sudo, and the paths are quoted in the provisioning journal.
-for s in docker-user-firewall.sh install-docker.sh ufw-docker-test.sh; do
+for s in docker-user-firewall.sh ufw-docker-test.sh; do
   link "$DOTFILES/scripts/Ubuntu/bin/$s" "$HOME/bin/$s"
 done
 

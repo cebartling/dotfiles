@@ -576,11 +576,11 @@ the script reconciles after installing and sets `repo_add_once="false"` in
 
 ### Docker (opt-in, a third-party apt repository)
 
-`scripts/Ubuntu/bin/install-docker.sh` — not wired into bootstrap, and the third
-of the [third-party apt sources](#third-party-apt-sources) above. It keeps its
-historical home in `scripts/Ubuntu/bin/` (symlinked to `~/bin`) rather than
-moving alongside the other installers, because that path is wired into `link.sh`
-and quoted in the provisioning journal.
+`scripts/Ubuntu/install_docker.sh` — offered by `install_all.sh` (and so at the
+end of bootstrap), never run unasked, and the third of the
+[third-party apt sources](#third-party-apt-sources) above. It used to live in
+`scripts/Ubuntu/bin/` as `install-docker.sh`, symlinked to `~/bin`; provisioning
+notes that quote that path predate the move.
 
 Engine, CLI, containerd, buildx and compose come from Docker's own repository
 rather than Ubuntu's `docker.io`, which is an older Engine and ships neither

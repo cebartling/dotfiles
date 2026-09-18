@@ -41,6 +41,7 @@ ORDER=(
   link.sh
   install_chrome.sh
   install_tailscale.sh
+  install_docker.sh
   install_k8s_tools.sh
   install_claude_code.sh
   install_obsidian_headless.sh

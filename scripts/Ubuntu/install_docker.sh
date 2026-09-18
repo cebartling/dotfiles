@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# install-docker.sh — Docker Engine on Ubuntu, from Docker's own apt repository.
+# install_docker.sh — Docker Engine on Ubuntu, from Docker's own apt repository.
 #
-#   ~/bin/install-docker.sh            # install
-#   ~/bin/install-docker.sh --verify   # install, then run the hello-world image
+#   scripts/Ubuntu/install_docker.sh            # install
+#   scripts/Ubuntu/install_docker.sh --verify   # install, then run the hello-world image
 #
 # Run it as yourself; it calls sudo where it needs root. Running the whole thing
 # under sudo also works — SUDO_USER is what decides who joins the docker group,
@@ -23,6 +23,16 @@
 # FORWARD rules ahead of ufw's, so any published container port is reachable
 # from the LAN whether or not ufw agrees. Run docker-user-firewall.sh afterwards;
 # print_summary says so again at the end.
+
+# --- install-all metadata ---
+# Read by install_all.sh. Keep this in sync with any new hard
+# precondition added below, or install_all will not know about it.
+# summary: Docker Engine, buildx and compose from Docker's own apt repository
+# group: opt-in
+# wants: link.sh
+# needs-cmd: systemctl
+# sudo: required
+# --- end metadata ---
 
 set -euo pipefail
 
@@ -49,7 +59,7 @@ die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
 usage() {
   cat <<'USAGE'
-usage: install-docker.sh [--verify]
+usage: install_docker.sh [--verify]
 
   --verify   after installing, run `docker run --rm hello-world` as a smoke
              test. Needs egress to Docker Hub and leaves the image behind, so

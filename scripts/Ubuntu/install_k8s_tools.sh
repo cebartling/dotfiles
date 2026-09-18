@@ -31,7 +31,7 @@
 # precondition added below, or install_all will not know about it.
 # summary: kubectl, helm, stern, k3d and radar into ~/.local/bin
 # group: opt-in
-# wants: install_tools.sh link.sh
+# wants: install_tools.sh link.sh install_docker.sh
 # needs-arch: x86_64
 # sudo: optional
 # --- end metadata ---

@@ -25,7 +25,8 @@ those blocks, proves the run order satisfies them, and runs what you pick.
 | `link.sh` | core | none | — | — |
 | `install_chrome.sh` | opt-in | required | `gpg`, x86_64 | — |
 | `install_tailscale.sh` | opt-in | required | `systemctl` | wants `install_tools.sh`, `link.sh` |
-| `install_k8s_tools.sh` | opt-in | optional | x86_64 | wants `install_tools.sh`, `link.sh` |
+| `install_docker.sh` | opt-in | required | `systemctl` | wants `link.sh` |
+| `install_k8s_tools.sh` | opt-in | optional | x86_64 | wants `install_tools.sh`, `link.sh`, `install_docker.sh` |
 | `install_claude_code.sh` | opt-in | none | — | wants `install_tools.sh` |
 | `install_obsidian_headless.sh` | opt-in | optional | `systemctl` | **requires** `install_nodejs.sh` |
 | `install_mosh_server.sh` | **dangerous** | required | `ufw` | wants `install_tailscale.sh` |
@@ -118,13 +119,13 @@ is tracked separately.
 
 - **`gpg`** — `install_chrome.sh` dearmors Google's signing key with it. Ships
   with Ubuntu.
-- **`systemd`** — `install_tailscale.sh` and `install_obsidian_headless.sh` both
-  die without `systemctl`.
+- **`systemd`** — `install_tailscale.sh`, `install_docker.sh` and
+  `install_obsidian_headless.sh` all die without `systemctl`.
 - **x86_64** — `install_chrome.sh` (Google publishes no arm64 Chrome for Linux)
   and `install_k8s_tools.sh`. `needs-arch` filters these out of the menu entirely
   on other architectures rather than failing at runtime.
 - **Docker** — `install_k8s_tools.sh` warns if `docker info` fails; k3d needs it.
-  Install it with `bin/install-docker.sh`.
+  Install it with `install_docker.sh`, which `install_all.sh` orders first.
 
 `ufw` used to be on this list. `install_mosh_server.sh` dies without it and
 nothing installed it — it was masked by Ubuntu shipping it by default. It is now

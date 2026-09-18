@@ -71,7 +71,7 @@ check_symlink "$HOME/.zshrc"                "$DOTFILES/zshrc"
 check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.toml"
 check_symlink "$HOME/.local/bin/wlheadless-run" \
               "$DOTFILES/scripts/Ubuntu/wlheadless-run"
-for s in docker-user-firewall.sh install-docker.sh ufw-docker-test.sh; do
+for s in docker-user-firewall.sh ufw-docker-test.sh; do
   check_symlink "$HOME/bin/$s" "$DOTFILES/scripts/Ubuntu/bin/$s"
 done
 # link.sh only links this when ghostty is present, so only check it then.
