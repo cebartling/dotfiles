@@ -110,10 +110,15 @@ outlive the 15-minute default.
 With no passwordless sudo and no human to ask, every `sudo: required` script is
 dropped into `skipped:` rather than left sitting on a password prompt.
 
-A known rough edge: `bootstrap.sh`'s own first step, `install_tools.sh`, still
-warns and then runs `sudo apt-get update` anyway (`install_tools.sh:127-128`), so
-an unattended `bootstrap.sh` can still block there. That predates this script and
-is tracked separately.
+The core path follows the same rule (PIN-245). `install_tools.sh` decides once,
+up front: cached sudo is used; with a controlling terminal it asks once, there
+and then; with neither — an agent, cron, `ssh host cmd` — its apt, snap and
+`.deb` steps land in `skipped:` and everything under `$HOME` still runs.
+`bootstrap.sh` only refreshes sudo when it has a terminal to ask on. The test is
+`/dev/tty`, not stdin: `curl … | bash` has a pipe on stdin but a person at the
+keyboard, and sudo reads the password from the terminal either way. Before this,
+sudo with no terminal failed on the spot and `set -e` ended the whole bootstrap
+at its first step.
 
 ## External prerequisites nothing here installs
 

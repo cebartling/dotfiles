@@ -54,15 +54,17 @@ ensure_dotfiles_repo() {
 }
 
 run_install_tools() {
-  say "Installing CLI tooling (apt/snap; sudo password required)"
+  say "Installing CLI tooling (apt/snap need sudo; skipped if it cannot be had)"
   "$DOTFILES/scripts/Ubuntu/install_tools.sh"
 }
 
 run_install_nodejs() {
-  say "Installing system Node.js from NodeSource (sudo password may be required)"
+  say "Installing system Node.js from NodeSource (needs sudo; skipped if it cannot be had)"
   # install_nodejs.sh refuses to prompt for sudo, and install_tools.sh can
-  # outlast the cached sudo timestamp — refresh it here, where a human is present.
-  sudo -v
+  # outlast the cached sudo timestamp — refresh it here, but only with a
+  # terminal to ask on. Without one `sudo -v` fails and set -e would abort the
+  # bootstrap; install_nodejs.sh records the skip itself instead.
+  if { : >/dev/tty; } 2>/dev/null; then sudo -v || true; fi
   "$DOTFILES/scripts/Ubuntu/install_nodejs.sh" \
     || warn "system node install failed; nvm's node is unaffected, continuing"
 }

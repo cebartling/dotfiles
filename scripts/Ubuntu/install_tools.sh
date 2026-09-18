@@ -30,6 +30,22 @@ say()  { printf '\033[36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 
 SKIPPED=()
+HAVE_SUDO=0
+
+# Decide once, up front, whether the root steps can run. Cached sudo: yes. A
+# controlling terminal: ask now, once, while a human is plainly present — that
+# is /dev/tty, not stdin, because `curl … | bash` has a pipe on stdin and a
+# person at the keyboard, and sudo reads the password from /dev/tty anyway.
+# Neither (agent, cron, `ssh host cmd`): sudo would fail on the spot and
+# `set -e` would end the whole run, so skip every root step and say so.
+ensure_sudo() {
+  if sudo -n true 2>/dev/null; then HAVE_SUDO=1; return 0; fi
+  if { : >/dev/tty; } 2>/dev/null; then
+    say "apt, snap and .deb installs need sudo — asking once, now"
+    sudo -v && { HAVE_SUDO=1; return 0; }
+  fi
+  warn "no usable sudo (not cached, no terminal to ask on) — skipping apt, snap and .deb installs; everything under \$HOME still runs."
+}
 
 # Every binary that should exist once this script has run. Shared with
 # scripts/Ubuntu/doctor.sh — keep additions here, not in either consumer.
@@ -132,8 +148,8 @@ APT_PYENV_BUILD=(
 )
 
 install_apt() {
+  if (( ! HAVE_SUDO )); then SKIPPED+=("apt packages (no sudo)"); return 0; fi
   say "Updating apt package lists"
-  sudo -n true 2>/dev/null || say "sudo password may be required"
   sudo apt-get update -qq
 
   say "Installing apt packages (base, modern CLI, dev tooling)"
@@ -168,6 +184,8 @@ install_snap() {
   for pkg in vale difftastic; do
     if snap list "$pkg" >/dev/null 2>&1; then
       say "snap $pkg already installed"
+    elif (( ! HAVE_SUDO )); then
+      SKIPPED+=("$pkg (no sudo)")
     else
       say "Installing snap $pkg"
       sudo snap install "$pkg" || { warn "snap install $pkg failed"; SKIPPED+=("$pkg"); }
@@ -194,6 +212,7 @@ install_watchexec() {
     say "watchexec already installed"
     return 0
   fi
+  if (( ! HAVE_SUDO )); then SKIPPED+=("watchexec (no sudo)"); return 0; fi
   say "Installing watchexec (GitHub release .deb)"
   local arch deb url tmp
   case "$(uname -m)" in
@@ -558,9 +577,7 @@ install_obsidian() {
     warn "no sha256 digest published for ${url##*/}; not installing unverified"; SKIPPED+=(obsidian); return 0
   fi
   # Check for usable sudo first — no point pulling ~116MB to fail at the last step.
-  if ! sudo -n true 2>/dev/null; then
-    warn "obsidian needs sudo to install its .deb, and sudo is not available non-interactively here."
-    warn "Run this script from a real terminal to include it."
+  if (( ! HAVE_SUDO )); then
     SKIPPED+=("obsidian (no sudo)")
     return 0
   fi
@@ -611,6 +628,7 @@ print_summary() {
 }
 
 main() {
+  ensure_sudo
   install_apt
   install_shims
   install_snap
