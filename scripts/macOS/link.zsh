@@ -47,6 +47,12 @@ echo
 
 link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
+link "$DOTFILES/configurations/git/config"    "$HOME/.config/git/config"
+
+# ~/.gitconfig stays a real, per-machine file. With it absent, git sends
+# `git config --global` (and gh auth setup-git) to the XDG file above — i.e.
+# into this repo. Create it empty; never touch an existing one.
+[[ -e "$HOME/.gitconfig" ]] || : > "$HOME/.gitconfig"
 link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
 link "$DOTFILES/configurations/cmux/cmux.json"      "$HOME/.config/cmux/cmux.json"
 link "$DOTFILES/configurations/cmux/settings.json"  "$HOME/.config/cmux/settings.json"

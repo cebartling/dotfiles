@@ -58,6 +58,12 @@ echo
 
 link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
+link "$DOTFILES/configurations/git/config"    "$HOME/.config/git/config"
+
+# ~/.gitconfig stays a real, per-machine file. With it absent, git sends
+# `git config --global` (and gh auth setup-git) to the XDG file above — i.e.
+# into this repo. Create it empty; never touch an existing one.
+[[ -e "$HOME/.gitconfig" ]] || : > "$HOME/.gitconfig"
 
 # The one tracked executable meant to land on $PATH. ~/.local/bin is already
 # on $path via zshrc; link() creates the directory if it is missing.

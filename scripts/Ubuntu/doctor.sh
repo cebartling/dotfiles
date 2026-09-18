@@ -69,6 +69,15 @@ check_symlink() {
 # Mirrors scripts/Ubuntu/link.sh.
 check_symlink "$HOME/.zshrc"                "$DOTFILES/zshrc"
 check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.toml"
+check_symlink "$HOME/.config/git/config"    "$DOTFILES/configurations/git/config"
+# The link can be right and commits still fail — e.g. a per-machine
+# ~/.gitconfig that blanks the identity. Check what git actually resolves.
+if git var GIT_AUTHOR_IDENT >/dev/null 2>&1; then
+  ok "git author identity resolves"
+else
+  fail "git has no author identity — commits will fail"
+  drift=$((drift + 1))
+fi
 check_symlink "$HOME/.local/bin/wlheadless-run" \
               "$DOTFILES/scripts/Ubuntu/wlheadless-run"
 for s in docker-user-firewall.sh ufw-docker-test.sh; do

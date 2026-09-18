@@ -1,0 +1,23 @@
+# =============================================================
+#  git config — managed by cebartling/dotfiles
+#  Symlinked to ~/.config/git/config by scripts/macOS/link.zsh
+#  (macOS) and scripts/Ubuntu/link.sh (Linux).
+#  Shared by both platforms: keep it free of OS-specific paths
+#  and helpers. Per-machine settings go in ~/.gitconfig, which
+#  stays a real file and overrides this one — that is also where
+#  `git config --global` and gh auth setup-git write.
+# =============================================================
+
+[user]
+	email = chris.bartling@gmail.com
+	name = Christopher Bartling
+[push]
+	default = upstream
+	autoSetupRemote = true
+[core]
+	pager = less -FX
+	autocrlf = input
+[pull]
+	rebase = true
+[init]
+	defaultBranch = main

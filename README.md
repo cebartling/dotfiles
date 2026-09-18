@@ -64,8 +64,8 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    already manages any node version)
 6. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
    Font, which `eza --icons` and the starship prompt both need
-7. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc` and
-   `~/.config/starship.toml`. The cmux links are macOS-only and skipped;
+7. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc`,
+   `~/.config/starship.toml` and `~/.config/git/config`. The cmux links are macOS-only and skipped;
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 8. [`install_all.sh`](scripts/Ubuntu/install_all.sh) — offers the optional
@@ -599,6 +599,7 @@ Or by hand:
 ```sh
 readlink ~/.zshrc                       # → ~/.dotfiles/zshrc
 readlink ~/.config/starship.toml        # → ~/.dotfiles/configurations/starship.toml
+readlink ~/.config/git/config           # → ~/.dotfiles/configurations/git/config
 which starship eza bat fzf
 time zsh -i -c exit                     # ~150ms
 ```
@@ -652,6 +653,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `paths/core.sh` | Extra `PATH` entries |
 | `runtimes/claude.sh` | The **only** file under `runtimes/` that `zshrc` sources. The nvm/sdkman/pyenv loaders were inlined into `zshrc`; the remaining `runtimes/*.sh` are unreferenced legacy and several hardcode macOS paths — do not assume they run |
 | `configurations/starship.toml` | Starship prompt config (symlinked) |
+| `configurations/git/config` | Shared git config (symlinked into `~/.config/git/`). Per-machine settings and anything a tool writes via `git config --global` go in `~/.gitconfig`, which stays a real file |
 | `configurations/ghostty/config` | Standalone Ghostty.app config (symlinked into `~/.config/ghostty/`) |
 | [`configurations/cmux/`](configurations/cmux/README.md) | cmux app + embedded-Ghostty config (symlinked into `~/.config/cmux/` and `~/Library/Application Support/com.cmuxterm.app/`) |
 | `scripts/macOS/link.zsh` | Idempotent symlink installer |
