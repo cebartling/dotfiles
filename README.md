@@ -210,13 +210,15 @@ by `freelens`.
 
 ```sh
 ~/.dotfiles/scripts/Ubuntu/install_docker.sh   # add --verify for a hello-world smoke test
-sudo ~/bin/docker-user-firewall.sh               # then contain it — see below
+sudo ~/bin/ufw-docker-test.sh                    # then prove containment off-box — see below
 ```
 
 Run it as yourself; it calls `sudo` where it needs root. Running the whole thing
 under `sudo` also works — `SUDO_USER` is what decides who joins the `docker`
 group, so the right account is added either way. Re-running on a provisioned box
-short-circuits before the sudo gate and changes nothing.
+changes nothing — but it only short-circuits once `docker-user-firewall.sh --check`
+confirms containment, which needs root, so without cached sudo it reports itself
+skipped rather than claiming a finished box it could not verify.
 
 Engine, CLI, containerd, buildx and compose come from Docker's own apt
 repository rather than Ubuntu's `docker.io`, which is an older Engine and ships
@@ -230,6 +232,7 @@ script into root.
 | apt source | `/etc/apt/sources.list.d/docker.sources`, deb822, `Signed-By` the key above |
 | packages | `docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin` |
 | services | `docker.service`, `containerd.service`, both `enable --now` |
+| containment | `DOCKER-USER` default-deny, live and in `/etc/ufw/after.rules` + `after6.rules` (via `bin/docker-user-firewall.sh`) |
 
 Like Tailscale and unlike Chrome, Docker publishes a suite per Ubuntu codename,
 so a brand-new release can land before Docker has packaged it. The script probes
@@ -239,10 +242,11 @@ sources list apt would then fail on. Architecture comes from
 
 > **Docker bypasses ufw, and installing it is the moment that opens up.** Docker
 > inserts its own `FORWARD` rules ahead of ufw's, so any published container port
-> reaches the LAN whether or not ufw agrees. Apply the containment *before* you
-> publish anything: `sudo ~/bin/docker-user-firewall.sh`, then prove it from an
-> off-box client with `~/bin/ufw-docker-test.sh`. The installer's summary repeats
-> this; it is the one step that is easy to skip and expensive to skip.
+> reaches the LAN whether or not ufw agrees. The installer applies the containment
+> itself (`bin/docker-user-firewall.sh`) as soon as dockerd is up, before anything
+> can be published, and its summary says whether `--check` passed. Prove it from
+> an off-box client with `sudo ~/bin/ufw-docker-test.sh` — the chain only sees
+> forwarded traffic, so no test run on the box itself can.
 
 > **The `docker` group is root-equivalent.** The daemon socket will bind any host
 > path into a container, so membership is effectively passwordless root. That is

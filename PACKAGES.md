@@ -602,9 +602,9 @@ than writing a sources list apt would fail on. Architecture comes from
 
 > **Docker bypasses ufw, and installing it is the moment that opens up.** Its
 > `FORWARD` rules sit ahead of ufw's, so a published container port reaches the
-> LAN whether or not ufw agrees. Run `sudo ~/bin/docker-user-firewall.sh` before
-> publishing anything, and prove it from an off-box client with
-> `~/bin/ufw-docker-test.sh`. The `docker` group is also root-equivalent — the
+> LAN whether or not ufw agrees. `install_docker.sh` applies
+> `bin/docker-user-firewall.sh` as soon as dockerd is up; prove it from an
+> off-box client with `sudo ~/bin/ufw-docker-test.sh`. The `docker` group is also root-equivalent — the
 > daemon socket will bind any host path into a container.
 
 ### Obsidian (a vendor `.deb`, needs sudo)

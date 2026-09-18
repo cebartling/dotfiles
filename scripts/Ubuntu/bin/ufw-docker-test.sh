@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-# Does Docker's port publishing bypass ufw? Run with sudo on bartling-lab01.
+# Does Docker's port publishing bypass ufw? Run with sudo on the box under test.
 set -uo pipefail
-LANIP=192.168.4.26
+# The address the Mac curls. This was once hardcoded to one box's IP, which on
+# any other box sent every probe to the wrong host — and a wrong host answers
+# 000, exactly like a working firewall. Resolve it here; LANIP=... overrides.
+LANIP="${LANIP:-$(ip -4 route get 1.1.1.1 2>/dev/null \
+  | awk '{for (i = 1; i < NF; i++) if ($i == "src") { print $(i + 1); exit }}')}"
+[ -n "$LANIP" ] || { echo "could not determine this box's LAN address; rerun with LANIP=<addr>"; exit 1; }
 # The tailnet is trusted by docker-user-firewall.sh, so it must be tested
 # separately: the same port is expected to be BLOCKED over the LAN and OPEN over
 # the tailnet. Resolved at run time so this does not rot if the address changes.
@@ -81,7 +86,7 @@ AND over the tailnet, which docker-user-firewall.sh trusts on purpose:
     || echo "no answer"; done
 
 Expected:
-  18080  200      <- observed on bartling-lab01 2026-09-03: this host admits
+  18080  200      <- observed on bartling-lab01 2026-09-03: that host admits
                      tailnet traffic on INPUT, so even the non-Docker listener
                      answers. A 000 here is not a failure of the container rule,
                      it just means the host firewall is stricter on tailscale0.

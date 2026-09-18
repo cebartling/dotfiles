@@ -209,6 +209,23 @@ else
   fi
 fi
 
+# ---------- docker containment ----------
+# Docker's published ports bypass ufw; docker-user-firewall.sh contains that
+# and its --check says whether it is applied and current. Root-only, so like
+# the ufw rules above: not being able to look is a warning, not drift.
+if command -v docker >/dev/null 2>&1; then
+  hdr "Docker containment"
+  fw="$DOTFILES/scripts/Ubuntu/bin/docker-user-firewall.sh"
+  if ! sudo -n true 2>/dev/null; then
+    warn "not checked (needs root: sudo $fw --check)"
+  elif verdict="$(sudo -n "$fw" --check 2>&1)"; then
+    ok "$verdict"
+  else
+    fail "$verdict (fix: sudo $fw)"
+    drift=$((drift + 1))
+  fi
+fi
+
 # ---------- shell startup ----------
 hdr "Shell startup"
 

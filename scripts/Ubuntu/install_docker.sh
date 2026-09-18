@@ -21,8 +21,9 @@
 #
 # NOTE: installing Docker is the moment its ufw bypass opens up. Docker inserts
 # FORWARD rules ahead of ufw's, so any published container port is reachable
-# from the LAN whether or not ufw agrees. Run docker-user-firewall.sh afterwards;
-# print_summary says so again at the end.
+# from the LAN whether or not ufw agrees. contain_published_ports closes it by
+# running bin/docker-user-firewall.sh as soon as dockerd is up, and a re-run only
+# counts as finished once that script's --check passes.
 
 # --- install-all metadata ---
 # Read by install_all.sh. Keep this in sync with any new hard
@@ -35,6 +36,9 @@
 # --- end metadata ---
 
 set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+FIREWALL="$HERE/bin/docker-user-firewall.sh"
 
 export DEBIAN_FRONTEND=noninteractive
 
@@ -208,6 +212,21 @@ join_docker_group() {
     || { warn "could not add '$TARGET_USER' to the docker group"; SKIPPED+=("docker group"); }
 }
 
+# DOCKER-USER only exists once dockerd has started, so this follows
+# enable_daemon. The script is idempotent: on a contained box it changes nothing
+# and does not reload ufw.
+contain_published_ports() {
+  command -v dockerd >/dev/null 2>&1 || return 0
+  if ! command -v ufw >/dev/null 2>&1; then
+    warn "ufw is not installed, so Docker's published ports cannot be contained (install_tools.sh installs it)."
+    SKIPPED+=("docker containment (no ufw)")
+    return 0
+  fi
+  say "Containing Docker's ufw bypass (DOCKER-USER default-deny)"
+  sudo "$FIREWALL" \
+    || { warn "docker-user-firewall.sh failed — published ports are NOT contained"; SKIPPED+=("docker containment"); }
+}
+
 # Runs as root deliberately: the group change above does not apply to the shell
 # we are already inside, so an unprivileged `docker run` here would fail for a
 # reason that has nothing to do with the install.
@@ -228,7 +247,10 @@ nothing_to_do() {
   for p in "${PACKAGES[@]}"; do dpkg -s "$p" >/dev/null 2>&1 || return 1; done
   [[ "$(systemctl is-enabled docker.service 2>/dev/null | head -1)" == "enabled" ]] || return 1
   systemctl is-active --quiet docker.service || return 1
-  id -nG "$TARGET_USER" 2>/dev/null | tr ' ' '\n' | grep -qx docker
+  id -nG "$TARGET_USER" 2>/dev/null | tr ' ' '\n' | grep -qx docker || return 1
+  # Root-only, so without cached sudo this fails and the run goes down the
+  # require_sudo path — correct, since containment cannot be confirmed.
+  sudo -n "$FIREWALL" --check >/dev/null 2>&1
 }
 
 print_summary() {
@@ -267,10 +289,15 @@ print_summary() {
   fi
 
   echo
-  warn "Docker bypasses ufw: published container ports reach the LAN regardless of your firewall rules."
-  warn "Contain that now, before you publish anything:"
-  echo "    sudo ~/bin/docker-user-firewall.sh"
-  echo "    ~/bin/ufw-docker-test.sh          # from an off-box client, proves it"
+  local verdict
+  if verdict="$(sudo -n "$FIREWALL" --check 2>&1)"; then
+    say "Published ports are contained: $verdict"
+    echo "    sudo ~/bin/ufw-docker-test.sh     # prove it from an off-box client"
+  else
+    warn "Docker bypasses ufw: published container ports reach the LAN regardless of your firewall rules."
+    warn "${verdict:-containment could not be checked (needs sudo)}"
+    echo "    sudo $FIREWALL"
+  fi
 }
 
 main() {
@@ -284,6 +311,7 @@ main() {
   add_repo       || { print_summary; return 0; }
   install_docker || { print_summary; return 0; }
   enable_daemon
+  contain_published_ports
   join_docker_group
   verify_hello_world
   print_summary
