@@ -48,7 +48,23 @@ Then, with `<base>` resolved:
 ### 3. Pre-flight
 
 - If `git status` shows uncommitted work that belongs in this PR, stop and tell the user to commit first (suggest `/stage-commit-push`). Do not stage on their behalf here.
-- If the branch has no upstream, or is ahead of its upstream: `git push -u origin <branch>` before creating the PR.
+- If the branch has no upstream, or is ahead of its upstream, push it — but **always with an explicit destination refspec**:
+
+  ```bash
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  git push -u origin "HEAD:refs/heads/$branch"
+  ```
+
+  Never use the source-only form `git push -u origin <branch>`. When a refspec names only a source, `push.default` chooses the destination; under `push.default = upstream` a branch created with `git checkout -b <name> origin/main` has `main` as its upstream, so that command pushes **straight to main**. The explicit `HEAD:refs/heads/<branch>` form ignores `push.default` entirely.
+
+- **Verify the push destination before running it.** If the branch's upstream is a protected/default branch while the local branch name differs, do not push — report it and stop:
+
+  ```bash
+  up=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+  # e.g. up=origin/main while branch=my-feature  -> mismatch, do not push
+  ```
+
+- **Confirm what actually landed.** `git push` prints its destination as `<source> -> <dest>`. Read it. If `<dest>` is `main`/`master`, the push went to the base branch — say so immediately and do not open a PR as if nothing happened.
 - Never force-push.
 
 ### 4. Draft title and body
@@ -95,4 +111,4 @@ Two lines max:
 - Never force-push, never `--no-verify`, never modify git or `gh` config.
 - Only run when the user invokes the skill explicitly.
 - If `gh` is not installed or not authenticated (`gh auth status` fails), stop and tell the user — do not attempt to authenticate on their behalf.
-- Do not push to `main`/`master` under any circumstance.
+- Do not push to `main`/`master` under any circumstance. The branch guard in step 1 is not sufficient on its own: it checks which branch you are *on*, not where a push will *land*. Pair it with the explicit refspec and the destination check in step 3.
