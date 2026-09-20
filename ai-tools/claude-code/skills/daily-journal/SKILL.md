@@ -151,10 +151,13 @@ Rules for all of them:
   from the day's actual work (`mongodb`, `code-review`, `tdd`, a ticket id like `pin-193`).
   Lowercase and hyphenated throughout. Don't invent tags the entry doesn't support, and don't pad
   past roughly eight.
-- **Never modify frontmatter on a file that already has it**, and never add frontmatter to a file
-  that doesn't. On a second update to a file this skill created earlier the same day, the tag list
-  stays as written — appending a section is not a reason to rewrite the header. This keeps the
-  append-only guarantee whole: the skill only ever writes frontmatter as part of creating a file.
+- **Never add frontmatter to a file that doesn't have it**, and never change `period`, `created` or
+  `date` on a file that does — those describe what the file covers, which appending doesn't alter.
+- **`tags` may be amended, but only when the user asks.** Appending a section is not itself a
+  reason to touch the header: on a second update the tag list stays as written unless the user
+  asks for a tag. When they do, add to the end of the list and change nothing else — never remove
+  or reorder existing tags, even ones the new work doesn't support. The roughly-eight guidance
+  above is for a list being written fresh; an amendment the user asked for isn't padding.
 
 ## Optional argument
 
@@ -460,7 +463,8 @@ leave them as they are.
 
 In every branch, everything before the insertion point — including anything the user wrote
 themselves, and any frontmatter already present — must come out byte-for-byte identical to what was
-read in step 4. Frontmatter is written **only** when the file is being created.
+read in step 4. Writing an update never touches frontmatter; the only edit to an existing header is
+a tag the user explicitly asked for, which is a request of its own and not part of this step.
 
 Never use `Edit` for this — the surrounding content is too variable to safely anchor a unique
 `old_string`. Read the whole file, compute the new whole-file content in memory, `Write` it back.
@@ -478,11 +482,13 @@ full appended text back if it's long — the user can open the file themselves.
 ## Guardrails
 
 - Append-only, always. Never edit, reorder, or remove anything already in the file — that includes
-  content the user wrote themselves in a section this skill didn't create, and any frontmatter
+  content the user wrote themselves in a section this skill didn't create, and the frontmatter
   already at the top of it.
-- Frontmatter is written **only** when creating a file. Never backfill it onto an existing file and
-  never revise it on one — most of the vault predates the rule, and prepending to a file the skill
-  didn't create is exactly the edit the line above forbids.
+- Never backfill frontmatter onto a file that has none — most of the vault predates the rule, and
+  prepending to a file the skill didn't create is exactly the edit the line above forbids.
+- The **one** permitted edit to existing frontmatter is adding a tag the user explicitly asked for.
+  Add it to the end of the list; never remove or reorder what's there, and never touch `period`,
+  `created` or `date`. Unprompted, frontmatter is still write-once-at-creation.
 - Never fabricate work that didn't happen in this conversation.
 - In inferred mode, if client inference is ambiguous or the current directory isn't recognizably
   tied to any client, ask — do not guess and silently write into the wrong client's journal.
