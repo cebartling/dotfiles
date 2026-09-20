@@ -12,9 +12,14 @@ journal's existing conventions exactly, without disturbing anything already writ
 ## Vault layout
 
 Every journal lives under `~/Documents/Default/Consulting/{Client}/Daily Journal/{YYYY}/`, but
-**the file-naming convention below that differs per client**. Two conventions exist today. Never
+**the file-naming convention below that differs per client**. Three conventions exist today. Never
 assume one — determine it from the client's own existing files (workflow step 2), and follow
 whatever that client already does.
+
+**The `Daily Journal` directory name is itself not uniform.** *Campfire Studio* spells it
+`Daily journal`, lowercase `j`. Glob case-insensitively when locating a client's journal rather
+than hardcoding the capitalization, and once found, put new files under the spelling that client
+already uses.
 
 ### Convention A — weekly files in month directories (most clients)
 
@@ -47,27 +52,55 @@ Consulting/{Client}/Daily Journal/{YYYY}/{NN} - {Month} {startDay}-{endDay}, {YY
   existing `{NN}` and add one.
 - Used by *Schoolhouse Educational Services* as of August 2026.
 
-### Shared by both conventions
+### Convention C — one file per day in month directories
+
+```
+Consulting/{Client}/Daily Journal/{YYYY}/{MM} - {Month}/{Month} {Day}, {YYYY}.md
+```
+
+- Month directories exactly as Convention A (`08 - August`, `09 - September`), but the file is a
+  **single day**, not a range: `September 19, 2026.md`. The day is **not** zero-padded —
+  `September 2, 2026.md`, not `September 02, 2026.md`, so a plain sort interleaves 1, 11, 12, 2.
+- Because the filename carries the date, these are **single-day notes** in the sense step 5 means:
+  there is no `## {Month} {Day}, {Year}` header inside. The body opens directly with a `## Topic`
+  header, `###` beneath. Repeated updates the same day append further `## Topic` sections to the
+  same file.
+- **Frontmatter dates with `created:`, not `date:`** — see **Frontmatter** below.
+- Used by *Replay Forensics Inc* as of September 2026.
+- Legacy shape in the same journal: `2025/05 - May 2025.md` is a whole-month file sitting flat in
+  the year directory, from before the per-day layout. Don't extend it and don't imitate it.
+
+### Shared by all three conventions
 
 - Files only exist when there's actual content — there is no empty placeholder for an idle period.
   Don't be surprised by gaps in the sequence.
-- Files have **no title line** — after the frontmatter they start directly with the first
-  `## Month Day, Year` header. Days are appended in chronological order down the file.
+- Files have **no title line** — after the frontmatter they start directly with the first header.
+  Under A and B that is `## Month Day, Year`, and days are appended in chronological order down the
+  file; under C the file *is* one day, so it is `## Topic` (see step 5).
 - **Every file this skill creates gets YAML frontmatter** — see **Frontmatter** below. Most files
   already in the vault predate that rule and have none; they are left exactly as they are.
-- **Do not confuse either with the vault's `Daily/` tree** — that's the separate built-in Obsidian
-  daily-notes system, and inference never targets it. An explicit path argument may legitimately
-  point there. Its notes live at `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` — one file
-  per day, so the date is the filename and the body opens directly with a `## Topic` header rather
-  than a date header. Step 5 detects this; step 7 writes accordingly.
+- **Do not confuse any of them with the vault's `Daily/` tree** — that's the separate built-in
+  Obsidian daily-notes system, and inference never targets it. An explicit path argument may
+  legitimately point there. Its notes live at
+  `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` — one file per day, so the date is the
+  filename and the body opens directly with a `## Topic` header rather than a date header. Step 5
+  detects this; step 7 writes accordingly. Note this is the same *filename* shape Convention C
+  uses; the two differ by tree (`Daily/` vs `Consulting/`) and by frontmatter key.
 
 ## Frontmatter
 
-**Every journal file this skill creates opens with YAML frontmatter.** The two file shapes date
-themselves differently, because one covers a range and the other covers a day:
+**Every journal file this skill creates opens with YAML frontmatter.** The file shapes date
+themselves differently, because one covers a range and the others cover a day — and the two
+single-day cases do not agree on the key, so take it from the convention, not from the shape:
 
-**Multi-day file** (Consulting journals, under either convention) — the filename is a period, so
-the frontmatter carries that period, not a single date:
+| Where | Key |
+|---|---|
+| Convention A / B (range filename) | `period: {start}/{end}` |
+| Convention C (`Consulting/…`, per-day filename) | `created: {YYYY-MM-DD}` |
+| `Daily/…` note | `date: {YYYY-MM-DD}` |
+
+**Multi-day file** (Convention A or B) — the filename is a period, so the frontmatter carries that
+period, not a single date:
 
 ```yaml
 ---
@@ -79,7 +112,7 @@ tags:
 ---
 ```
 
-**Single-day note** (`Daily/…`) — the filename is one date, so `date` is exact:
+**Single-day note** — the filename is one date, so the date is exact. `Daily/…` notes use `date`:
 
 ```yaml
 ---
@@ -91,10 +124,28 @@ tags:
 ---
 ```
 
-Rules for both:
+Convention C files are the same shape but key it `created`, which is what that journal's recent
+files actually carry:
+
+```yaml
+---
+created: 2026-09-19
+tags:
+  - journal
+  - replay-forensics
+  - rp-454
+  - bff
+---
+```
+
+Older Convention C files are inconsistent — some have no frontmatter, one carries only `tags`, and
+one uses `period` with a single date rather than a range. Don't propagate those; follow the table
+above for anything new, and leave the existing ones alone.
+
+Rules for all of them:
 
 - `period` is `{startDate}/{endDate}`, both `YYYY-MM-DD`, matching the range in the filename.
-  `date` is a single `YYYY-MM-DD`. Never both.
+  `created` and `date` are a single `YYYY-MM-DD`. Never more than one of the three.
 - `tags` is a list, always led by `journal`. After that: the client or project slug (lowercase,
   hyphenated — `schoolhouse`, `life-time`, `storyboard-2026`), then a handful of topic tags drawn
   from the day's actual work (`mongodb`, `code-review`, `tdd`, a ticket id like `pin-193`).
@@ -188,12 +239,23 @@ logged_at=$(date '+%-I:%M %p %Z')   # e.g. 2:32 PM CDT — see **Timestamp** und
 Look at what the client already has, newest last:
 
 ```bash
-find "$HOME/Documents/Default/Consulting/{Client}/Daily Journal" -name '*.md' | sort | tail -5
+journal=$(find "$HOME/Documents/Default/Consulting/{Client}" -maxdepth 1 -iname 'daily journal' | head -1)
+find "$journal" -name '*.md' | sort | tail -5
 ```
 
-Match the result against **Vault layout**: paths containing a `{MM} - {Month}/` directory are
-Convention A; `.md` files sitting directly in `{YYYY}/` with an `{NN} - ` prefix are Convention B.
-An empty journal (a client with no files yet) defaults to Convention A.
+`-iname` because the directory's capitalization varies per client (see **Vault layout**).
+
+Match the result against **Vault layout**. The month directory alone does not decide it — A and C
+share it, and they differ on the *filename*:
+
+- `.md` files directly in `{YYYY}/` with an `{NN} - ` prefix → **Convention B**.
+- Inside a `{MM} - {Month}/` directory, filename is a date **range** (`September 14-20, 2026.md`) →
+  **Convention A**.
+- Inside a `{MM} - {Month}/` directory, filename is a **single** date (`September 19, 2026.md`) →
+  **Convention C**.
+
+An empty journal (a client with no files yet) defaults to Convention A. Ignore a lone whole-month
+file like `2025/05 - May 2025.md` when classifying — it is a legacy shape, not a convention.
 
 **Convention A — compute this week's Monday–Sunday window:**
 
@@ -223,8 +285,14 @@ Then find the file for that period in `{YYYY}/`:
   digits, and build `{NN} - {Month} {startDay}-{endDay}, {YYYY}.md`. There is no month
   subdirectory — the file goes directly in `{YYYY}/`.
 
-Never create a Convention A path for a Convention B client (or vice versa) — that silently
-fragments the journal into two parallel layouts.
+**Convention C — no period math at all:**
+
+The file is today, so the path is `{YYYY}/{MM} - {Month}/{Month} {Day}, {YYYY}.md` with `{Day}` not
+zero-padded (`September 2, 2026.md`). Nothing to clamp and no counter to increment.
+
+Never create one convention's path for a client using another — that silently fragments the
+journal into parallel layouts. The A/C confusion is the easy one to make, since both live in a
+`{MM} - {Month}/` directory and only the filename differs.
 
 ### 3. Resolve and validate an explicit path
 
@@ -256,12 +324,12 @@ it in step 7, not before.
 Two file shapes exist in this vault, and they date their content differently:
 
 - **Multi-day file** — one file holds many days, each introduced by a `## {Month} {Day}, {Year}`
-  header, with `### Topic` subsections beneath. Consulting journal files are always this shape,
-  under either convention.
+  header, with `### Topic` subsections beneath. Convention A and B journals are this shape.
 - **Single-day note** — the file *is* one day; the date lives in the **filename**, so there is no
-  date *header* inside (it does go in the frontmatter as `date`). Content opens with a `## Topic`
-  header, `###` beneath. The `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes are this
-  shape.
+  date *header* inside (it goes in the frontmatter instead, as `created` or `date` per the table
+  under **Frontmatter**). Content opens with a `## Topic` header, `###` beneath. Both the
+  `Daily/{YYYY}/{MM} - {Month}/{Month} {Day}, {Year}.md` notes **and Convention C Consulting
+  journals** are this shape.
 
 Decide the shape from the **filename** first, falling back to content:
 
@@ -270,8 +338,9 @@ Decide the shape from the **filename** first, falling back to content:
 3. Neither → inspect the content just read: any `## {Month} {Day}, {Year}` header present →
    multi-day; otherwise single-day.
 
-Inferred mode always builds a range filename, so it is always multi-day — the shape check never
-changes its behavior.
+Inferred mode builds a range filename under Convention A and B, so it is multi-day there; under
+Convention C it builds a single-date filename and is single-day. Either way the rule above already
+gives the right answer from the filename the convention produced.
 
 Then check whether today is already represented, which means different things per shape:
 
@@ -329,7 +398,7 @@ inside a `##`/`###` header, so header text (and the Obsidian anchors built from 
 Entries written before this rule have no timestamp, and older ones use a plain `*Logged …*` line;
 leave them as they are.
 
-**Multi-day file:**
+**Multi-day file** (Convention A, Convention B):
 
 - *Creating the file* — frontmatter (see **Frontmatter**), then today's section:
   ```
@@ -364,10 +433,11 @@ leave them as they are.
   `### Topic` subsection(s) (or bullets) immediately before the *next* `## ` header that follows
   today's, or at the true end of the file if today's section is currently the last one.
 
-**Single-day note:**
+**Single-day note** (Convention C, `Daily/…`):
 
 - *Creating the file* — frontmatter, then straight into the first topic. No date header: the
-  filename already carries the date, and repeating it inside is duplication.
+  filename already carries the date, and repeating it inside is duplication. The date key is
+  `created` under Convention C and `date` under `Daily/…` — see the table under **Frontmatter**.
   ```
   ---
   date: {YYYY-MM-DD}
@@ -418,8 +488,10 @@ full appended text back if it's long — the user can open the file themselves.
   tied to any client, ask — do not guess and silently write into the wrong client's journal.
 - Never assume a naming convention. Read the client's existing files and follow them, even where
   that contradicts this document — the journal is the source of truth, and this document may
-  simply be out of date. If a client's layout matches neither convention, follow what's there and
-  say so in the report rather than "correcting" it.
+  simply be out of date. If a client's layout matches none of the three conventions, follow what's
+  there and say so in the report rather than "correcting" it — Convention C was added to this
+  document exactly that way, after *Replay Forensics Inc* turned out to match neither of the first
+  two.
 - This skill only touches files under `~/Documents/Default/`. An explicit path argument may point
   anywhere inside that vault, but never outside it — a path that resolves outside stops and asks.
   It never touches git, commits, or pushes anything in the project repo being worked on.
