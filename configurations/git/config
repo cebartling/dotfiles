@@ -12,7 +12,13 @@
 	email = chris.bartling@gmail.com
 	name = Christopher Bartling
 [push]
-	default = upstream
+	# `simple` refuses to push when the local branch name does not match the
+	# upstream branch name. `upstream` does not: for a branch created with
+	# `git checkout -b <name> origin/main`, the upstream IS main, so a
+	# source-only refspec (`git push -u origin <name>`) silently pushes
+	# straight to main instead of creating <name> on the remote.
+	# autoSetupRemote still auto-creates the remote branch on first push.
+	default = simple
 	autoSetupRemote = true
 [core]
 	pager = less -FX
