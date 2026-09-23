@@ -87,6 +87,10 @@ source $DOTFILES/aliases/core.sh
 source $DOTFILES/paths/core.sh
 source $DOTFILES/functions/project-aliases.sh
 
+# GITHUB_TOKEN in every shell, from gh's own cached auth. Silenced: a login
+# shell must start silently, and not being logged into gh isn't an error.
+(( $+commands[gh] )) && ghtoken 2>/dev/null
+
 # ----- Lazy runtimes (huge startup speedup) -----
 # nvm: load on first use of nvm/node/npm/npx.
 # macOS gets nvm from the Homebrew formula ($HOMEBREW_PREFIX/opt/nvm);
