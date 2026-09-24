@@ -87,9 +87,14 @@ source $DOTFILES/aliases/core.sh
 source $DOTFILES/paths/core.sh
 source $DOTFILES/functions/project-aliases.sh
 
-# GITHUB_TOKEN in every shell, from gh's own cached auth. Silenced: a login
-# shell must start silently, and not being logged into gh isn't an error.
-(( $+commands[gh] )) && ghtoken 2>/dev/null
+# GITHUB_TOKEN in every shell, from the cache `ghtoken` writes. Reading it is
+# a builtin; `gh auth token` is a ~80ms subprocess, so on a miss it runs in the
+# background (`&!`, silent) and the next shell picks the token up.
+if [[ -s $GHTOKEN_CACHE ]]; then
+  read -r GITHUB_TOKEN < "$GHTOKEN_CACHE" && export GITHUB_TOKEN
+elif (( $+commands[gh] )); then
+  ghtoken >/dev/null 2>&1 &!
+fi
 
 # ----- Lazy runtimes (huge startup speedup) -----
 # nvm: load on first use of nvm/node/npm/npx.
