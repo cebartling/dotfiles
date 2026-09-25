@@ -31,12 +31,35 @@ export LANG=en_US.UTF-8
 # Suppress Claude Code's periodic in-terminal feedback survey prompt.
 export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
 
+# Source a tool's generated init script from a cache instead of running the
+# tool on every shell (each one is a 10-30ms subprocess). The cache is rebuilt
+# when <stamp> — the file that produces the script — is newer than it, and
+# every time if <stamp> does not exist (slow, but never stale).
+#   _cached_init <name> <stamp> <command...>
+_cached_init() {
+  local name=$1 stamp=$2; shift 2
+  local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh-init/$name.zsh
+  if [[ ! -s $cache || ! -e $stamp || $stamp -nt $cache ]]; then
+    mkdir -p "${cache:h}"
+    if ! "$@" >| "$cache.tmp"; then
+      print -u2 "_cached_init: \`$*\` failed; $name not loaded"
+      rm -f "$cache.tmp"
+      return 1
+    fi
+    mv -f "$cache.tmp" "$cache"
+  fi
+  source "$cache"
+}
+
 # ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew,
 #       and linuxbrew — no-op on a Linux box installed from apt) -----
 for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew \
                        "$HOME/homebrew/bin/brew" /home/linuxbrew/.linuxbrew/bin/brew; do
   if [ -x "$_brew_candidate" ]; then
-    eval "$("$_brew_candidate" shellenv)"
+    # Stamped on shellenv.sh, not bin/brew: that is where the output comes from.
+    # :A first — on Intel and linuxbrew, bin/brew links into a Homebrew/ repo.
+    _cached_init brew-shellenv "${_brew_candidate:A:h:h}/Library/Homebrew/cmd/shellenv.sh" \
+      "$_brew_candidate" shellenv
     break
   fi
 done
@@ -73,12 +96,19 @@ setopt SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE \
 setopt AUTO_CD EXTENDED_GLOB NO_BEEP INTERACTIVE_COMMENTS
 
 # ----- oh-my-zsh (theme is empty; starship handles the prompt) -----
+# fpath additions must come before oh-my-zsh: its compinit is the only one.
+fpath=(
+  "$HOME/.zsh/completion"
+  "$HOME/.docker/completions"
+  $fpath
+)
 source $DOTFILES/oh-my-zsh/core.sh
 if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
   source $ZSH/oh-my-zsh.sh
 else
   print -u2 "zshrc: oh-my-zsh not found at $ZSH — install it with:"
   print -u2 "  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c \"\$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)\""
+  autoload -Uz compinit && compinit
 fi
 
 # ----- Dotfiles helpers -----
@@ -174,30 +204,19 @@ sdk() {
 # Eager (cheap) runtime hooks
 source $DOTFILES/runtimes/claude.sh
 
-# ----- fpath additions (must be BEFORE compinit) -----
-fpath=(
-  "$HOME/.zsh/completion"
-  "$HOME/.docker/completions"
-  $fpath
-)
-
-# ----- Completion (single compinit, after all fpath mods) -----
-autoload -Uz compinit
-compinit -C
-
 # ----- Integrations -----
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
 
 # ----- Prompt -----
 unset RPROMPT
-command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+(( $+commands[starship] )) && _cached_init starship $commands[starship] starship init zsh
 
 # ----- zoxide (frecency cd: `z partial-name`) -----
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 # ----- direnv (per-directory env from .envrc; `direnv allow` to trust one) -----
-command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+(( $+commands[direnv] )) && _cached_init direnv $commands[direnv] direnv hook zsh
 
 # ----- zsh plugins (autosuggestions, then syntax-highlighting LAST) -----
 # Homebrew keeps these under $HOMEBREW_PREFIX/share; the Debian/Ubuntu
@@ -227,7 +246,7 @@ unset _zsh_plugin _zsh_plugin_dir
 # ----- Per-machine overrides (untracked, optional) -----
 # Docker Desktop's installer appends its own `fpath=(... ); compinit` block
 # here on first run. Don't keep it: $HOME/.docker/completions is already on
-# fpath above and the single `compinit -C` (line 98) picks it up. A second
+# fpath above and oh-my-zsh's compinit (the only one) picks it up. A second
 # compinit just re-runs compaudit/compdump on every shell.
 if [ -f "$HOME/.zshrc.local" ]; then
   source "$HOME/.zshrc.local"
