@@ -105,6 +105,17 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/require-linear-plan-comment.sh",
+            "timeout": 10,
+            "statusMessage": "Checking the plan is on the Linear issue"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
