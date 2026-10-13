@@ -609,6 +609,25 @@ which starship eza bat fzf
 time zsh -i -c exit                     # ~150ms
 ```
 
+## Secretive (Secure Enclave SSH keys)
+
+`brew bundle` installs Secretive but does not wire it into SSH. Keys it
+creates live in the Secure Enclave, are per-machine and cannot be exported,
+so each one must be registered as a new public key on GitHub and any host
+you use it with. `~/.ssh/config` is deliberately untracked, so the agent is
+selected there per `Host` rather than by exporting `SSH_AUTH_SOCK` globally.
+
+1. Launch Secretive, approve the SecretAgent login item, create a key.
+2. Copy its public key into GitHub (Settings -> SSH keys) and onto any hosts.
+3. Add to `~/.ssh/config`, above any existing `Host` blocks you want it for:
+
+```sshconfig
+Host github.com
+  IdentityAgent ~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh
+```
+
+4. Verify with `ssh -T git@github.com`. Existing file keys stay in place as a fallback.
+
 ## Per-machine overrides
 
 `~/.dotfiles/zshrc` is shared across every Mac. For things that should

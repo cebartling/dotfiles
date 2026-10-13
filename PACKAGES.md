@@ -203,6 +203,7 @@ is GitHub's superfamily, separately maintained.
 | Cask | Description | Source |
 |---|---|---|
 | `1password-cli` | Command-line interface for 1Password (signed installer) | [1password.com/downloads/command-line](https://1password.com/downloads/command-line) (proprietary) |
+| `secretive` | Stores SSH keys in the Secure Enclave and serves them through its own agent socket | [github.com/maxgoedjen/secretive](https://github.com/maxgoedjen/secretive) |
 
 #### AI / coding agents
 
