@@ -44,6 +44,7 @@ tap "tednaleid/montty"
 
 # ===== Core CLI =====
 brew "bash"
+brew "coreutils"            # GNU timeout (as gtimeout), readlink -f, etc.
 brew "curl"
 brew "git"
 brew "git-lfs"              # large-file storage for git
