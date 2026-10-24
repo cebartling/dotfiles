@@ -89,6 +89,45 @@ node ~/.claude/plugins/marketplaces/context-mode/cli.bundle.mjs doctor
 
 Enabled: `context-mode`, `beads`, and four official LSP/Playwright plugins.
 
+## MCP servers
+
+Standalone MCP servers are **not** tracked here. `claude mcp add --scope user`
+writes them to `~/.claude.json`, which also holds per-machine session state, so
+each machine registers its own.
+
+### MobileBuildMCP (Apple dev Macs only)
+
+[MobileBuildMCP](https://github.com/getsentry/MobileBuildMCP) gives agents
+xcodebuild, simulator, device, LLDB and UI-automation tools. The binary comes
+from [`Brewfile.apple`](../../Brewfile.apple), so set it up only on Macs that
+ran `scripts/macOS/install_apple_tools.zsh`:
+
+```sh
+# MCP server, available in every project
+claude mcp add --scope user mobilebuildmcp -- /opt/homebrew/bin/mobilebuildmcp mcp
+claude mcp get mobilebuildmcp          # expect: ✔ Connected
+
+# Agent skill (MCP variant); re-run after a brew upgrade to refresh it
+mkdir -p ~/.claude/skills/mobilebuildmcp
+mobilebuildmcp init --skill mcp --print > ~/.claude/skills/mobilebuildmcp/SKILL.md
+```
+
+- **Use `--skill mcp`.** The default `cli` variant teaches the agent the shell
+  CLI instead of the MCP tools.
+- **Write the skill with `--print`, not plain `init`.** Plain `init` also
+  writes a "use the MobileBuildMCP skill" line into `AGENTS.md` at the current
+  workspace root, and creates that file if it is missing. Run it from this repo
+  and it edits our `AGENTS.md`; run it from `~` and it leaves a stray
+  `~/AGENTS.md`. There is no flag to skip that step. Run plain `init --force`
+  only inside an Apple project whose `AGENTS.md` should carry the line.
+- The skill is a plain directory, not a symlink into this repo, like the other
+  third-party skills in `~/.claude/skills`.
+- Only simulator tools are on by default. Enable device, macOS, debugging and
+  UI-automation workflows per project in `.mobilebuildmcp/config.yaml`.
+
+To remove: `claude mcp remove mobilebuildmcp -s user` and
+`rm -r ~/.claude/skills/mobilebuildmcp`.
+
 ## Editing
 
 Both ends of every symlink are the same file. Edit either location:
