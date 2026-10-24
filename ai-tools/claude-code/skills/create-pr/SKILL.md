@@ -73,6 +73,9 @@ Then, with `<base>` resolved:
 - **Body**: pass via HEREDOC. Required sections:
 
 ```markdown
+## Why
+- <1–3 bullets: the value this PR delivers and its ROI — time saved, risk reduced, capability unlocked>
+
 ## Summary
 - <1–3 bullets covering all commits in <base>..HEAD>
 
