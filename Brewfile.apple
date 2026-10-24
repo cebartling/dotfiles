@@ -12,6 +12,7 @@
 tap "xcodesorg/made"          # xcodes CLI
 tap "peripheryapp/periphery"  # periphery dead-code scanner
 tap "chargepoint/xcparse"     # xcparse .xcresult extractor
+tap "getsentry/xcodebuildmcp" # mobilebuildmcp MCP server / CLI
 
 # ─────────────────────────────────────────────────────────────
 # Xcode & toolchain management
@@ -20,6 +21,8 @@ brew "xcodes"             # install / switch between Xcode versions from the CLI
                           # (use `cask "xcodes"` instead if you want the GUI app)
 brew "xcode-build-server" # SourceKit-LSP <-> xcodebuild bridge for non-Xcode editors
 brew "xcbeautify"         # readable xcodebuild output (modern xcpretty replacement)
+brew "mobilebuildmcp"     # MCP server + CLI exposing xcodebuild/simulator/device tools
+                          # to AI agents (github.com/getsentry/MobileBuildMCP)
 
 # ─────────────────────────────────────────────────────────────
 # Lint, format, codegen
