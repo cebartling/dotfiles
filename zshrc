@@ -53,6 +53,8 @@ _cached_init() {
 
 # ----- Homebrew (detect prefix; supports /opt/homebrew, /usr/local, ~/homebrew,
 #       and linuxbrew — no-op on a Linux box installed from apt) -----
+# Refuse to build from source: install only prebuilt bottles.
+export HOMEBREW_FORCE_BOTTLE=1
 for _brew_candidate in /opt/homebrew/bin/brew /usr/local/bin/brew \
                        "$HOME/homebrew/bin/brew" /home/linuxbrew/.linuxbrew/bin/brew; do
   if [ -x "$_brew_candidate" ]; then
