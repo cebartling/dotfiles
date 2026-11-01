@@ -148,16 +148,18 @@ Rules for all of them:
   `created` and `date` are a single `YYYY-MM-DD`. Never more than one of the three.
 - `tags` is a list, always led by `journal`. After that: the client or project slug (lowercase,
   hyphenated — `schoolhouse`, `life-time`, `storyboard-2026`), then a handful of topic tags drawn
-  from the day's actual work (`mongodb`, `code-review`, `tdd`, a ticket id like `pin-193`).
-  Lowercase and hyphenated throughout. Don't invent tags the entry doesn't support, and don't pad
+  from the day's actual work (`mongodb`, `code-review`, `tdd`). **Every Linear issue worked in the
+  entry gets its own tag** (`pin-444`, lowercase), however many that makes. Lowercase and hyphenated throughout. Don't invent tags the entry doesn't support, and don't pad
   past roughly eight.
 - **Never add frontmatter to a file that doesn't have it**, and never change `period`, `created` or
   `date` on a file that does — those describe what the file covers, which appending doesn't alter.
-- **`tags` may be amended, but only when the user asks.** Appending a section is not itself a
-  reason to touch the header: on a second update the tag list stays as written unless the user
-  asks for a tag. When they do, add to the end of the list and change nothing else — never remove
-  or reorder existing tags, even ones the new work doesn't support. The roughly-eight guidance
-  above is for a list being written fresh; an amendment the user asked for isn't padding.
+- **`tags` get a tag for each Linear issue the update covers, and otherwise change only when the
+  user asks.** The user has given standing permission for the issue tags, so add one for every
+  Linear issue worked in an update that the list lacks, without asking, on an existing file that
+  already has frontmatter too. Add to the end of the list and change nothing else — never remove
+  or reorder existing tags, even ones the new work doesn't support. Any other tag is added only
+  when the user asks. The roughly-eight guidance above is for a list being written fresh; issue
+  tags and tags the user asked for aren't padding.
 
 ## Optional argument
 
@@ -463,8 +465,8 @@ leave them as they are.
 
 In every branch, everything before the insertion point — including anything the user wrote
 themselves, and any frontmatter already present — must come out byte-for-byte identical to what was
-read in step 4. Writing an update never touches frontmatter; the only edit to an existing header is
-a tag the user explicitly asked for, which is a request of its own and not part of this step.
+read in step 4. Writing an update never touches frontmatter beyond appending the tags for the
+Linear issues it covers (see **Frontmatter**) and any tag the user explicitly asked for.
 
 Never use `Edit` for this — the surrounding content is too variable to safely anchor a unique
 `old_string`. Read the whole file, compute the new whole-file content in memory, `Write` it back.
@@ -486,8 +488,9 @@ full appended text back if it's long — the user can open the file themselves.
   already at the top of it.
 - Never backfill frontmatter onto a file that has none — most of the vault predates the rule, and
   prepending to a file the skill didn't create is exactly the edit the line above forbids.
-- The **one** permitted edit to existing frontmatter is adding a tag the user explicitly asked for.
-  Add it to the end of the list; never remove or reorder what's there, and never touch `period`,
+- The **only** permitted edits to existing frontmatter are adding a tag for each Linear issue the
+  update covers (standing permission) and adding a tag the user explicitly asked for.
+  Add each to the end of the list; never remove or reorder what's there, and never touch `period`,
   `created` or `date`. Unprompted, frontmatter is still write-once-at-creation.
 - Never fabricate work that didn't happen in this conversation.
 - In inferred mode, if client inference is ambiguous or the current directory isn't recognizably
