@@ -17,6 +17,23 @@ replaced with a symlink — nothing is overwritten in place.
 This step is **not** wired into `bootstrap.sh`. Run it explicitly on
 each machine after cloning the dotfiles repo.
 
+> **Don't run it on a machine that keeps its own `settings.json`.** "Safe"
+> means nothing is lost, not that nothing changes. `install.sh` links
+> *everything*, so any real `~/.claude/settings.json` or `~/.claude/RTK.md`
+> gets moved to a `.backup.<timestamp>` file and replaced with a symlink to
+> the repo copy. On the work Mac those two are local files on purpose: they
+> hold the work auto-mode environment and the iTerm `cc-status` hooks. On a
+> machine like that, link new skills one at a time instead (see
+> [Adding a new skill](#adding-a-new-skill)). If the installer has already
+> run there, put the originals back:
+>
+> ```sh
+> cd ~/.claude
+> for f in settings.json RTK.md; do
+>   [ -L "$f" ] && rm "$f" && mv "$f.backup.<timestamp>" "$f"
+> done
+> ```
+
 ## What gets linked
 
 | Source (in repo) | Destination |
@@ -156,6 +173,14 @@ bash ~/.dotfiles/ai-tools/claude-code/install.sh
 > no re-install.
 
 The skill is now available as `/my-skill` in any Claude Code session.
+
+On a machine that keeps its own `settings.json` or `RTK.md` (see the warning
+under [Install / sync](#install--sync)), skip `install.sh` and link only the
+new skill. This creates the same symlink the installer would:
+
+```sh
+ln -s ~/.dotfiles/ai-tools/claude-code/skills/my-skill ~/.claude/skills/my-skill
+```
 
 Adding a new command or hook follows the same pattern — drop the file
 under `commands/` or `hooks/` and re-run `install.sh`.
