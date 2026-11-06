@@ -38,6 +38,7 @@ zsdoc/data
 .dolt/
 *.db
 .beads-credential-key
+.beads.gate.lock
 
 # macOS
 .DS_Store
