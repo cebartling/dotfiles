@@ -2,6 +2,7 @@
 name: daily-journal
 description: Append a summary of the current conversation's work to the user's Obsidian daily work journal (Consulting/{Client}/Daily Journal/...), matching the file's existing dated-section conventions. Use when the user asks to "update my journal", "update the work summary in Obsidian", invokes /daily-journal, or wants today's work logged to their daily journal. Accepts an optional target-file path (e.g. `/daily-journal <path>`) that overrides the inferred client/period file.
 tools: Bash, Read, Write, Glob, AskUserQuestion
+model: sonnet
 ---
 
 # daily-journal
