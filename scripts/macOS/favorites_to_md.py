@@ -5,7 +5,9 @@ Usage: python3 -I favorites_to_md.py <source.html> <target.md>
 Folders become headings (nested folders go one level deeper, capped at H6),
 links become bullets. Icons and date attributes are dropped.
 """
+import os
 import sys
+from datetime import date
 from html.parser import HTMLParser
 from urllib.parse import quote
 
@@ -94,7 +96,7 @@ def main(source, target):
     lines = [
         "# Edge Browser Favorites",
         "",
-        f"Converted from `favorites_11_11_26.html` on 2026-11-11. "
+        f"Converted from `{os.path.basename(source)}` on {date.today().isoformat()}. "
         f"{counts['links']} links in {counts['folders']} folders.",
     ]
     lines.extend(body)

@@ -658,6 +658,21 @@ To see drift between this Mac and the canonical Brewfile:
 brew bundle check --file=~/.dotfiles/Brewfile --verbose
 ```
 
+## Converting Edge favorites to Markdown
+
+[`scripts/macOS/favorites_to_md.py`](scripts/macOS/favorites_to_md.py) turns an
+Edge bookmarks export into a Markdown document. Export your favorites from Edge
+to an HTML file, then:
+
+```sh
+python3 ~/.dotfiles/scripts/macOS/favorites_to_md.py ~/Documents/favorites.html ~/Documents/Edge\ Favorites.md
+```
+
+Folders become headings (nested folders go one level deeper, capped at H6) and
+links become bullets. Icons and add/modified dates are dropped. The target file
+is overwritten without a prompt. It uses only the Python standard library, so
+there is nothing to install.
+
 ## Layout
 
 | Path | Purpose |
@@ -684,6 +699,7 @@ brew bundle check --file=~/.dotfiles/Brewfile --verbose
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |
 | `scripts/macOS/install_k8s_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.k8s` |
 | `scripts/macOS/install_cloud_tools.zsh` | Thin wrapper around `brew bundle --file=Brewfile.cloud` |
+| [`scripts/macOS/favorites_to_md.py`](scripts/macOS/favorites_to_md.py) | Converts an Edge favorites HTML export to a Markdown document ([usage](#converting-edge-favorites-to-markdown)) |
 | `scripts/Ubuntu/bootstrap.sh` | One-shot installer for a fresh Ubuntu box |
 | `scripts/Ubuntu/install_tools.sh` | CLI toolchain via apt/snap/upstream installers |
 | `scripts/Ubuntu/install_fonts.sh` | JetBrainsMono Nerd Font into `~/.local/share/fonts` |
