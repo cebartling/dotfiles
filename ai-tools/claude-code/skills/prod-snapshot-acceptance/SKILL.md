@@ -25,14 +25,15 @@ local stack. Run all paths from the workspace root
 ### 1. Preflight
 
 ```bash
-sed -E 's#(mongodb(\+srv)?://)[^@]*@#\1***@#' wici-tools/database-import-export/.env.local
+sed -E 's#(mongodb(\+srv)?://)[^@]*@#\1***@#' wici-tools/database-import-export/.env.wici-api
 sed -E 's#(mongodb(\+srv)?://)[^@]*@#\1***@#' wici-tools/cleanse-local-dev/.env.local
 grep -v -i pass wici-acceptance-tests/.env.local
 lsof -iTCP -sTCP:LISTEN -P | grep -E ':(3000|5001|27017) '
 ```
 
-The active (uncommented) `MONGODB_URI` in both tool `.env.local` files must be
-`mongodb://localhost:27017/wici-db`. `wici-acceptance-tests/.env.local` should have
+The active (uncommented) `MONGODB_URI` in `database-import-export/.env.wici-api` and
+`cleanse-local-dev/.env.local` must be `mongodb://localhost:27017/wici-db`. If `.env.wici-api` is
+missing, create it with `cp .env.wici-api.example .env.wici-api`. `wici-acceptance-tests/.env.local` should have
 `BASE_URL=http://localhost:3000`.
 
 Tell the user which branch each repo is on (`git -C <repo> branch --show-current` for `wici-api`,
@@ -50,26 +51,22 @@ bun run export:prod -- -o exports/production-$(date +%Y-%m-%d)
 
 Record the per-collection document counts for the summary.
 
-### 3. Start Docker Compose services
+### 3. Docker Compose services
 
-If :27017 isn't listening, start them:
-
-```bash
-cd wici-api && npm run docker:up && docker compose ps
-```
-
-Wait until `wici-api-mongo` reports `healthy`. If the containers are already up and healthy,
-leave them alone.
+No separate start step. `import:wici-api` (step 4) stops web-client-v2's Compose stack, which
+publishes the same host ports, then runs `docker compose up -d --wait` for wici-api and checks
+that `wici-api-mongo` is the container on :27017. Don't treat "something is listening on
+:27017" as wici-api being up — it may be web-client-v2's `schoolhouse-mongo`.
 
 ### 4. Load the export into local MongoDB
 
-Validate first, then import. The import **drops each collection before inserting**, so it
-replaces the local data in those collections.
+Validate first, then import. The import **empties each collection before inserting** (keeping
+its indexes), so it replaces the local data in those collections.
 
 ```bash
 cd wici-tools/database-import-export
-bun run import:local -- exports/production-<date> --dry-run
-bun run import:local -- exports/production-<date>
+bun run import:wici-api -- exports/production-<date> --dry-run
+bun run import:wici-api -- exports/production-<date>
 ```
 
 Stop if the dry run reports any invalid file.
