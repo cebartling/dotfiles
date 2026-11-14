@@ -1,5 +1,5 @@
 # Brewfile.lifetime — standalone macOS package manifest for the Life Time
-# work laptop (Homebrew prefix /Users/e9004590/homebrew).
+# work laptop (Homebrew prefix /opt/homebrew).
 # Apply with:  scripts/macOS/install_lifetime_tools.zsh  (preferred)
 #         or:  brew bundle --file=$DOTFILES/Brewfile.lifetime
 #
