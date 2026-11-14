@@ -161,6 +161,7 @@ cask "tednaleid/montty/montty"
 cask "manaflow-ai/cmux/cmux"
 
 # ===== Cloud CLIs (cask form) =====
+cask "1password"  # password manager desktop app
 cask "1password-cli"
 cask "secretive"  # Secure Enclave-backed SSH keys (macOS only)
 
