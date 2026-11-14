@@ -163,7 +163,5 @@ if (( drift == 0 )); then
   exit 0
 else
   fail "$drift drift item(s) found. See above for details."
-  echo "  Outdated packages:  daily-update"
-  echo "  Absent packages:    ~/.dotfiles/bootstrap.sh"
   exit 1
 fi
