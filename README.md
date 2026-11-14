@@ -682,7 +682,7 @@ there is nothing to install.
 | `Brewfile.k8s` | Optional Kubernetes toolchain |
 | `Brewfile.cloud` | Optional cloud management tooling (provider CLIs + Hashicorp IaC) |
 | `Brewfile.apple` / `.aitools` / `.tailscale` / `.netbird` | Further opt-in macOS manifests, applied by their own `scripts/macOS/install_*.zsh` |
-| `Brewfile.lifetime` | Standalone manifest for the Life Time work laptop, replacing `Brewfile` there; every entry ships commented out. Applied by `scripts/macOS/install_lifetime_tools.zsh` |
+| `Brewfile.lifetime` | Standalone, hand-picked manifest for the Life Time work laptop, replacing `Brewfile` there. Applied by `scripts/macOS/install_lifetime_tools.zsh` |
 | [`PACKAGES.md`](PACKAGES.md) | Human-readable documentation of every tracked Brewfile package, plus where each comes from on Linux |
 | `zshrc` | Tracked `~/.zshrc`, shared by macOS and Linux (symlinked into place by `link.zsh` / `link.sh`) |
 | `oh-my-zsh/core.sh` | Theme + plugins config sourced before `oh-my-zsh.sh` |
