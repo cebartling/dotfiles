@@ -166,6 +166,8 @@ cask "secretive"  # Secure Enclave-backed SSH keys (macOS only)
 
 # ===== Editors / IDEs =====
 cask "zed"
+# manual: Silica — no cask yet. DMG from https://github.com/dqhieu/Silica/releases/latest
+#   (self-updates; needs macOS 26+). Swap for a cask line once one lands.
 
 # ===== Productivity / window mgmt =====
 cask "raycast"
