@@ -9,6 +9,14 @@
 
 DOTFILES="${DOTFILES:-$HOME/.dotfiles}"
 
+# Per-machine brew profile. A machine that applies only one client-specific
+# manifest sets it to "lifetime" (in ~/.config/dotfiles/brew-profile, or via
+# DOTFILES_BREW_PROFILE). It is untracked, so other Macs keep the default.
+brew_profile="${DOTFILES_BREW_PROFILE:-$(cat "$HOME/.config/dotfiles/brew-profile" 2>/dev/null)}"
+brew_profile="${brew_profile//[[:space:]]/}"
+lifetime_only=0
+[[ "$brew_profile" == lifetime ]] && lifetime_only=1
+
 autoload colors
 colors
 
@@ -44,6 +52,17 @@ check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.t
 check_symlink "$HOME/.config/git/config"    "$DOTFILES/configurations/git/config"
 
 # ---------- brew bundle ----------
+if (( lifetime_only )); then
+  hdr "Brewfile.lifetime"
+  if brew bundle check --file="$DOTFILES/Brewfile.lifetime" >/dev/null 2>&1; then
+    ok "Brewfile.lifetime satisfied"
+  else
+    warn "Brewfile.lifetime not satisfied (run scripts/macOS/install_lifetime_tools.zsh to fix):"
+    brew bundle check --file="$DOTFILES/Brewfile.lifetime" --verbose 2>&1 \
+      | grep -E '^→' | sed 's/^/    /'
+    drift=$((drift + 1))
+  fi
+else
 hdr "Brewfile"
 if brew bundle check --file="$DOTFILES/Brewfile" >/dev/null 2>&1; then
   ok "Brewfile satisfied"
@@ -57,8 +76,9 @@ else
     | grep -E '^→' | sed 's/^/    /'
   drift=$((drift + 1))
 fi
+fi
 
-if [[ -f "$DOTFILES/Brewfile.k8s" ]]; then
+if (( ! lifetime_only )) && [[ -f "$DOTFILES/Brewfile.k8s" ]]; then
   hdr "Brewfile.k8s"
   if brew bundle check --file="$DOTFILES/Brewfile.k8s" >/dev/null 2>&1; then
     ok "Brewfile.k8s satisfied"
@@ -72,7 +92,7 @@ if [[ -f "$DOTFILES/Brewfile.k8s" ]]; then
   fi
 fi
 
-if [[ -f "$DOTFILES/Brewfile.aitools" ]]; then
+if (( ! lifetime_only )) && [[ -f "$DOTFILES/Brewfile.aitools" ]]; then
   hdr "Brewfile.aitools"
   if brew bundle check --file="$DOTFILES/Brewfile.aitools" >/dev/null 2>&1; then
     ok "Brewfile.aitools satisfied"
@@ -86,7 +106,7 @@ if [[ -f "$DOTFILES/Brewfile.aitools" ]]; then
   fi
 fi
 
-if [[ -f "$DOTFILES/Brewfile.apple" ]]; then
+if (( ! lifetime_only )) && [[ -f "$DOTFILES/Brewfile.apple" ]]; then
   hdr "Brewfile.apple"
   if brew bundle check --file="$DOTFILES/Brewfile.apple" >/dev/null 2>&1; then
     ok "Brewfile.apple satisfied"
