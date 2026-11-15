@@ -21,6 +21,7 @@ if [[ "$OSTYPE" == darwin* ]]; then
 else
   alias daily-update="sudo apt-get update && sudo apt-get -y upgrade && sudo apt-get -y autoremove && claude update && omz update"
 fi
+alias daily-updates='daily-update'
 
 # $EDITOR is resolved in zshrc and may carry a blocking flag (`code --wait`).
 # These aliases just open a file, so drop the flags.
