@@ -312,7 +312,7 @@
   "tui": "fullscreen",
   "autoMemoryDirectory": "~/.claude/memory/",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "custom:orca",
+  "theme": "dark",
   "preferredNotifChannel": "iterm2",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
