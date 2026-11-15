@@ -28,13 +28,30 @@ FONT_DIR="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
 say()  { printf '\033[36m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[33mwarn:\033[0m %s\n' "$*" >&2; }
 
+# Point GNOME's system monospace font at the Nerd Font, so editors, code views
+# and any terminal left on "use system font" get the glyphs too. Only inside a
+# desktop session: without a session bus gsettings writes to a throwaway
+# in-memory backend and warns on stderr. Size 11 matches the Ubuntu default.
+SYSTEM_MONO_FONT="$FONT_FAMILY 11"
+set_system_mono_font() {
+  command -v gsettings >/dev/null 2>&1 || return 0
+  [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] || return 0
+  gsettings list-keys org.gnome.desktop.interface 2>/dev/null \
+    | grep -qx monospace-font-name || return 0
+  [[ "$(gsettings get org.gnome.desktop.interface monospace-font-name)" == "'$SYSTEM_MONO_FONT'" ]] && return 0
+  say "Setting the GNOME system monospace font to $SYSTEM_MONO_FONT"
+  gsettings set org.gnome.desktop.interface monospace-font-name "$SYSTEM_MONO_FONT" \
+    || warn "could not set the system monospace font; continuing"
+}
+
 if ! command -v fc-cache >/dev/null 2>&1; then
   warn "fontconfig not installed (apt-get install -y fontconfig); skipping fonts"
   exit 0
 fi
 
-if fc-list : family | grep -qi "$FONT_FAMILY"; then
+if fc-list : family | grep -i "$FONT_FAMILY" >/dev/null; then
   say "$FONT_FAMILY already installed"
+  set_system_mono_font
   exit 0
 fi
 
@@ -63,12 +80,14 @@ rm -f "$FONT_DIR"/*.md "$FONT_DIR"/LICENSE* 2>/dev/null || true
 say "Rebuilding the font cache"
 fc-cache -f "$FONT_DIR" >/dev/null
 
-if fc-list : family | grep -qi "$FONT_FAMILY"; then
+if fc-list : family | grep -i "$FONT_FAMILY" >/dev/null; then
   say "$FONT_FAMILY installed"
 else
   warn "font extracted but fontconfig does not report $FONT_FAMILY"
   exit 1
 fi
+
+set_system_mono_font
 
 cat <<'EOF'
 
