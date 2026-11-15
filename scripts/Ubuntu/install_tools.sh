@@ -194,6 +194,9 @@ install_shims() {
   mkdir -p "$HOME/.local/bin"
   [[ -x /usr/bin/batcat ]] && ln -sf /usr/bin/batcat "$HOME/.local/bin/bat"
   [[ -x /usr/bin/fdfind ]] && ln -sf /usr/bin/fdfind "$HOME/.local/bin/fd"
+  # Without this, a box lacking fdfind (e.g. apt skipped for no sudo) returns
+  # the failed test's 1 and set -e aborts the whole run.
+  return 0
 }
 
 # ---------- snap ----------
