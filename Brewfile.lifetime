@@ -43,6 +43,7 @@ brew "microsoft/mssql-release/msodbcsql18"    # Microsoft ODBC Driver 18 for SQL
 brew "microsoft/mssql-release/mssql-tools18"  # sqlcmd and bcp for SQL Server
 brew "nmap"                                   # Port scanning utility for large networks
 brew "nvm"                                    # Manage multiple Node.js versions
+brew "openssl@3"                              # OpenSSL 3 for the Microsoft ODBC driver (openssl link points here)
 brew "pandoc"                                 # Swiss-army knife of markup format conversion
 brew "pre-commit"                             # Framework for managing multi-language pre-commit hooks
 brew "procs"                                  # Modern replacement for ps written in Rust
