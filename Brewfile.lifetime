@@ -23,6 +23,7 @@ tap "stablyai/orca"
 
 # ===== Formulae =====
 brew "atuin"                       # Improved shell history for zsh, bash, fish and nushell
+brew "bat"                         # cat with syntax highlighting
 brew "beads"                       # bd issue tracker
 brew "ccusage"                     # CLI tool for analyzing Claude Code usage from local JSONL files
 brew "cliclick"                    # Tool for emulating mouse and keyboard events
