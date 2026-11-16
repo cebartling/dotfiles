@@ -38,6 +38,7 @@ tap "netbirdio/tap"
 tap "oven-sh/bun"
 tap "paninihouse/brewer-cmd"  # Brewer X GUI app's companion command (brewer-tap-content-info)
 tap "productdevbook/tap"
+tap "sdkman/tap"
 tap "steveyegge/beads"
 tap "teamookla/speedtest"
 tap "tednaleid/montty"
@@ -98,6 +99,7 @@ brew "watchexec"
 brew "nvm"                  # lazy-loaded in zshrc
 brew "poetry"
 brew "uv"
+brew "sdkman/tap/sdkman-cli"  # SDKMAN! CLI (JDKs and other SDK candidates); zshrc still loads ~/.sdkman
 
 # ===== HTTP / network =====
 brew "caddy"

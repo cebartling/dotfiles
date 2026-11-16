@@ -17,6 +17,7 @@
 
 # ===== Taps =====
 tap "azure/azd"
+tap "sdkman/tap"
 tap "steveyegge/beads"
 tap "stablyai/orca"
 
@@ -43,6 +44,7 @@ brew "pre-commit"                  # Framework for managing multi-language pre-c
 brew "procs"                       # Modern replacement for ps written in Rust
 brew "ripgrep"                     # Search tool like grep and The Silver Searcher
 brew "rtk"                         # CLI proxy to minimize LLM token consumption
+brew "sdkman/tap/sdkman-cli"       # SDKMAN! CLI for managing JDKs and other SDK candidates
 brew "starship"                    # Cross-shell prompt for astronauts
 brew "typescript-language-server"  # Language Server Protocol implementation for TypeScript wrapping tsserver
 brew "uv"                          # Extremely fast Python package installer and resolver, written in Rust
