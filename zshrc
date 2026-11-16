@@ -188,8 +188,13 @@ if [[ -d "$PYENV_ROOT/bin" ]]; then
   }
 fi
 
-# sdkman: load on first use of sdk
-export SDKMAN_DIR="$HOME/.sdkman"
+# sdkman: load on first use of sdk. macOS uses the Homebrew formula
+# (sdkman/tap/sdkman-cli, same pattern as nvm); elsewhere the curl installer's ~/.sdkman.
+if [[ -d "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/sdkman-cli/libexec/bin" ]]; then
+  export SDKMAN_DIR="${HOMEBREW_PREFIX:-/opt/homebrew}/opt/sdkman-cli/libexec"
+else
+  export SDKMAN_DIR="$HOME/.sdkman"
+fi
 # ...but the installed candidates must not wait for that: without this, `java`
 # is "command not found" in a fresh shell until something calls `sdk`. A glob,
 # not sdkman-init — no subprocess, same trick as the pyenv shims above.
