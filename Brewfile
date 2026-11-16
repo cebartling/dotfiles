@@ -45,58 +45,58 @@ tap "tednaleid/montty"
 
 # ===== Core CLI =====
 brew "bash"
-brew "coreutils"            # GNU timeout (as gtimeout), readlink -f, etc.
+brew "coreutils"  # GNU timeout (as gtimeout), readlink -f, etc.
 brew "curl"
 brew "git"
-brew "git-lfs"              # large-file storage for git
+brew "git-lfs"    # large-file storage for git
 brew "openssl@3"
 brew "tmux"
 
 # ===== Modern CLI replacements =====
-brew "bat"                  # cat with syntax highlighting
-brew "eza"                  # ls replacement
-brew "fd"                   # find replacement
-brew "ripgrep"              # grep replacement
-brew "dust"                 # du replacement
-brew "mole"                 # disk cleanup / optimization (mole.fit)
-brew "procs"                # ps replacement
-brew "fzf"                  # fuzzy finder
-brew "tree"                 # directory layout
-brew "zoxide"               # frecency-based cd (z <name>)
-brew "git-delta"            # better git diff pager
-brew "difftastic"           # AST-aware structural diff
-brew "starship"             # cross-shell prompt
+brew "bat"         # cat with syntax highlighting
+brew "eza"         # ls replacement
+brew "fd"          # find replacement
+brew "ripgrep"     # grep replacement
+brew "dust"        # du replacement
+brew "mole"        # disk cleanup / optimization (mole.fit)
+brew "procs"       # ps replacement
+brew "fzf"         # fuzzy finder
+brew "tree"        # directory layout
+brew "zoxide"      # frecency-based cd (z <name>)
+brew "git-delta"   # better git diff pager
+brew "difftastic"  # AST-aware structural diff
+brew "starship"    # cross-shell prompt
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
 # ===== Dev tooling =====
-brew "ast-grep"             # structural code search
-brew "atuin"                # better shell history (opt-in init in zshrc.local)
-brew "beads"                # bd issue tracker
+brew "ast-grep"                  # structural code search
+brew "atuin"                     # better shell history (opt-in init in zshrc.local)
+brew "beads"                     # bd issue tracker
 brew "cargo-binstall"
 brew "direnv"
-brew "atlassian-labs/acli/acli" # Atlassian CLI (Jira, Confluence, Bitbucket)
-brew "gh"                   # GitHub CLI
-brew "gitleaks"             # secret scanner
-brew "nmap"                 # network scanner
-brew "trivy"                # vulnerability scanner (containers, IaC, filesystems)
-brew "glow"                 # terminal markdown renderer
+brew "atlassian-labs/acli/acli"  # Atlassian CLI (Jira, Confluence, Bitbucket)
+brew "gh"                        # GitHub CLI
+brew "gitleaks"                  # secret scanner
+brew "nmap"                      # network scanner
+brew "trivy"                     # vulnerability scanner (containers, IaC, filesystems)
+brew "glow"                      # terminal markdown renderer
 brew "hyperfine"
 brew "jq"
-brew "yq"                   # YAML query (jq for YAML)
-brew "fx"                   # interactive JSON viewer
+brew "yq"                        # YAML query (jq for YAML)
+brew "fx"                        # interactive JSON viewer
 brew "just"
-brew "lazygit"              # TUI git client
-brew "miller"               # mlr — jq for CSV/TSV/JSON tabular data
+brew "lazygit"                   # TUI git client
+brew "miller"                    # mlr — jq for CSV/TSV/JSON tabular data
 brew "pre-commit"
 brew "semgrep"
-brew "tokei"                # fast cloc replacement
+brew "tokei"                     # fast cloc replacement
 brew "typescript-language-server"
 brew "vale"
 brew "watchexec"
 
 # ===== Runtimes / package managers =====
-brew "nvm"                  # lazy-loaded in zshrc
+brew "nvm"                    # lazy-loaded in zshrc
 brew "poetry"
 brew "uv"
 brew "sdkman/tap/sdkman-cli"  # SDKMAN! CLI (JDKs and other SDK candidates); zshrc still loads ~/.sdkman
@@ -104,11 +104,11 @@ brew "sdkman/tap/sdkman-cli"  # SDKMAN! CLI (JDKs and other SDK candidates); zsh
 # ===== HTTP / network =====
 brew "caddy"
 brew "dnsmasq"
-brew "doggo"                # DNS client (replaces deprecated `dog`; run: brew uninstall dog)
-brew "grpcurl"              # curl for gRPC
+brew "doggo"                  # DNS client (replaces deprecated `dog`; run: brew uninstall dog)
+brew "grpcurl"                # curl for gRPC
 brew "httpie"
-brew "mosh"                 # roaming SSH: survives sleep and network changes
-brew "xh"                   # faster httpie
+brew "mosh"                   # roaming SSH: survives sleep and network changes
+brew "xh"                     # faster httpie
 brew "sniffnet"
 brew "tailscale"
 brew "netbirdio/tap/netbird"  # WireGuard-based mesh VPN (netbird-ui cask = GUI)
@@ -122,21 +122,21 @@ brew "podman-compose"
 # poppler omitted: a source build failed under an old Homebrew prefix
 # (~/homebrew, no longer used) because the p11-kit dep timed out in
 # meson tests. Install ad-hoc when pdftotext/pdftoppm/pdfinfo are needed.
-brew "imagemagick"          # convert/resize images (token cost reduction)
-brew "ffmpeg-full"          # audio/video conversion & processing; the full
+brew "imagemagick"  # convert/resize images (token cost reduction)
+brew "ffmpeg-full"  # audio/video conversion & processing; the full
                             # build (extra codecs/filters + ffplay). keg-only,
                             # so zshrc prepends its bin to $path.
 
 # ===== Data =====
 brew "duckdb"
 brew "mongodb-atlas-cli"
-brew "pgcli"                # Postgres CLI with autocomplete
+brew "pgcli"  # Postgres CLI with autocomplete
 brew "playwright-cli"
 brew "specify"
 
 # ===== Local LLM =====
-brew "ollama"               # local LLM runner; pair with Claude for proprietary work
-brew "hf"                   # Hugging Face CLI (formerly huggingface-cli)
+brew "ollama"  # local LLM runner; pair with Claude for proprietary work
+brew "hf"      # Hugging Face CLI (formerly huggingface-cli)
 
 # ===== Misc =====
 brew "cheat"
@@ -187,12 +187,13 @@ cask "handy"  # open-source push-to-talk dictation
 cask "devutils"
 cask "entireio/tap/entire"
 cask "gitkraken"
+cask "jetbrains-toolbox"       # JetBrains IDE installer and updater
 cask "detachhead/tap/rebased"  # git client built on the IntelliJ platform
 cask "polypane"
 cask "postman"
 cask "ngrok"
 cask "productdevbook/tap/portkiller"
-cask "jithin-sabu/tap/purge"  # open-source cache/junk cleaner, trash-by-default (purgemac.com)
+cask "jithin-sabu/tap/purge"   # open-source cache/junk cleaner, trash-by-default (purgemac.com)
 cask "sloth"
 cask "wave"
 

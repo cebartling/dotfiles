@@ -56,22 +56,23 @@ brew "zsh-autosuggestions"         # Fish-like fast/unobtrusive autosuggestions 
 brew "zsh-syntax-highlighting"     # Fish shell like syntax highlighting for zsh
 
 # ===== Casks =====
-cask "1password"                      # 1Password GUI
-cask "1password-cli"                  # Command-line interface for 1Password
-cask "agentsview"                     # Browse, search and analyse your past AI coding sessions
+cask "1password"           # 1Password GUI
+cask "1password-cli"       # Command-line interface for 1Password
+cask "agentsview"          # Browse, search and analyse your past AI coding sessions
 cask "font-3270-nerd-font"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
 cask "font-liberation-nerd-font"
 cask "font-monaspace"
-cask "freelens"                       # Kubernetes IDE
-cask "handy"                          # Speech to text application
-cask "keepingyouawake"                # Tool to prevent the system from going into sleep mode
-cask "maccy"                          # Clipboard manager
-cask "mongodb-compass"                # Interactive tool for analyzing MongoDB data
-cask "moom"                           # Utility to move and zoom windows—on one display
-cask "obsidian"                       # Knowledge base that works on top of a local folder of plain text Markdown files
-cask "stablyai/orca/orca"             # IDE for orchestrating AI coding agents across terminals and worktrees
-cask "raycast"                        # Control your tools with a few keystrokes
-cask "witch"                          # Switch apps, windows, or tabs
-cask "zed"                            # Multiplayer code editor
+cask "freelens"            # Kubernetes IDE
+cask "handy"               # Speech to text application
+cask "jetbrains-toolbox"   # JetBrains IDE installer and updater
+cask "keepingyouawake"     # Tool to prevent the system from going into sleep mode
+cask "maccy"               # Clipboard manager
+cask "mongodb-compass"     # Interactive tool for analyzing MongoDB data
+cask "moom"                # Utility to move and zoom windows—on one display
+cask "obsidian"            # Knowledge base that works on top of a local folder of plain text Markdown files
+cask "stablyai/orca/orca"  # IDE for orchestrating AI coding agents across terminals and worktrees
+cask "raycast"             # Control your tools with a few keystrokes
+cask "witch"               # Switch apps, windows, or tabs
+cask "zed"                 # Multiplayer code editor

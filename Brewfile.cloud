@@ -21,16 +21,16 @@ tap "nicholasbester/clickup-cli"
 brew "awscli"
 brew "awslogs"
 brew "azure-cli"
-brew "azure/azd/azd"        # Azure Developer CLI
-brew "azure/kubelogin/kubelogin"  # Azure AD auth for kubectl/AKS
-brew "doctl"               # DigitalOcean CLI
+brew "azure/azd/azd"                           # Azure Developer CLI
+brew "azure/kubelogin/kubelogin"               # Azure AD auth for kubectl/AKS
+brew "doctl"                                   # DigitalOcean CLI
 brew "heroku/brew/heroku"
 brew "nicholasbester/clickup-cli/clickup-cli"  # ClickUp CLI
 
 # ===== Infrastructure as code =====
 brew "hashicorp/tap/terraform"
 brew "hashicorp/tap/vault"
-brew "opentofu"            # open-source Terraform fork
+brew "opentofu"  # open-source Terraform fork
 
 # ===== Cloud CLIs (cask form) =====
-cask "gcloud-cli"           # gcloud / gsutil / bq (formerly google-cloud-sdk)
+cask "gcloud-cli"  # gcloud / gsutil / bq (formerly google-cloud-sdk)
