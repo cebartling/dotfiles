@@ -39,7 +39,7 @@ brew "gh"                                     # GitHub command-line tool
 brew "git"                                    # Distributed revision control system
 brew "helm"                                   # Kubernetes package manager
 brew "jq"                                     # Lightweight and flexible command-line JSON processor
-brew "microsoft/mssql-release/msodbcsql18"    # Microsoft ODBC Driver 18 for SQL Server (accepts EULA on install)
+brew "microsoft/mssql-release/msodbcsql18"    # Microsoft ODBC Driver 18 for SQL Server (needs HOMEBREW_ACCEPT_EULA=Y at install)
 brew "microsoft/mssql-release/mssql-tools18"  # sqlcmd and bcp for SQL Server
 brew "nmap"                                   # Port scanning utility for large networks
 brew "nvm"                                    # Manage multiple Node.js versions
