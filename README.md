@@ -219,16 +219,17 @@ Not wired into bootstrap, mirroring `scripts/macOS/install_cloud_tools.zsh`.
 Both vendors' install docs want a third-party apt repository. Neither is
 needed: each tool is a static Go binary, installed into `~/.local/bin` with no
 root and SHA256-verified against the release's own checksum file. amd64 and
-arm64 both work.
+arm64 both work. The AWS CLI is the exception, covered in the table below.
 
 | Tool | Source |
 |---|---|
 | `terraform` | `releases.hashicorp.com` zip, version from `api.releases.hashicorp.com` — HashiCorp publish no GitHub release binaries |
 | `tofu` | `opentofu/opentofu` GitHub release tarball |
 | `vault` | `releases.hashicorp.com` zip, same as `terraform`. The CLI only — no server or systemd unit |
+| `aws` | AWS's own v2 installer zip (`awscli.amazonaws.com`), relocated with `--install-dir ~/.local/aws-cli --bin-dir ~/.local/bin` so it needs no root. Not apt: Ubuntu's `awscli` needs sudo and lags upstream. AWS publish no checksum, so the zip is GPG-verified against a pinned key fingerprint instead |
 
-The HashiCorp tools and OpenTofu from [`Brewfile.cloud`](Brewfile.cloud) so
-far; the provider CLIs are tracked in beads `dotfiles-m4i`. A re-run
+The HashiCorp tools, OpenTofu and `awscli` from [`Brewfile.cloud`](Brewfile.cloud)
+so far; the other provider CLIs are tracked in beads `dotfiles-m4i`. A re-run
 skips anything already on `$PATH` rather than upgrading it — delete the binary
 from `~/.local/bin` and re-run to upgrade.
 
@@ -732,7 +733,7 @@ there is nothing to install.
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | `scripts/Ubuntu/doctor.sh` | Reports drift between a Linux box and the repo (symlinks, apt/snap packages, binaries, startup time) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
-| `scripts/Ubuntu/install_cloud_tools.sh` | Opt-in Terraform, OpenTofu and Vault (not run by bootstrap; no sudo) |
+| `scripts/Ubuntu/install_cloud_tools.sh` | Opt-in Terraform, OpenTofu, Vault and AWS CLI (not run by bootstrap; no sudo) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_nodejs.sh` | System Node.js 24 install (run by bootstrap; adds NodeSource's apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |

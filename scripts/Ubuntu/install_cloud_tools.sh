@@ -17,13 +17,20 @@
 #   vault       release assets; the version comes from their releases API.
 #   tofu      — opentofu/opentofu GitHub release tarball.
 #
-# So far the HashiCorp tools and OpenTofu from Brewfile.cloud. The provider CLIs
-# are tracked in beads dotfiles-m4i; add them here.
+# The AWS CLI is the exception to "static Go binary": v2 is a bundled Python
+# app. apt has it (awscli 2.x) but needs sudo and lags upstream, so it comes from
+# AWS's own installer zip instead, relocated with --install-dir/--bin-dir so it
+# needs no root: the app goes in ~/.local/aws-cli, `aws` is symlinked into
+# ~/.local/bin. AWS publish no checksum file; they sign the zip with GPG, so that
+# is verified instead, against a pinned fingerprint (see AWSCLI_FPR).
+#
+# So far the HashiCorp tools, OpenTofu and awscli from Brewfile.cloud. The other
+# provider CLIs are tracked in beads dotfiles-m4i; add them here.
 
 # --- install-all metadata ---
 # Read by install_all.sh. Keep this in sync with any new hard
 # precondition added below, or install_all will not know about it.
-# summary: terraform, opentofu and vault into ~/.local/bin
+# summary: terraform, opentofu, vault and the AWS CLI into ~/.local/bin
 # group: opt-in
 # wants: install_tools.sh link.sh
 # sudo: none
@@ -43,7 +50,7 @@ die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 ARCH="$(dpkg --print-architecture)"
 case "$ARCH" in
   amd64|arm64) ;;
-  *) die "terraform, tofu and vault are published for amd64 and arm64; got $ARCH" ;;
+  *) die "terraform, tofu, vault and aws are published for amd64 and arm64; got $ARCH" ;;
 esac
 
 # verify_sha256 <file> <expected-hex>
@@ -111,10 +118,87 @@ install_tofu() {
   rm -rf "$tmp"
 }
 
+# The AWS CLI Team's release-signing key, copied from
+# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+# It EXPIRES 2027-07-01. An expired key does not break verification (gpg reports
+# EXPKEYSIG but still emits VALIDSIG), so expiry itself is silent. What breaks it
+# is rotation: once AWS sign releases with a new key, the fingerprint check below
+# fails with a clear message — re-copy the block from that page and update
+# AWSCLI_FPR. Importing the key proves nothing by itself; the pinned fingerprint
+# is what ties the zip to AWS.
+AWSCLI_FPR="FB5DB77FD5C118B80511ADA8A6310ACC4672475C"
+awscli_pubkey() {
+  cat <<'KEY'
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQINBF2Cr7UBEADJZHcgusOJl7ENSyumXh85z0TRV0xJorM2B/JL0kHOyigQluUG
+ZMLhENaG0bYatdrKP+3H91lvK050pXwnO/R7fB/FSTouki4ciIx5OuLlnJZIxSzx
+PqGl0mkxImLNbGWoi6Lto0LYxqHN2iQtzlwTVmq9733zd3XfcXrZ3+LblHAgEt5G
+TfNxEKJ8soPLyWmwDH6HWCnjZ/aIQRBTIQ05uVeEoYxSh6wOai7ss/KveoSNBbYz
+gbdzoqI2Y8cgH2nbfgp3DSasaLZEdCSsIsK1u05CinE7k2qZ7KgKAUIcT/cR/grk
+C6VwsnDU0OUCideXcQ8WeHutqvgZH1JgKDbznoIzeQHJD238GEu+eKhRHcz8/jeG
+94zkcgJOz3KbZGYMiTh277Fvj9zzvZsbMBCedV1BTg3TqgvdX4bdkhf5cH+7NtWO
+lrFj6UwAsGukBTAOxC0l/dnSmZhJ7Z1KmEWilro/gOrjtOxqRQutlIqG22TaqoPG
+fYVN+en3Zwbt97kcgZDwqbuykNt64oZWc4XKCa3mprEGC3IbJTBFqglXmZ7l9ywG
+EEUJYOlb2XrSuPWml39beWdKM8kzr1OjnlOm6+lpTRCBfo0wa9F8YZRhHPAkwKkX
+XDeOGpWRj4ohOx0d2GWkyV5xyN14p2tQOCdOODmz80yUTgRpPVQUtOEhXQARAQAB
+tCFBV1MgQ0xJIFRlYW0gPGF3cy1jbGlAYW1hem9uLmNvbT6JAlQEEwEIAD4CGwMF
+CwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQT7Xbd/1cEYuAURraimMQrMRnJHXAUC
+akV0ygUJDqP4lQAKCRCmMQrMRnJHXFHjD/9eyZLYcKuQOlLvtqSDtUBiEZf6ZZjM
+i3ygYH8rJNtuToUH+HvSpe819urJCquXhDrlK6N+aqW0hCLtNABJG/vsafIgvIYJ
+hSGgpgtNnQyMV1jViRWqPjbouw8OkYKBThUfT1i2Y+wn58ifs6ODBCmTexWtXspA
+Si+Gt49xDOW0APmbOPnI+a4HJW6tVEo6MWS0WjzpiBayR3d1A4pt4YrPfSdDgpLo
+h2SLQqlRqvvVZJaWBjhkErNFpfsBA06sDcPEOb0G8LBUbR4WOcdvhe5LubJbZuxC
+AG9kNPCVeQP1ixwjgjXKysaxeQ6rv0VzIQgRp6tLVLWhy6AKDNvLjFSsmXZ1Wl08
+Y/RlOHXlzLuQMRE6sR1wOdRxc9TsrNWTGiBK65cvSWOy03JeBkQQ8pesqltiyxI9
+U21kkgiXtTSKNGfKK8pO27D81YANhRqPK7iTp6kuFiY2WtOg90KTMNlIT+Ff85Y2
+b1rHj6Z0SrCkJujhWk3IBPic/wJgz01LEc/OAdUPlby90RJZcIBhSlWhT7mXnXIO
+c0HWlNQrns2s3CTyYwZSiSlYe9ApeLwhjDo8NhbFuCAy61l6O5UsR4AfZxx/rGKv
+2wFb1/RN/P4gNe6vmxZAPjR0AQcwD3tc2McimOLr/22kmPz8IH3I0X7WoSFr0Biz
+E91G7bb0hOb/cA==
+=knv7
+-----END PGP PUBLIC KEY BLOCK-----
+KEY
+}
+
+install_awscli() {
+  if command -v aws >/dev/null 2>&1; then say "aws already installed ($(aws --version 2>&1 | head -1))"; return 0; fi
+  # Same posture as the HashiCorp zips: unzip and gpg come from install_tools.sh,
+  # so skip rather than die when they are missing.
+  command -v unzip >/dev/null 2>&1 || { warn "aws needs unzip; run install_tools.sh first"; SKIPPED+=("aws (no unzip)"); return 0; }
+  command -v gpg   >/dev/null 2>&1 || { warn "aws needs gpg to verify the download"; SKIPPED+=("aws (no gpg)"); return 0; }
+  local arch tmp gh zip base
+  # AWS name builds by the kernel's spelling, not Debian's.
+  case "$ARCH" in amd64) arch=x86_64 ;; arm64) arch=aarch64 ;; esac
+  zip="awscli-exe-linux-${arch}.zip"
+  base="https://awscli.amazonaws.com"
+  say "Installing aws (AWS CLI v2)"
+  tmp="$(mktemp -d)"
+  # A throwaway keyring, so the user's own ~/.gnupg is never touched.
+  gh="$tmp/gnupg"; mkdir -m 0700 "$gh"
+  if curl -fsSL -o "$tmp/$zip" "$base/$zip" && curl -fsSL -o "$tmp/$zip.sig" "$base/$zip.sig"; then
+    awscli_pubkey | gpg --homedir "$gh" --batch --quiet --import 2>/dev/null \
+      || die "could not import the AWS CLI signing key"
+    # Parse the machine-readable status, not the prose. Require a VALIDSIG for
+    # exactly the pinned fingerprint: a good signature from any other key is a
+    # failure, and so is an expired one (EXPKEYSIG, no VALIDSIG).
+    gpg --homedir "$gh" --batch --status-fd 1 --verify "$tmp/$zip.sig" "$tmp/$zip" 2>/dev/null \
+      | grep -q "^\[GNUPG:\] VALIDSIG .* $AWSCLI_FPR\$" \
+      || die "GPG verification failed for $zip (expected a signature from $AWSCLI_FPR)"
+    unzip -q "$tmp/$zip" -d "$tmp"
+    mkdir -p "$BIN"
+    "$tmp/aws/install" --install-dir "$HOME/.local/aws-cli" --bin-dir "$BIN" >/dev/null
+  else
+    warn "aws download failed"; SKIPPED+=(aws)
+  fi
+  gpgconf --homedir "$gh" --kill all 2>/dev/null || true
+  rm -rf "$tmp"
+}
+
 print_summary() {
   echo
   say "Verifying"
-  for t in terraform tofu vault; do
+  for t in terraform tofu vault aws; do
     if command -v "$t" >/dev/null 2>&1; then printf '  \033[32mok\033[0m      %s\n' "$t"
     else printf '  \033[31mmissing\033[0m %s\n' "$t"; fi
   done
@@ -127,6 +211,7 @@ main() {
   install_hashicorp terraform
   install_tofu
   install_hashicorp vault
+  install_awscli
   print_summary
 }
 

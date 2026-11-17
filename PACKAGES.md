@@ -697,7 +697,7 @@ needs root, creates a system user and enables a service; not wanted on these
 boxes. The `Brewfile.k8s`/`Brewfile.cloud` gaps (`k9s`, `eksctl`, `kubeshark`,
 `kubectl-ai`, the cloud CLIs) are tracked separately in beads
 `dotfiles-m4i`. `Brewfile.cloud` is only partly covered on Linux: `terraform`,
-`tofu` and `vault`, by `scripts/Ubuntu/install_cloud_tools.sh`;
+`tofu`, `vault` and `awscli`, by `scripts/Ubuntu/install_cloud_tools.sh`;
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
 Chrome has no `cask` entry on either side; on Ubuntu it comes from
