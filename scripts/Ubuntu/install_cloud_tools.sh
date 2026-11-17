@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install_cloud_tools.sh — infrastructure-as-code tooling on Ubuntu.
+# install_cloud_tools.sh — infrastructure-as-code and secrets tooling on Ubuntu.
 #
 # The Linux counterpart to scripts/macOS/install_cloud_tools.zsh. Offered by
 # install_all.sh, NOT wired into bootstrap.sh, exactly like the macOS version —
@@ -7,23 +7,23 @@
 #
 #   ~/.dotfiles/scripts/Ubuntu/install_cloud_tools.sh
 #
-# Ubuntu packages neither tool, and both vendors' install docs want a
+# Ubuntu packages none of these, and the vendors' install docs want a
 # third-party apt repository (apt.releases.hashicorp.com, packages.opentofu.org).
-# Neither is necessary: each is a single static Go binary published upstream, so
+# None is necessary: each is a single static Go binary published upstream, so
 # they go into ~/.local/bin with no root and no extra apt sources. Every
 # download is SHA256-verified against the release's own checksum file.
 #
 #   terraform — releases.hashicorp.com. HashiCorp publish NO binaries as GitHub
-#               release assets; the version comes from their releases API.
+#   vault       release assets; the version comes from their releases API.
 #   tofu      — opentofu/opentofu GitHub release tarball.
 #
-# So far only the infrastructure-as-code pair from Brewfile.cloud. The provider
-# CLIs and vault are tracked in beads dotfiles-m4i; add them here.
+# So far the HashiCorp tools and OpenTofu from Brewfile.cloud. The provider CLIs
+# are tracked in beads dotfiles-m4i; add them here.
 
 # --- install-all metadata ---
 # Read by install_all.sh. Keep this in sync with any new hard
 # precondition added below, or install_all will not know about it.
-# summary: terraform and opentofu into ~/.local/bin
+# summary: terraform, opentofu and vault into ~/.local/bin
 # group: opt-in
 # wants: install_tools.sh link.sh
 # sudo: none
@@ -43,7 +43,7 @@ die()  { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 ARCH="$(dpkg --print-architecture)"
 case "$ARCH" in
   amd64|arm64) ;;
-  *) die "terraform and tofu are published for amd64 and arm64; got $ARCH" ;;
+  *) die "terraform, tofu and vault are published for amd64 and arm64; got $ARCH" ;;
 esac
 
 # verify_sha256 <file> <expected-hex>
@@ -58,27 +58,30 @@ verify_sha256() {
 # sum_for <checksums-file> <filename> — the hex digest listed for filename.
 sum_for() { awk -v f="$2" '$2 == f {print $1; exit}' "$1"; }
 
-install_terraform() {
-  if command -v terraform >/dev/null 2>&1; then say "terraform already installed ($(terraform version 2>/dev/null | head -1))"; return 0; fi
+# install_hashicorp <product> — terraform and vault ship identically: a zip
+# holding one binary named after the product, plus a SHA256SUMS file.
+install_hashicorp() {
+  local name="$1"
+  if command -v "$name" >/dev/null 2>&1; then say "$name already installed ($("$name" version 2>/dev/null | head -1))"; return 0; fi
   # The zip is the only format HashiCorp publish, and unzip comes from
   # install_tools.sh's APT_BASE. Skip rather than die: tofu needs no unzip.
-  command -v unzip >/dev/null 2>&1 || { warn "terraform needs unzip; run install_tools.sh first"; SKIPPED+=("terraform (no unzip)"); return 0; }
+  command -v unzip >/dev/null 2>&1 || { warn "$name needs unzip; run install_tools.sh first"; SKIPPED+=("$name (no unzip)"); return 0; }
   local ver tmp zip want
-  ver="$(curl -fsSL https://api.releases.hashicorp.com/v1/releases/terraform/latest \
+  ver="$(curl -fsSL "https://api.releases.hashicorp.com/v1/releases/$name/latest" \
         | grep -o '"version": *"[^"]*"' | head -1 | cut -d'"' -f4)" || true
-  [[ -n "$ver" ]] || { warn "could not resolve terraform version"; SKIPPED+=(terraform); return 0; }
-  say "Installing terraform $ver"
+  [[ -n "$ver" ]] || { warn "could not resolve $name version"; SKIPPED+=("$name"); return 0; }
+  say "Installing $name $ver"
   tmp="$(mktemp -d)"
-  zip="terraform_${ver}_linux_${ARCH}.zip"
-  if curl -fsSL -o "$tmp/$zip" "https://releases.hashicorp.com/terraform/$ver/$zip" \
-     && curl -fsSL -o "$tmp/SHA256SUMS" "https://releases.hashicorp.com/terraform/$ver/terraform_${ver}_SHA256SUMS"; then
+  zip="${name}_${ver}_linux_${ARCH}.zip"
+  if curl -fsSL -o "$tmp/$zip" "https://releases.hashicorp.com/$name/$ver/$zip" \
+     && curl -fsSL -o "$tmp/SHA256SUMS" "https://releases.hashicorp.com/$name/$ver/${name}_${ver}_SHA256SUMS"; then
     want="$(sum_for "$tmp/SHA256SUMS" "$zip")"
     [[ -n "$want" ]] || die "no checksum line for $zip"
     verify_sha256 "$tmp/$zip" "$want"
-    unzip -qo "$tmp/$zip" terraform -d "$tmp"
-    mkdir -p "$BIN"; install -m 0755 "$tmp/terraform" "$BIN/terraform"
+    unzip -qo "$tmp/$zip" "$name" -d "$tmp"
+    mkdir -p "$BIN"; install -m 0755 "$tmp/$name" "$BIN/$name"
   else
-    warn "terraform download failed"; SKIPPED+=(terraform)
+    warn "$name download failed"; SKIPPED+=("$name")
   fi
   rm -rf "$tmp"
 }
@@ -111,7 +114,7 @@ install_tofu() {
 print_summary() {
   echo
   say "Verifying"
-  for t in terraform tofu; do
+  for t in terraform tofu vault; do
     if command -v "$t" >/dev/null 2>&1; then printf '  \033[32mok\033[0m      %s\n' "$t"
     else printf '  \033[31mmissing\033[0m %s\n' "$t"; fi
   done
@@ -121,8 +124,9 @@ print_summary() {
 }
 
 main() {
-  install_terraform
+  install_hashicorp terraform
   install_tofu
+  install_hashicorp vault
   print_summary
 }
 

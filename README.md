@@ -70,9 +70,9 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 8. [`install_all.sh`](scripts/Ubuntu/install_all.sh) — offers the optional
-   installers (Chrome, Tailscale, Docker, k8s tooling, Terraform/OpenTofu,
-   Claude Code, headless Obsidian, mosh), asking about each. It owns the
-   dependency order between them; see
+   installers (Chrome, Tailscale, Docker, k8s tooling,
+   Terraform/OpenTofu/Vault, Claude Code, headless Obsidian, mosh), asking
+   about each. It owns the dependency order between them; see
    [scripts/Ubuntu/README.md](scripts/Ubuntu/README.md). With no terminal it
    prints an advisory and changes nothing, so a piped or SSH bootstrap stays
    unattended. Re-runnable on its own at any time.
@@ -135,8 +135,8 @@ names in `~/.local/bin`, so `aliases/core.sh` needs no Linux special-casing.
 
 Not available on Linux and intentionally skipped: `mole`, `cliclick`,
 `whisperkit-cli`, and every `cask` entry in the Brewfiles. Of the optional
-cloud toolchain, only `terraform` and `tofu` have a Linux installer so far — see
-[Infrastructure as code](#infrastructure-as-code-opt-in).
+cloud toolchain, only `terraform`, `tofu` and `vault` have a Linux installer so
+far — see [Infrastructure as code](#infrastructure-as-code-opt-in).
 
 ### Headless Wayland (`wlheadless-run`)
 
@@ -225,9 +225,10 @@ arm64 both work.
 |---|---|
 | `terraform` | `releases.hashicorp.com` zip, version from `api.releases.hashicorp.com` — HashiCorp publish no GitHub release binaries |
 | `tofu` | `opentofu/opentofu` GitHub release tarball |
+| `vault` | `releases.hashicorp.com` zip, same as `terraform`. The CLI only — no server or systemd unit |
 
-Only the infrastructure-as-code pair from [`Brewfile.cloud`](Brewfile.cloud) so
-far; the provider CLIs and `vault` are tracked in beads `dotfiles-m4i`. A re-run
+The HashiCorp tools and OpenTofu from [`Brewfile.cloud`](Brewfile.cloud) so
+far; the provider CLIs are tracked in beads `dotfiles-m4i`. A re-run
 skips anything already on `$PATH` rather than upgrading it — delete the binary
 from `~/.local/bin` and re-run to upgrade.
 
@@ -731,7 +732,7 @@ there is nothing to install.
 | `scripts/Ubuntu/link.sh` | Idempotent symlink installer (Linux targets) |
 | `scripts/Ubuntu/doctor.sh` | Reports drift between a Linux box and the repo (symlinks, apt/snap packages, binaries, startup time) |
 | `scripts/Ubuntu/install_k8s_tools.sh` | Opt-in Kubernetes toolchain (not run by bootstrap) |
-| `scripts/Ubuntu/install_cloud_tools.sh` | Opt-in Terraform and OpenTofu (not run by bootstrap; no sudo) |
+| `scripts/Ubuntu/install_cloud_tools.sh` | Opt-in Terraform, OpenTofu and Vault (not run by bootstrap; no sudo) |
 | `scripts/Ubuntu/install_chrome.sh` | Opt-in Google Chrome install (not run by bootstrap; adds Google's signed apt repository) |
 | `scripts/Ubuntu/install_nodejs.sh` | System Node.js 24 install (run by bootstrap; adds NodeSource's apt repository) |
 | `scripts/Ubuntu/install_tailscale.sh` | Opt-in Tailscale install (not run by bootstrap; adds Tailscale's signed apt repository) |
