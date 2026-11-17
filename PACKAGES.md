@@ -695,8 +695,9 @@ Linux route above (Zed via `install_zed.sh`, 1Password via its apt repository).
 **Deliberately not installed on Linux** (PIN-243): `ollama` — its installer
 needs root, creates a system user and enables a service; not wanted on these
 boxes. The `Brewfile.k8s`/`Brewfile.cloud` gaps (`k9s`, `eksctl`, `kubeshark`,
-`kubectl-ai`, the cloud CLIs) are tracked separately in beads `dotfiles-m4i`. The
-`Brewfile.cloud` toolchain has no Linux installer yet;
+`kubectl-ai`, the cloud CLIs, `vault`) are tracked separately in beads
+`dotfiles-m4i`. `Brewfile.cloud` is only partly covered on Linux: `terraform`
+and `tofu`, by `scripts/Ubuntu/install_cloud_tools.sh`;
 `Brewfile.k8s` and `Brewfile.tailscale` do (`scripts/Ubuntu/install_k8s_tools.sh`
 and `scripts/Ubuntu/install_tailscale.sh`), and `netbird` still does not. Google
 Chrome has no `cask` entry on either side; on Ubuntu it comes from
