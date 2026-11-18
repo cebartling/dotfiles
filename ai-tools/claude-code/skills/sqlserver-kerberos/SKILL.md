@@ -47,7 +47,7 @@ server names no longer match DNS.
 | QA Report | `sqlqa-report` | `QAWSQL43.ltfinc.net` | Verified. SQL Server 16 Developer. Used to alias `qawsql03` (pre-migration, still answers); do not use that name or its IP. |
 | Stage LTSuite | `sqlstg-ltsuite` | `SQLSTG-LTSUITE2.ltfinc.net` (cluster name) | **Fails**: TLS cert mismatch under sqlcmd; Confluence also reports error 906 (missing cluster SPN, DB team incident open). Do not use. |
 | Stage Report | `sqlstg-report` | `STGWSQL43.ltfinc.net` | Verified. Confluence says `STGWSQL27`, which does not resolve. |
-| Prod (report replica) | `sqlprd-report` | `PRDWSQL43.ltfinc.net` | **Not tested.** DNS says `PRDWSQL43`; Confluence says `PRDWSQL28`, which is stale or wrong. Needs `SEC-DB-LTSUITE-RO`. See "Production". |
+| Prod (report replica) | `sqlprd-report` | `PRDWSQL43.ltfinc.net` | Verified 2026-11-18 (needs `SEC-DB-LTSUITE-RO`). Confluence says `PRDWSQL28`, which is stale. See "Production". |
 
 Databases the user's login can open (system DBs omitted):
 
@@ -58,6 +58,7 @@ Databases the user's login can open (system DBs omitted):
 | `QAWSQL41` / `QAWSQL42` | `Acquisition_QA`, `Batch_QA`, `CIS_QA`, `Integration_QA`, `LTFEB_QA`, `MMS_Contract_QA`, `MMS_QA` |
 | `QAWSQL43` | `MMS_Subscriber_QA`, `Report_MMS_QA` (the user works with these); others such as `Batch_Subscriber_QA`, `CIS_Subscriber_QA`, `Integration_Subscriber_QA`, `LTFEB_Subscriber_QA`, `MMS_Archive_Subscriber_QA`, `Report_CIS_QA`, `Report_LTFEB_QA`, `DBA` are in `sys.databases` but not confirmed accessible |
 | `STGWSQL43` | `Batch_Subscriber_Stg`, `CIS_Subscriber_Stg`, `Integration_Subscriber_Stg`, `LTFEB_Subscriber_Stg`, `MMS_Archive_Subscriber_Stg`, `MMS_Subscriber_Stg`, `Report_CIS_Stg`, `Report_LTFEB_Stg`, `Report_MMS_Stg`, `distribution` |
+| `PRDWSQL43` (Prod) | `Batch_Subscriber`, `CIS_Subscriber`, `DBAImport`, `Integration`, `LTFEB_Subscriber`, `MMS`, `MMS_Archive`, `Report_CIS`, `Report_LTFEB`, `Report_MMS`, `distribution` |
 
 The LTSuite hosts hold the primary transactional databases; the Report hosts hold the `*_Subscriber_*`
 and `Report_*` replicas. If the requested database is not listed, check
@@ -83,6 +84,8 @@ right group for that server. Report it; do not retry or switch to `-C`.
 - Only the report replica is permitted: `sqlprd-report`, currently `PRDWSQL43.ltfinc.net`, database
   `Report_MMS`. Re-resolve it with `dig` first; the Confluence name `PRDWSQL28` is stale.
 - User connections to `sqlprd-ltsuite` are not permitted; do not try it.
+- `Report_MMS` reports `READ_WRITE` updateability for the user's login, so the server will not stop a
+  write. The read-only rule below is enforced by this skill alone.
 - Do not connect to Prod unless the user explicitly names it for that request.
 - Prod is read-only: `SELECT` and metadata queries only, aggregates preferred, no write statements
   under any circumstances (the "ask first" path for writes does not apply to Prod).
