@@ -32,37 +32,37 @@ Check these before any query. Stop and report if one fails.
 
 With sqlcmd, always connect by the **real server** name, never the alias. The aliases are CNAMEs and
 TLS fails with "subject name does not match host name" because the cert is issued for the real
-server. (The Confluence page lists short alias names such as `sqlqa-report` for JetBrains tools;
-those do not apply to sqlcmd.)
+server. Resolve an alias with `dig +short <alias>.ltfinc.net`. (The Confluence page lists short
+alias names for JetBrains tools; those do not apply to sqlcmd.)
 
-Source: Confluence page "Kerberos on macOS (needed for on-prem SQL Server connections)", status as
-of Sep 2026. Only `QAWSQL43` has been verified through sqlcmd; treat the other rows as unverified
-until a smoke test passes.
+Verified through sqlcmd on 2026-11-18 unless marked otherwise. The Confluence page "Kerberos on
+macOS (needed for on-prem SQL Server connections)" is partly stale: its Stage Report and Prod
+server names no longer match DNS.
 
-| Environment | Alias (do not use) | Real server (use with `-S`) | Status | Notes |
-|---|---|---|---|---|
-| Dev LTSuite | `sqldev-ltsuite` | `DEVWSQL41.ltfinc.net` | Works (per Confluence) | |
-| Dev Report | `sqldev-report` | `DEVWSQL43.ltfinc.net` | Works (per Confluence) | |
-| QA LTSuite | `sqlqa-ltsuite` | `SQLQA-LTSUITE22.ltfinc.net` | Works (per Confluence) | Cluster name since the Sep 2026 migration; the DB team registered its SPN on Sep 10, 2026. |
-| QA Report | `sqlqa-report` | `QAWSQL43.ltfinc.net` | **Verified** | SQL Server 16 Developer. Used to alias `qawsql03` (pre-migration, still answers); do not use that name or its IP. |
-| Stage LTSuite | `sqlstg-ltsuite` | `sqlstg-ltsuite.ltfinc.net` (cluster name) | **Fails** with error 906 as of Sep 10, 2026 | Likely a missing cluster SPN; the DB team has an incident open. Do not retry. |
-| Stage Report | `sqlstg-report` | `STGWSQL27.ltfinc.net` | Works (per Confluence) | Report database is `Report_MMS_Stg`. |
-| Prod (report replica) | `sqlprd-report` | `PRDWSQL28.ltfinc.net` | Works with `SEC-DB-LTSUITE-RO` | See "Production" below. |
+| Environment | Alias (do not use) | Real server (use with `-S`) | Status |
+|---|---|---|---|
+| Dev LTSuite | `sqldev-ltsuite` | `DEVWSQL41.ltfinc.net` | Verified |
+| Dev Report | `sqldev-report` | `DEVWSQL43.ltfinc.net` | Verified |
+| QA LTSuite | `sqlqa-ltsuite` | `QAWSQL41.ltfinc.net` or `QAWSQL42.ltfinc.net` | Verified. The alias resolves to cluster name `SQLQA-LTSUITE22`, which fails TLS (cert mismatch) under sqlcmd. Which node is primary is unknown (HADR role query is permission-denied); both show the same databases. Stick to reads. |
+| QA Report | `sqlqa-report` | `QAWSQL43.ltfinc.net` | Verified. SQL Server 16 Developer. Used to alias `qawsql03` (pre-migration, still answers); do not use that name or its IP. |
+| Stage LTSuite | `sqlstg-ltsuite` | `SQLSTG-LTSUITE2.ltfinc.net` (cluster name) | **Fails**: TLS cert mismatch under sqlcmd; Confluence also reports error 906 (missing cluster SPN, DB team incident open). Do not use. |
+| Stage Report | `sqlstg-report` | `STGWSQL43.ltfinc.net` | Verified. Confluence says `STGWSQL27`, which does not resolve. |
+| Prod (report replica) | `sqlprd-report` | `PRDWSQL43.ltfinc.net` | **Not tested.** DNS says `PRDWSQL43`; Confluence says `PRDWSQL28`, which is stale or wrong. Needs `SEC-DB-LTSUITE-RO`. See "Production". |
 
-Databases on QAWSQL43 that the user works with (all accessible to `LTFINC\<user>`):
+Databases the user's login can open (system DBs omitted):
 
-- `MMS_Subscriber_QA`
-- `Report_MMS_QA`
+| Server | Databases |
+|---|---|
+| `DEVWSQL41` | `Acquisition_Dev`, `Batch_Dev`, `CIS_Dev`, `DBAImport`, `Integration_Dev`, `LTFEB_Dev`, `MMS_Contract_Dev`, `MMS_Dev` |
+| `DEVWSQL43` | `Batch_Subscriber_Dev`, `CIS_Subscriber_Dev`, `Integration_Subscriber_Dev`, `LTFEB_Subscriber_Dev`, `MMS_Archive_Subscriber_Dev`, `MMS_Subscriber_Dev`, `Report_CIS_Dev`, `Report_LTFEB_Dev`, `Report_MMS_Dev`, `distribution` |
+| `QAWSQL41` / `QAWSQL42` | `Acquisition_QA`, `Batch_QA`, `CIS_QA`, `Integration_QA`, `LTFEB_QA`, `MMS_Contract_QA`, `MMS_QA` |
+| `QAWSQL43` | `MMS_Subscriber_QA`, `Report_MMS_QA` (the user works with these); others such as `Batch_Subscriber_QA`, `CIS_Subscriber_QA`, `Integration_Subscriber_QA`, `LTFEB_Subscriber_QA`, `MMS_Archive_Subscriber_QA`, `Report_CIS_QA`, `Report_LTFEB_QA`, `DBA` are in `sys.databases` but not confirmed accessible |
+| `STGWSQL43` | `Batch_Subscriber_Stg`, `CIS_Subscriber_Stg`, `Integration_Subscriber_Stg`, `LTFEB_Subscriber_Stg`, `MMS_Archive_Subscriber_Stg`, `MMS_Subscriber_Stg`, `Report_CIS_Stg`, `Report_LTFEB_Stg`, `Report_MMS_Stg`, `distribution` |
 
-Other databases on the instance (`Batch_Subscriber_QA`, `CIS_Subscriber_QA`,
-`Integration_Subscriber_QA`, `LTFEB_Subscriber_QA`, `MMS_Archive_Subscriber_QA`,
-`Report_CIS_QA`, `Report_LTFEB_QA`, `DBA`, plus system DBs) are listed in `sys.databases` but are
-not confirmed accessible; check before relying on one.
-
-If the requested database is not on this list, ask the user for the host before guessing. `MMS`
-alone does **not** exist on QAWSQL43. The Stage Report database is `Report_MMS_Stg` and the Prod
-replica database is `Report_MMS`; database names on the Dev and LTSuite hosts are not documented,
-so list `sys.databases` and ask.
+The LTSuite hosts hold the primary transactional databases; the Report hosts hold the `*_Subscriber_*`
+and `Report_*` replicas. If the requested database is not listed, check
+`SELECT name FROM sys.databases WHERE HAS_DBACCESS(name)=1` and ask the user before guessing a host.
+`MMS` alone does **not** exist on QAWSQL43.
 
 ## Access: AD groups
 
@@ -80,8 +80,9 @@ right group for that server. Report it; do not retry or switch to `-C`.
 
 ## Production
 
-- Only the report replica `PRDWSQL28.ltfinc.net` (`Report_MMS`) is reachable. User connections to
-  `sqlprd-ltsuite` are not permitted; do not try it.
+- Only the report replica is permitted: `sqlprd-report`, currently `PRDWSQL43.ltfinc.net`, database
+  `Report_MMS`. Re-resolve it with `dig` first; the Confluence name `PRDWSQL28` is stale.
+- User connections to `sqlprd-ltsuite` are not permitted; do not try it.
 - Do not connect to Prod unless the user explicitly names it for that request.
 - Prod is read-only: `SELECT` and metadata queries only, aggregates preferred, no write statements
   under any circumstances (the "ask first" path for writes does not apply to Prod).
