@@ -1,6 +1,6 @@
 ---
 name: sqlserver-kerberos
-description: Query Life Time SQL Server instances from this Mac using Kerberos (integrated) authentication via sqlcmd. Use when the user asks to query, inspect, or check a SQL Server database at Life Time, test a SQL Server connection, list databases on a SQL host, or run a read-only query against an LTFINC.NET server such as QAWSQL43 or the MMS databases. Covers the Microsoft ODBC 18 driver, the OpenSSL 3 requirement, the Kerberos ticket, and the hostname-vs-certificate gotcha.
+description: Query Life Time SQL Server instances from this Mac using Kerberos (integrated) authentication via sqlcmd. Use when the user asks to query, inspect, or check a SQL Server database at Life Time, test a SQL Server connection, list databases on a SQL host, or run a read-only query against an LTFINC.NET server such as QAWSQL43 or the MMS databases, or against the Dev, QA, Stage or Prod-replica LTSuite and Report servers. Covers the Microsoft ODBC 18 driver, the OpenSSL 3 requirement, the Kerberos ticket, and the hostname-vs-certificate gotcha.
 ---
 
 # SQL Server via Kerberos (sqlcmd)
@@ -15,7 +15,9 @@ Check these before any query. Stop and report if one fails.
 1. **Kerberos ticket** for `LTFINC.NET`:
    `klist` should show `krbtgt/LTFINC.NET@LTFINC.NET` and an unexpired expiry. If it is missing or
    expired, the user runs `kinit <user>@LTFINC.NET` in their own terminal (password prompt).
-   Do not attempt `kinit` yourself.
+   Do not attempt `kinit` yourself. A TGT lasts 10 hours. After any AD group change the user must
+   `kinit` again, because group membership is embedded in the ticket when it is issued.
+   `/etc/krb5.conf` must set `default_realm = LTFINC.NET` and map `.ltfinc.net`/`ltfinc.net` to it.
 2. **sqlcmd** on PATH: `command -v sqlcmd` → `/opt/homebrew/bin/sqlcmd`. Installed by the
    `microsoft/mssql-release/mssql-tools18` formula.
 3. **ODBC driver**: `msodbcsql18` (`/opt/homebrew/lib/libmsodbcsql.18.dylib`), installed with
@@ -28,10 +30,24 @@ Check these before any query. Stop and report if one fails.
 
 ## Known hosts and databases
 
-| Host | Use | Notes |
-|---|---|---|
-| `QAWSQL43.ltfinc.net` | QA instance (SQL Server 16 Developer) | Use this name. |
-| `sqlqa-report.ltfinc.net` | Alias for QAWSQL43 | **Do not use.** TLS fails with "subject name does not match host name" because the cert is issued for `QAWSQL43`. |
+With sqlcmd, always connect by the **real server** name, never the alias. The aliases are CNAMEs and
+TLS fails with "subject name does not match host name" because the cert is issued for the real
+server. (The Confluence page lists short alias names such as `sqlqa-report` for JetBrains tools;
+those do not apply to sqlcmd.)
+
+Source: Confluence page "Kerberos on macOS (needed for on-prem SQL Server connections)", status as
+of Sep 2026. Only `QAWSQL43` has been verified through sqlcmd; treat the other rows as unverified
+until a smoke test passes.
+
+| Environment | Alias (do not use) | Real server (use with `-S`) | Status | Notes |
+|---|---|---|---|---|
+| Dev LTSuite | `sqldev-ltsuite` | `DEVWSQL41.ltfinc.net` | Works (per Confluence) | |
+| Dev Report | `sqldev-report` | `DEVWSQL43.ltfinc.net` | Works (per Confluence) | |
+| QA LTSuite | `sqlqa-ltsuite` | `SQLQA-LTSUITE22.ltfinc.net` | Works (per Confluence) | Cluster name since the Sep 2026 migration; the DB team registered its SPN on Sep 10, 2026. |
+| QA Report | `sqlqa-report` | `QAWSQL43.ltfinc.net` | **Verified** | SQL Server 16 Developer. Used to alias `qawsql03` (pre-migration, still answers); do not use that name or its IP. |
+| Stage LTSuite | `sqlstg-ltsuite` | `sqlstg-ltsuite.ltfinc.net` (cluster name) | **Fails** with error 906 as of Sep 10, 2026 | Likely a missing cluster SPN; the DB team has an incident open. Do not retry. |
+| Stage Report | `sqlstg-report` | `STGWSQL27.ltfinc.net` | Works (per Confluence) | Report database is `Report_MMS_Stg`. |
+| Prod (report replica) | `sqlprd-report` | `PRDWSQL28.ltfinc.net` | Works with `SEC-DB-LTSUITE-RO` | See "Production" below. |
 
 Databases on QAWSQL43 that the user works with (all accessible to `LTFINC\<user>`):
 
@@ -44,14 +60,38 @@ Other databases on the instance (`Batch_Subscriber_QA`, `CIS_Subscriber_QA`,
 not confirmed accessible; check before relying on one.
 
 If the requested database is not on this list, ask the user for the host before guessing. `MMS`
-alone does **not** exist on QAWSQL43.
+alone does **not** exist on QAWSQL43. The Stage Report database is `Report_MMS_Stg` and the Prod
+replica database is `Report_MMS`; database names on the Dev and LTSuite hosts are not documented,
+so list `sys.databases` and ask.
+
+## Access: AD groups
+
+Kerberos only proves identity. Which servers a login can use is controlled by AD group membership,
+which the DB team does not manage. Access is requested through the Database Access Request
+(ServiceNow) process; for prod read-only choose **LTF Suite - Read Only** and name the group.
+
+| Group | Grants | Covers |
+|---|---|---|
+| `SEC-DB-LTSUITE-Developers` | Read-write-execute | Dev, QA, Stage. Does **not** cover Prod. |
+| `SEC-DB-LTSUITE-RO` | Read-only | Prod report replica. Coverage of lower environments is unconfirmed. |
+
+If Kerberos succeeds but the login fails with error 18456, the user is authenticated but not in the
+right group for that server. Report it; do not retry or switch to `-C`.
+
+## Production
+
+- Only the report replica `PRDWSQL28.ltfinc.net` (`Report_MMS`) is reachable. User connections to
+  `sqlprd-ltsuite` are not permitted; do not try it.
+- Do not connect to Prod unless the user explicitly names it for that request.
+- Prod is read-only: `SELECT` and metadata queries only, aggregates preferred, no write statements
+  under any circumstances (the "ask first" path for writes does not apply to Prod).
 
 ## Connection command
 
 Always pass `-E`, `-b` (exit non-zero on SQL errors), `-W` (trim spaces), and a timeout:
 
 ```bash
-timeout 60 sqlcmd -S QAWSQL43.ltfinc.net -E -d <database> -b -W -h -1 -Q "<query>"
+timeout 60 sqlcmd -S <server> -E -d <database> -b -W -h -1 -Q "<query>"
 ```
 
 - `-h -1` suppresses headers for scripted output. Drop it when column names are needed.
@@ -64,7 +104,7 @@ timeout 60 sqlcmd -S QAWSQL43.ltfinc.net -E -d <database> -b -W -h -1 -Q "<query
 Run this first, with no table reads:
 
 ```bash
-timeout 60 sqlcmd -S QAWSQL43.ltfinc.net -E -d <database> -b -W -h -1 -Q \
+timeout 60 sqlcmd -S <server> -E -d <database> -b -W -h -1 -Q \
   "SELECT DB_NAME() AS db, SUSER_NAME() AS login, USER_NAME() AS db_user, DATABASEPROPERTYEX(DB_NAME(),'Status') AS status, DATABASEPROPERTYEX(DB_NAME(),'Updateability') AS updateability;"
 ```
 
@@ -93,8 +133,11 @@ Organization policy: do not include member PHI or HIPAA data in responses; PII i
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Client unable to establish connection` + `OpenSSL library could not be loaded` | `/opt/homebrew/opt/openssl` points at openssl@4 or nothing | Relink to openssl@3 (see Prerequisites #4). |
-| `subject name does not match host name` | Using the alias `sqlqa-report.ltfinc.net` | Use `QAWSQL43.ltfinc.net`. |
-| `Login failed for user 'LTFINC\<user>'` / `Cannot open database "X"` | Login has no access to X, or X doesn't exist on that instance | Check `sys.databases` for the name; ask the user. |
+| `subject name does not match host name` | Using an alias such as `sqlqa-report.ltfinc.net` | Use the real server from the hosts table (e.g. `QAWSQL43.ltfinc.net`). |
+| `Login failed for user 'LTFINC\<user>'` (18456) | Kerberos worked, but the user is not in the AD group for that server, or the ticket predates a group change | See "Access: AD groups"; after a group change the user runs `kinit` again. |
+| `Cannot open database "X"` | X doesn't exist on that instance, or no access | Check `sys.databases` for the name; ask the user. |
+| Error 906 on every host-name form (clustered instance) | `MSSQLSvc` SPN not registered on the cluster virtual name (this was QA's problem; Stage LTSuite has it now) | DB team fix. Report it and stop; do not work around it. |
+| `Login timeout expired` / `TCP Provider: Error code 0x2AF9` | Host not resolvable or reachable, usually VPN is off | Ask the user to check VPN; `klist` is a separate check. |
 | `Cannot generate SSPI context` / Kerberos errors | No or expired ticket | Ask the user to run `kinit` in their terminal; check `klist`. |
 | `sqlcmd: command not found` | `mssql-tools18` not installed | `brew bundle check --file=~/.dotfiles/Brewfile.lifetime`; install with `HOMEBREW_ACCEPT_EULA=Y brew install microsoft/mssql-release/msodbcsql18 microsoft/mssql-release/mssql-tools18`. |
 | Hang with no output | Brew install waiting for a sudo password (pkg installer) | Ask the user to run the install in their own terminal (`!` prefix). |
