@@ -17,6 +17,7 @@
 
 # ===== Taps =====
 tap "azure/azd"
+tap "azure/kubelogin"
 tap "microsoft/mssql-release"
 tap "sdkman/tap"
 tap "steveyegge/beads"
@@ -39,6 +40,7 @@ brew "gh"                                     # GitHub command-line tool
 brew "git"                                    # Distributed revision control system
 brew "helm"                                   # Kubernetes package manager
 brew "jq"                                     # Lightweight and flexible command-line JSON processor
+brew "kubelogin"                              # Azure AD auth plugin for kubectl (azure/kubelogin/kubelogin, 0.2.22)
 brew "microsoft/mssql-release/msodbcsql18"    # Microsoft ODBC Driver 18 for SQL Server (needs HOMEBREW_ACCEPT_EULA=Y at install)
 brew "microsoft/mssql-release/mssql-tools18"  # sqlcmd and bcp for SQL Server
 brew "nmap"                                   # Port scanning utility for large networks
