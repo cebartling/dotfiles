@@ -63,6 +63,7 @@ brew "zsh-syntax-highlighting"                # Fish shell like syntax highlight
 cask "1password"           # 1Password GUI
 cask "1password-cli"       # Command-line interface for 1Password
 cask "agentsview"          # Browse, search and analyse your past AI coding sessions
+cask "azure-cli"           # Microsoft Azure CLI (provides the az command)
 cask "font-3270-nerd-font"
 cask "font-hack-nerd-font"
 cask "font-jetbrains-mono-nerd-font"
