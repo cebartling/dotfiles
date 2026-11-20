@@ -72,6 +72,7 @@ cask "font-jetbrains-mono-nerd-font"
 cask "font-liberation-nerd-font"
 cask "font-monaspace"
 cask "freelens"            # Kubernetes IDE
+cask "google-chrome"       # Google Chrome web browser
 cask "handy"               # Speech to text application
 cask "jetbrains-toolbox"   # JetBrains IDE installer and updater
 cask "keepingyouawake"     # Tool to prevent the system from going into sleep mode
