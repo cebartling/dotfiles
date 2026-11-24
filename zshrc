@@ -206,6 +206,10 @@ sdk() {
   sdk "$@"
 }
 
+# mise: shims on $path instead of `eval "$(mise activate zsh)"` (a subprocess
+# on every shell). After pyenv and sdkman, so a mise-managed tool wins.
+(( $+commands[mise] )) && path=("${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims" $path)
+
 # Eager (cheap) runtime hooks
 source $DOTFILES/runtimes/claude.sh
 
