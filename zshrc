@@ -157,18 +157,25 @@ unset _nvm_prefix _nvm_comp_candidate
 # extendedglob on, which breaks nvm's alias resolution (`default` -> N/A, so
 # node never lands on $PATH). Sticky emulation makes every nvm function run
 # with zsh-default options, without touching the options of this shell.
+#
+# Sourcing nvm.sh also puts nvm's default node on $path. When mise provides
+# node, drop that entry so mise owns node: `nvm use` then finds no nvm entry
+# to swap in place and prepends, so it still overrides for that shell.
+_nvm_yield_to_mise() {
+  [[ -x "${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims/node" ]] || return 0
+  path=(${path:#$NVM_DIR/versions/node/*/bin})
+}
 if [[ -n "$_nvm_sh" ]]; then
   if [[ -n "$CLAUDECODE" ]]; then
     emulate zsh -c '\. "$_nvm_sh"'
     [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
+    _nvm_yield_to_mise
   else
     _nvm_load() {
       unset -f nvm node npm npx _nvm_load
       emulate zsh -c '\. "$_nvm_sh"'
       [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
-      # nvm.sh just prepended its default node; put the mise shims (see below)
-      # back in front so mise owns node. `nvm use` still overrides per shell.
-      (( $+commands[mise] )) && path=("${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims" $path)
+      _nvm_yield_to_mise
     }
     nvm()  { _nvm_load; nvm  "$@"; }
     node() { _nvm_load; node "$@"; }
