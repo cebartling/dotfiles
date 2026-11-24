@@ -64,6 +64,7 @@ link "$DOTFILES/configurations/git/config"    "$HOME/.config/git/config"
 # `git config --global` (and gh auth setup-git) to the XDG file above — i.e.
 # into this repo. Create it empty; never touch an existing one.
 [[ -e "$HOME/.gitconfig" ]] || : > "$HOME/.gitconfig"
+link "$DOTFILES/configurations/mise/config.toml" "$HOME/.config/mise/config.toml"
 
 # The one tracked executable meant to land on $PATH. ~/.local/bin is already
 # on $path via zshrc; link() creates the directory if it is missing.

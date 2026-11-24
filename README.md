@@ -66,7 +66,8 @@ git clone git@github.com:cebartling/dotfiles.git "$HOME/.dotfiles"
 6. [`install_fonts.sh`](scripts/Ubuntu/install_fonts.sh) — JetBrainsMono Nerd
    Font, which `eza --icons` and the starship prompt both need
 7. [`link.sh`](scripts/Ubuntu/link.sh) — symlink `~/.zshrc`,
-   `~/.config/starship.toml` and `~/.config/git/config`. The cmux links are macOS-only and skipped;
+   `~/.config/starship.toml`, `~/.config/git/config` and
+   `~/.config/mise/config.toml`. The cmux links are macOS-only and skipped;
    ghostty is linked only if installed. Existing files are backed up to
    `<file>.backup.<timestamp>`.
 8. [`install_all.sh`](scripts/Ubuntu/install_all.sh) — offers the optional
@@ -721,6 +722,7 @@ there is nothing to install.
 | `configurations/starship.toml` | Starship prompt config (symlinked) |
 | `configurations/git/config` | Shared git config (symlinked into `~/.config/git/`). Per-machine settings and anything a tool writes via `git config --global` go in `~/.gitconfig`, which stays a real file |
 | `configurations/ghostty/config` | Standalone Ghostty.app config (symlinked into `~/.config/ghostty/`) |
+| `configurations/mise/config.toml` | Global mise tool versions (symlinked into `~/.config/mise/`). `mise use -g` writes here, i.e. into this repo |
 | [`configurations/cmux/`](configurations/cmux/README.md) | cmux app + embedded-Ghostty config (symlinked into `~/.config/cmux/` and `~/Library/Application Support/com.cmuxterm.app/`) |
 | `scripts/macOS/link.zsh` | Idempotent symlink installer |
 | `scripts/macOS/install_tools.zsh` | Thin wrapper around `brew bundle` |

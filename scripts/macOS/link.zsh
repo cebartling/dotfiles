@@ -54,6 +54,7 @@ link "$DOTFILES/configurations/git/config"    "$HOME/.config/git/config"
 # into this repo. Create it empty; never touch an existing one.
 [[ -e "$HOME/.gitconfig" ]] || : > "$HOME/.gitconfig"
 link "$DOTFILES/configurations/ghostty/config" "$HOME/.config/ghostty/config"
+link "$DOTFILES/configurations/mise/config.toml" "$HOME/.config/mise/config.toml"
 link "$DOTFILES/configurations/cmux/cmux.json"      "$HOME/.config/cmux/cmux.json"
 link "$DOTFILES/configurations/cmux/settings.json"  "$HOME/.config/cmux/settings.json"
 link "$DOTFILES/configurations/cmux/config.ghostty" "$HOME/Library/Application Support/com.cmuxterm.app/config.ghostty"
