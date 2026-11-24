@@ -166,6 +166,9 @@ if [[ -n "$_nvm_sh" ]]; then
       unset -f nvm node npm npx _nvm_load
       emulate zsh -c '\. "$_nvm_sh"'
       [[ -n "$_nvm_completion" ]] && \. "$_nvm_completion"
+      # nvm.sh just prepended its default node; put the mise shims (see below)
+      # back in front so mise owns node. `nvm use` still overrides per shell.
+      (( $+commands[mise] )) && path=("${MISE_DATA_DIR:-$HOME/.local/share/mise}/shims" $path)
     }
     nvm()  { _nvm_load; nvm  "$@"; }
     node() { _nvm_load; node "$@"; }
