@@ -96,6 +96,7 @@ brew "vale"
 brew "watchexec"
 
 # ===== Runtimes / package managers =====
+brew "mise"                   # polyglot tool version manager (mise.jdx.dev); not activated in zshrc
 brew "nvm"                    # lazy-loaded in zshrc
 brew "poetry"
 brew "uv"

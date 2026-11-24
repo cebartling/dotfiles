@@ -92,6 +92,7 @@ each of these comes from on Ubuntu.
 
 | Package | Description | Source |
 |---|---|---|
+| `mise` | Polyglot tool version manager (not activated by `zshrc`) | [mise.jdx.dev](https://mise.jdx.dev/) |
 | `nvm` | Node version manager (lazy-loaded by `zshrc`) | [github.com/nvm-sh/nvm](https://github.com/nvm-sh/nvm) |
 | `poetry` | Python dependency management and packaging | [github.com/python-poetry/poetry](https://github.com/python-poetry/poetry) |
 | `uv` | Extremely fast Python installer/resolver written in Rust | [github.com/astral-sh/uv](https://github.com/astral-sh/uv) |
@@ -373,7 +374,7 @@ Note `gh` and `lazygit` resolve from the Ubuntu Pro ESM apps pocket on 26.04.
 | `pnpm` | `pnpm/pnpm` GitHub release tarball, unpacked to `~/.local/lib/pnpm` |
 | `rustup` | `sh.rustup.rs` with `--no-modify-path`; toolchain lands in `~/.cargo` |
 | `pyenv` | `pyenv.run` (writes no profile itself); clones into `~/.pyenv` with the virtualenv/update/doctor plugins |
-| `fx` · `doggo` · `grpcurl` · `duckdb` · `cheat` · `cargo-binstall` · `trivy` · `caddy` | Latest GitHub release of each, through one helper, `install_release` in `install_tools.sh`. It handles a bare binary, `.gz`, tarball or zip and checks for an ELF before installing. `duckdb` is the glibc build, `cargo-binstall` the slim one |
+| `fx` · `doggo` · `grpcurl` · `duckdb` · `cheat` · `cargo-binstall` · `trivy` · `caddy` · `mise` | Latest GitHub release of each, through one helper, `install_release` in `install_tools.sh`. It handles a bare binary, `.gz`, tarball or zip and checks for an ELF before installing. `duckdb` is the glibc build, `cargo-binstall` the slim one |
 
 `caddy` is the release binary, **not** Ubuntu's `caddy` package: that one is
 years older and enables a `caddy.service` listening on `:80`. Here it is the CLI

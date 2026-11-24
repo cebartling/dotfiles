@@ -55,7 +55,7 @@ VERIFY_TOOLS=(
   tmux tree xh http gitleaks pre-commit uv ast-grep bd rtk
   bun pnpm rustup cargo linear-cli pyenv weston
   nmap mlr pgcli pandoc magick ffmpeg fastfetch
-  fx doggo grpcurl duckdb cheat cargo-binstall trivy caddy
+  fx doggo grpcurl duckdb cheat cargo-binstall trivy caddy mise
   semgrep hf tsc typescript-language-server ccusage playwright-cli op
 )
 # 1Password publishes its desktop app for amd64 only; arm64 gets just `op`.
@@ -635,6 +635,8 @@ install_release_tools() {
   # The release binary, not Ubuntu's caddy package: that one is years older and
   # enables a caddy.service listening on :80. This is the CLI only.
   install_release caddy          caddyserver/caddy     'caddy_[0-9.]+_linux_amd64\.tar\.gz'              'caddy_[0-9.]+_linux_arm64\.tar\.gz'
+  # The bare glibc binary, not the -musl build or a tarball. Not activated in zshrc.
+  install_release mise           jdx/mise              'mise-v[0-9.]+-linux-x64'                        'mise-v[0-9.]+-linux-arm64'
 }
 
 # ---------- uv tools ----------
