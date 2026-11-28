@@ -91,6 +91,7 @@ check_user_unit() { _check_unit "--user" "$1"; }
 check_symlink "$HOME/.zshrc"                "$DOTFILES/zshrc"
 check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.toml"
 check_symlink "$HOME/.config/git/config"    "$DOTFILES/configurations/git/config"
+check_symlink "$HOME/.config/git/ignore"    "$DOTFILES/configurations/git/ignore"
 # The link can be right and commits still fail — e.g. a per-machine
 # ~/.gitconfig that blanks the identity. Check what git actually resolves.
 if git var GIT_AUTHOR_IDENT >/dev/null 2>&1; then

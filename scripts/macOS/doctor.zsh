@@ -50,6 +50,7 @@ check_symlink() {
 check_symlink "$HOME/.zshrc"               "$DOTFILES/zshrc"
 check_symlink "$HOME/.config/starship.toml" "$DOTFILES/configurations/starship.toml"
 check_symlink "$HOME/.config/git/config"    "$DOTFILES/configurations/git/config"
+check_symlink "$HOME/.config/git/ignore"    "$DOTFILES/configurations/git/ignore"
 
 # ---------- brew bundle ----------
 if (( lifetime_only )); then

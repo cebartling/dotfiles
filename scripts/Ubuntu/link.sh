@@ -59,6 +59,7 @@ echo
 link "$DOTFILES/zshrc"                        "$HOME/.zshrc"
 link "$DOTFILES/configurations/starship.toml" "$HOME/.config/starship.toml"
 link "$DOTFILES/configurations/git/config"    "$HOME/.config/git/config"
+link "$DOTFILES/configurations/git/ignore"    "$HOME/.config/git/ignore"
 
 # ~/.gitconfig stays a real, per-machine file. With it absent, git sends
 # `git config --global` (and gh auth setup-git) to the XDG file above — i.e.
